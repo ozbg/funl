@@ -7,6 +7,7 @@ import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
+import PrintPreview from '@/components/PrintPreview'
 import { createClient } from '@/lib/supabase/client'
 import { Business } from '@/lib/types'
 
@@ -20,7 +21,7 @@ export default function NewFunnelPage() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateFunnelInput>({
     defaultValues: {
       type: 'contact',
-      print_size: 'A4',
+      print_type: 'A4_portrait',
       content: {}
     }
   })
@@ -33,6 +34,7 @@ export default function NewFunnelPage() {
   const watchedPropertyUrl = watch('content.property_url')
   const watchedVideoUrl = watch('content.video_url')
   const watchedCustomMessage = watch('content.custom_message')
+  const watchedPrintType = watch('print_type')
   
   const selectedType = watchedType
 
@@ -201,9 +203,6 @@ export default function NewFunnelPage() {
                       _hover={selectedType !== 'contact' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Contact Card</h3>
-                      <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
-                        Simple contact card download
-                      </p>
                     </Box>
                   </label>
 
@@ -224,10 +223,7 @@ export default function NewFunnelPage() {
                       color={selectedType === 'property' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'property' ? { borderColor: 'border.default' } : {}}
                     >
-                      <h3 className={css({ fontWeight: 'medium' })}>Property + Contact</h3>
-                      <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
-                        Contact + property details
-                      </p>
+                      <h3 className={css({ fontWeight: 'medium' })}>+ Details</h3>
                     </Box>
                   </label>
 
@@ -248,10 +244,7 @@ export default function NewFunnelPage() {
                       color={selectedType === 'video' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'video' ? { borderColor: 'border.default' } : {}}
                     >
-                      <h3 className={css({ fontWeight: 'medium' })}>Video + Contact</h3>
-                      <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
-                        Contact + video message
-                      </p>
+                      <h3 className={css({ fontWeight: 'medium' })}>+ Video</h3>
                     </Box>
                   </label>
                 </Grid>
@@ -321,40 +314,36 @@ export default function NewFunnelPage() {
                   <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
                     Custom Message (Optional)
                   </label>
-                  <textarea
+                  <input
+                    type="text"
                     {...register('content.custom_message')}
-                    rows={3}
                     className={inputStyles}
                     placeholder="Add any additional message..."
                   />
                 </Box>
               </Stack>
 
-              {/* Print Size */}
+              {/* Print Type */}
               <Box>
-                <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                  Print Size
+                <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                  Print Type
                 </label>
-                <Flex gap={4}>
-                  <label className={css({ display: 'flex', alignItems: 'center' })}>
-                    <input
-                      type="radio"
-                      {...register('print_size')}
-                      value="A4"
-                      className={css({ h: 4, w: 4, color: 'colorPalette.default', borderColor: 'border.default' })}
-                    />
-                    <span className={css({ ml: 2, fontSize: 'sm', color: 'fg.default' })}>A4 (Standard)</span>
-                  </label>
-                  <label className={css({ display: 'flex', alignItems: 'center' })}>
-                    <input
-                      type="radio"
-                      {...register('print_size')}
-                      value="A5"
-                      className={css({ h: 4, w: 4, color: 'colorPalette.default', borderColor: 'border.default' })}
-                    />
-                    <span className={css({ ml: 2, fontSize: 'sm', color: 'fg.default' })}>A5 (Compact)</span>
-                  </label>
-                </Flex>
+                <select
+                  {...register('print_type')}
+                  className={inputStyles}
+                >
+                  <option value="A4_portrait">A4 Portrait</option>
+                  <option value="A5_portrait">A5 Portrait</option>
+                  <option value="A5_landscape">A5 Landscape</option>
+                </select>
+              </Box>
+
+              {/* Print Preview */}
+              <Box mt={4}>
+                <PrintPreview 
+                  printType={watchedPrintType || 'A4_portrait'}
+                  funnelName={watchedName}
+                />
               </Box>
 
               {/* Actions */}

@@ -11,7 +11,7 @@ export const CreateFunnelSchema = z.object({
     custom_message: z.string().max(500, 'Message too long').optional(),
     cta_button_text: z.string().max(50, 'CTA text too long').optional(),
   }).optional(),
-  print_size: z.enum(['A4', 'A5']).default('A4'),
+  print_type: z.enum(['A4_portrait', 'A5_portrait', 'A5_landscape']).default('A4_portrait'),
 })
 
 export const UpdateFunnelSchema = CreateFunnelSchema.partial().extend({
