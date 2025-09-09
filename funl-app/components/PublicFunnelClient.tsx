@@ -66,17 +66,13 @@ export default function PublicFunnelClient({
       <Box maxW="md" mx="auto" pt={8} pb={16}>
         <Box bg="bg.default" boxShadow="lg" overflow="hidden">
           {/* Header */}
-          <Box 
-            bgGradient="to-r" 
-            gradientFrom="mint.default" 
-            gradientTo="mint.emphasized" 
-            px={6} 
-            py={8} 
-            textAlign="center" 
-            colorPalette="mint"
-            color="colorPalette.fg"
-          >
-            <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>Get in Touch</h1>
+          <Box px={6} py={8} textAlign="center">
+            <h1 className={css({ fontSize: 'xl', fontWeight: 'medium', color: 'fg.default', mb: 2 })}>
+              {business.name}
+            </h1>
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 8 })}>
+              {business.vcard_data?.firstName} {business.vcard_data?.lastName}
+            </p>
             
             {funnel.type === 'property' && funnel.content?.state && (
               <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
@@ -92,31 +88,9 @@ export default function PublicFunnelClient({
           </Box>
 
           {/* Contact Section */}
-          <Box p={6}>
-            <Box textAlign="center" mb={6}>
-              <Flex 
-                w={20} 
-                h={20} 
-                mx="auto" 
-                mb={4} 
-                colorPalette="mint"
-                bg="colorPalette.subtle" 
-                borderRadius="full" 
-                align="center" 
-                justify="center"
-              >
-                <span className={css({ colorPalette: 'mint', fontSize: '2xl', fontWeight: 'bold', color: 'colorPalette.text' })}>
-                  {business.name.charAt(0).toUpperCase()}
-                </span>
-              </Flex>
-              <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>{business.name}</h2>
-              {business.phone && (
-                <p className={css({ color: 'fg.muted', mt: 1 })}>{business.phone}</p>
-              )}
-            </Box>
-
+          <Box px={6} pb={6}>
             {/* Primary CTA */}
-            <Stack gap={3} mb={6}>
+            <Stack gap={6}>
               <VCardDownload
                 businessName={business.name}
                 vCardData={vCardData}
@@ -126,8 +100,10 @@ export default function PublicFunnelClient({
                   bg: 'colorPalette.default',
                   color: 'colorPalette.fg',
                   fontWeight: 'semibold',
-                  py: 3,
-                  px: 4,
+                  py: 4,
+                  px: 6,
+                  fontSize: 'lg',
+                  textAlign: 'center',
                   transition: 'colors',
                   _hover: {
                     bg: 'colorPalette.emphasized'
@@ -135,7 +111,7 @@ export default function PublicFunnelClient({
                 })}
                 onClick={handleVCardDownload}
               >
-                📱 Add Contact to Phone
+                Save {business.vcard_data?.firstName}'s Contact
               </VCardDownload>
               
               {business.phone && (
@@ -149,16 +125,17 @@ export default function PublicFunnelClient({
                     bg: 'colorPalette.default',
                     color: 'colorPalette.fg',
                     fontWeight: 'semibold',
-                    py: 3,
-                    px: 4,
-                      textAlign: 'center',
+                    py: 4,
+                    px: 6,
+                    fontSize: 'lg',
+                    textAlign: 'center',
                     transition: 'colors',
                     _hover: {
                       bg: 'colorPalette.emphasized'
                     }
                   })}
                 >
-                  📞 Call Now
+                  Call {business.vcard_data?.firstName}
                 </a>
               )}
             </Stack>
@@ -228,7 +205,7 @@ export default function PublicFunnelClient({
             )}
 
             {/* Callback Request Form */}
-            <Box borderTopWidth="1px" borderColor="border.default" pt={6}>
+            <Box mt={6} borderTopWidth="1px" borderColor="border.default" pt={6}>
               <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default', mb: 4 })}>Request a Callback</h3>
               <form onSubmit={handleCallbackSubmit}>
                 <Stack gap={4}>

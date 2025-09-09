@@ -1,17 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
+import { createClient } from '@/lib/supabase/client'
+import { Business } from '@/lib/types'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [business, setBusiness] = useState<Business | null>(null)
   const router = useRouter()
+  const supabase = createClient()
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateFunnelInput>({
     defaultValues: {
@@ -31,6 +35,22 @@ export default function NewFunnelPage() {
   const watchedCustomMessage = watch('content.custom_message')
   
   const selectedType = watchedType
+
+  // Fetch business data on component mount
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('businesses')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        if (data) setBusiness(data)
+      }
+    }
+    fetchBusiness()
+  }, [supabase])
 
   const onSubmit = async (data: CreateFunnelInput) => {
     setLoading(true)
@@ -376,7 +396,8 @@ export default function NewFunnelPage() {
                   custom_message: watchedCustomMessage || ''
                 }
               }}
-              businessName="Your Business"
+              businessName={business?.name || 'Your Business'}
+              contactName={business?.vcard_data ? `${business.vcard_data.firstName} ${business.vcard_data.lastName}` : undefined}
             />
           </Box>
         </Box>

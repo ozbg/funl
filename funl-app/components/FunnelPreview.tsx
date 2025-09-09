@@ -17,9 +17,10 @@ interface FunnelPreviewProps {
     }
   }
   businessName?: string
+  contactName?: string
 }
 
-export default function FunnelPreview({ formData, businessName = 'Your Business' }: FunnelPreviewProps) {
+export default function FunnelPreview({ formData, businessName = 'Your Business', contactName }: FunnelPreviewProps) {
   return (
     <Box>
       <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>
@@ -43,8 +44,8 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
           top={0.5}
           left="50%"
           transform="translateX(-50%)"
-          w="100px"
-          h="16px"
+          w="60px"
+          h="8px"
           bg="fg.muted"
           borderRadius="full"
           zIndex={1}
@@ -63,19 +64,13 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
           <Box p={4}>
             <Box bg="bg.default" boxShadow="lg" overflow="hidden">
               {/* Header */}
-              <Box 
-                bgGradient="to-r" 
-                gradientFrom="mint.default" 
-                gradientTo="mint.emphasized" 
-                px={4} 
-                py={6} 
-                textAlign="center" 
-                colorPalette="mint"
-                color="colorPalette.fg"
-              >
-                <h1 className={css({ fontSize: 'lg', fontWeight: 'bold', mb: 2 })}>
-                  Get in Touch
+              <Box px={3} py={6} textAlign="center">
+                <h1 className={css({ fontSize: 'md', fontWeight: 'medium', color: 'fg.default', mb: 2 })}>
+                  {businessName}
                 </h1>
+                <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 6 })}>
+                  {contactName || 'Contact Name'}
+                </p>
                 
                 {formData.type === 'property' && formData.content?.state && (
                   <Box display="inline-flex" alignItems="center" px={2} py={1} fontSize="xs" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
@@ -86,37 +81,16 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 )}
                 
                 {formData.content?.price && (
-                  <p className={css({ fontSize: 'md', fontWeight: 'semibold', mt: 2 })}>
+                  <p className={css({ fontSize: 'sm', fontWeight: 'semibold', mt: 1 })}>
                     {formData.content.price}
                   </p>
                 )}
               </Box>
 
               {/* Contact Section */}
-              <Box p={4}>
-                <Box textAlign="center" mb={4}>
-                  <Flex 
-                    w={12} 
-                    h={12} 
-                    mx="auto" 
-                    mb={2} 
-                    colorPalette="mint"
-                    bg="colorPalette.subtle" 
-                    borderRadius="full" 
-                    align="center" 
-                    justify="center"
-                  >
-                    <span className={css({ colorPalette: 'mint', fontSize: 'lg', fontWeight: 'bold', color: 'colorPalette.text' })}>
-                      {businessName.charAt(0).toUpperCase()}
-                    </span>
-                  </Flex>
-                  <h2 className={css({ fontSize: 'md', fontWeight: 'semibold', color: 'fg.default' })}>
-                    {businessName}
-                  </h2>
-                </Box>
-
+              <Box px={3} pb={4}>
                 {/* Primary CTAs */}
-                <Stack gap={2} mb={4}>
+                <Stack gap={4} mb={4}>
                   <Box
                     w="full"
                     colorPalette="mint"
@@ -126,9 +100,9 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                     py={2}
                     px={3}
                     textAlign="center"
-                    fontSize="sm"
+                    fontSize="xs"
                   >
-                    📱 Add Contact to Phone
+                    Save {contactName?.split(' ')[0] || 'Contact'}'s Contact
                   </Box>
                   
                   <Box
@@ -140,15 +114,15 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                     py={2}
                     px={3}
                     textAlign="center"
-                    fontSize="sm"
+                    fontSize="xs"
                   >
-                    📞 Call Now
+                    Call {contactName?.split(' ')[0] || 'Contact'}
                   </Box>
                 </Stack>
 
                 {/* Custom Message */}
                 {formData.content?.custom_message && (
-                  <Box mb={4} p={3} bg="bg.subtle">
+                  <Box mb={5} p={3} bg="bg.subtle">
                     <p className={css({ color: 'fg.muted', fontSize: 'xs' })}>
                       {formData.content.custom_message}
                     </p>
@@ -157,7 +131,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
 
                 {/* Property Link - Show if property type selected */}
                 {formData.type === 'property' && (
-                  <Box mb={3}>
+                  <Box mb={4}>
                     <Box
                       w="full"
                       bg="bg.muted"
@@ -175,7 +149,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
 
                 {/* Video Link - Show if video type selected */}
                 {formData.type === 'video' && (
-                  <Box mb={3}>
+                  <Box mb={4}>
                     <Box
                       w="full"
                       colorPalette="red"
@@ -193,11 +167,11 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 )}
 
                 {/* Callback Form Preview */}
-                <Box borderTopWidth="1px" borderColor="border.default" pt={3}>
-                  <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 2 })}>
+                <Box mt={5} borderTopWidth="1px" borderColor="border.default" pt={4}>
+                  <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 3 })}>
                     Request a Callback
                   </h3>
-                  <Stack gap={2}>
+                  <Stack gap={3}>
                     <Box
                       w="full"
                       px={2}
@@ -241,7 +215,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
             </Box>
 
             {/* Footer */}
-            <Box textAlign="center" mt={4}>
+            <Box textAlign="center" mt={6}>
               <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
                 Powered by FunL.app
               </p>
