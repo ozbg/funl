@@ -7,7 +7,7 @@ import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
-import PrintPreview from '@/components/PrintPreview'
+import PrintLayoutPreview from '@/components/PrintLayoutPreview'
 import { createClient } from '@/lib/supabase/client'
 import { Business } from '@/lib/types'
 
@@ -340,9 +340,15 @@ export default function NewFunnelPage() {
 
               {/* Print Preview */}
               <Box mt={4}>
-                <PrintPreview 
+                <PrintLayoutPreview 
                   printType={watchedPrintType || 'A4_portrait'}
                   funnelName={watchedName}
+                  businessName={business?.name}
+                  customMessage={watchedCustomMessage}
+                  contactPhone={business?.phone}
+                  contactEmail={business?.email}
+                  website={business?.website}
+                  scale={0.4}
                 />
               </Box>
 

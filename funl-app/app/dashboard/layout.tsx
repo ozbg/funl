@@ -108,6 +108,47 @@ export default async function DashboardLayout({
                   Sign out
                 </button>
               </form>
+              <Link
+                href="/admin/layouts"
+                className={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  w: 8,
+                  h: 8,
+                  bg: 'bg.default',
+                  color: 'fg.muted',
+                  border: '1px solid',
+                  borderColor: 'border.default',
+                  cursor: 'pointer',
+                  transition: 'colors',
+                  _hover: {
+                    bg: 'bg.muted',
+                    color: 'fg.default',
+                  },
+                  _focus: {
+                    outline: 'none',
+                    ringWidth: '2',
+                    ringColor: 'ring.default',
+                  }
+                })}
+                aria-label="Layout Builder"
+                title="Admin Layout Builder"
+              >
+                <svg
+                  className={css({ w: 4, h: 4 })}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                  />
+                </svg>
+              </Link>
               <ThemeToggle />
             </Flex>
           </Flex>

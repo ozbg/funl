@@ -1,0 +1,147 @@
+'use client'
+
+import { useState } from 'react'
+import { css } from '@/styled-system/css'
+import { Stack } from '@/styled-system/jsx'
+import { generatePrintPDF, downloadPDF } from '@/lib/pdf-generator'
+import { generateShortUrl } from '@/lib/qr'
+import { createClient } from '@/lib/supabase/client'
+
+interface PrintActionsProps {
+  funnelId: string
+  funnelName: string
+  shortUrl: string
+  printType: 'A4_portrait' | 'A5_portrait' | 'A5_landscape'
+  businessData: {
+    name: string
+    phone?: string
+    email?: string
+    website?: string
+  }
+  customMessage?: string
+}
+
+export default function PrintActions({
+  funnelId,
+  funnelName,
+  shortUrl,
+  printType,
+  businessData,
+  customMessage
+}: PrintActionsProps) {
+  const [downloading, setDownloading] = useState(false)
+  const supabase = createClient()
+
+  const handleDownloadPDF = async () => {
+    setDownloading(true)
+    
+    try {
+      // Fetch the print layout
+      const { data: layout, error: layoutError } = await supabase
+        .from('print_layouts')
+        .select('*')
+        .eq('print_type', printType)
+        .eq('is_active', true)
+        .eq('is_default', true)
+        .single()
+
+      if (layoutError || !layout) {
+        console.error('Failed to fetch layout:', layoutError)
+        alert('Failed to fetch print layout')
+        return
+      }
+
+      // Generate the full URL for QR code
+      const fullUrl = generateShortUrl(shortUrl)
+
+      // Prepare print data
+      const printData = {
+        business_name: businessData.name,
+        custom_message: customMessage,
+        contact_phone: businessData.phone,
+        contact_email: businessData.email,
+        website: businessData.website,
+        funnel_name: funnelName,
+        qr_url: fullUrl
+      }
+
+      // Generate PDF
+      const pdfBlob = await generatePrintPDF(layout, printData)
+      
+      // Download PDF
+      const filename = `${funnelName.replace(/[^a-zA-Z0-9]/g, '_')}_print.pdf`
+      downloadPDF(pdfBlob, filename)
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      alert('Failed to generate PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const handleOrderPrints = () => {
+    // Placeholder for future functionality
+    alert('Order prints functionality coming soon!')
+  }
+
+  return (
+    <Stack gap={2}>
+      <button
+        onClick={handleDownloadPDF}
+        disabled={downloading}
+        className={css({
+          colorPalette: 'mint',
+          w: 'full',
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          px: 4,
+          py: 2,
+          borderWidth: '1px',
+          borderColor: 'transparent',
+          boxShadow: 'sm',
+          fontSize: 'sm',
+          fontWeight: 'medium',
+          color: 'colorPalette.fg',
+          bg: 'colorPalette.default',
+          cursor: 'pointer',
+          _hover: {
+            bg: 'colorPalette.emphasized',
+          },
+          _disabled: {
+            opacity: 'disabled',
+            cursor: 'not-allowed',
+          },
+        })}
+      >
+        {downloading ? 'Generating PDF...' : 'Download Print PDF'}
+      </button>
+      
+      <button
+        onClick={handleOrderPrints}
+        className={css({
+          w: 'full',
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          px: 4,
+          py: 2,
+          borderWidth: '1px',
+          borderColor: 'border.default',
+          boxShadow: 'sm',
+          fontSize: 'sm',
+          fontWeight: 'medium',
+          color: 'fg.default',
+          bg: 'bg.default',
+          cursor: 'pointer',
+          _hover: {
+            bg: 'bg.muted',
+          },
+        })}
+      >
+        Order Prints
+      </button>
+    </Stack>
+  )
+}

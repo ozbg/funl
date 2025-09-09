@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { generateShortUrl } from '@/lib/qr'
 import FunnelActions from '@/components/FunnelActions'
+import PrintActions from '@/components/PrintActions'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack } from '@/styled-system/jsx'
 
@@ -30,6 +31,13 @@ export default async function FunnelDetailPage({ params }: PageProps) {
   if (error || !funnel) {
     return notFound()
   }
+
+  // Fetch business data
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('*')
+    .eq('id', user.id)
+    .single()
 
   const publicUrl = generateShortUrl(funnel.short_url)
 
@@ -156,6 +164,24 @@ export default async function FunnelDetailPage({ params }: PageProps) {
                   Preview Landing Page
                 </Link>
               </Stack>
+
+              {/* Print Actions */}
+              <Box mt={6} pt={6} borderTopWidth="1px" borderColor="border.default">
+                <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>Print Options</h3>
+                <PrintActions
+                  funnelId={funnel.id}
+                  funnelName={funnel.name}
+                  shortUrl={funnel.short_url}
+                  printType={(funnel.print_type || funnel.print_size === 'A4' ? 'A4_portrait' : 'A5_portrait') as any}
+                  businessData={{
+                    name: business?.name || '',
+                    phone: business?.phone,
+                    email: business?.email,
+                    website: business?.website
+                  }}
+                  customMessage={funnel.content?.custom_message}
+                />
+              </Box>
             </Box>
           )}
         </Box>
@@ -171,8 +197,10 @@ export default async function FunnelDetailPage({ params }: PageProps) {
             </Box>
             
             <Box>
-              <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Print Size</dt>
-              <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.print_size}</dd>
+              <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Print Type</dt>
+              <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>
+                {(funnel.print_type || funnel.print_size || 'A4_portrait').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </dd>
             </Box>
 
 
