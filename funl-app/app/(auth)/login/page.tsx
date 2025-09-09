@@ -47,18 +47,18 @@ export default function LoginPage() {
           Or{' '}
           <Link 
             href="/signup" 
-            className={css({ fontWeight: 'medium', color: 'accent.default', _hover: { color: 'accent.emphasis' } })}
+            className={css({ fontWeight: 'medium', colorPalette: 'mint', color: 'colorPalette.default', _hover: { color: 'colorPalette.emphasized' } })}
           >
             create a new account
           </Link>
         </p>
       </Box>
 
-      <form className={css({ mt: 8 })} onSubmit={handleLogin}>
+      <form className={css({ mt: 8, colorPalette: 'mint' })} onSubmit={handleLogin}>
         <Stack gap={6}>
           {error && (
-            <Box borderRadius="none" bg="red.50" p={4}>
-              <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
+            <Box borderRadius="none" bg="red.default" p={4}>
+              <p className={css({ fontSize: 'sm', color: 'red.fg' })}>{error}</p>
             </Box>
           )}
 
@@ -92,8 +92,8 @@ export default function LoginPage() {
                 _focus: {
                   outline: 'none',
                   ringWidth: '2px',
-                  ringColor: 'accent.default',
-                  borderColor: 'accent.default',
+                  ringColor: 'colorPalette.default',
+                  borderColor: 'colorPalette.default',
                 },
               })}
             />
@@ -129,8 +129,8 @@ export default function LoginPage() {
                 _focus: {
                   outline: 'none',
                   ringWidth: '2px',
-                  ringColor: 'accent.default',
-                  borderColor: 'accent.default',
+                  ringColor: 'colorPalette.default',
+                  borderColor: 'colorPalette.default',
                 },
               })}
             />
@@ -139,7 +139,7 @@ export default function LoginPage() {
           <Flex justify="space-between" align="center">
             <Link
               href="/forgot-password"
-              className={css({ fontSize: 'sm', color: 'accent.default', _hover: { color: 'accent.emphasis' } })}
+              className={css({ fontSize: 'sm', colorPalette: 'mint', color: 'colorPalette.default', _hover: { color: 'colorPalette.emphasized' } })}
             >
               Forgot your password?
             </Link>
@@ -149,9 +149,10 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className={css({
+              colorPalette: 'mint',
               w: 'full',
               display: 'flex',
-              justify: 'center',
+              justifyContent: 'center',
               py: 2,
               px: 4,
               borderWidth: '1px',
@@ -160,17 +161,17 @@ export default function LoginPage() {
               boxShadow: 'sm',
               fontSize: 'sm',
               fontWeight: 'medium',
-              color: 'neutral.fg',
-              bg: 'accent.default',
+              color: 'colorPalette.fg',
+              bg: 'colorPalette.default',
               cursor: 'pointer',
               _hover: {
-                bg: 'accent.emphasis',
+                bg: 'colorPalette.emphasized',
               },
               _focus: {
                 outline: 'none',
                 ringWidth: '2px',
                 ringOffset: '2px',
-                ringColor: 'accent.default',
+                ringColor: 'colorPalette.default',
               },
               _disabled: {
                 opacity: 0.5,

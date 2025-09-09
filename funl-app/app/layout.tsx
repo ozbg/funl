@@ -22,14 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-color-mode="dark">
+    <html lang="en" data-theme="dark">
       <body
         className={css({
           fontSmoothing: 'antialiased',
         })}
-        style={{
-          fontVariationSettings: robotoMono.style?.fontVariationSettings,
-        }}
       >
         <ThemeProvider>
           <ThemeToggle />

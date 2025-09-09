@@ -51,13 +51,14 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
       <button
         onClick={copyToClipboard}
         className={css({
+          colorPalette: 'mint',
           px: 2,
           py: 1,
           fontSize: 'xs',
-          color: 'accent.default',
+          color: 'colorPalette.default',
           cursor: 'pointer',
           _hover: {
-            color: 'accent.emphasis',
+            color: 'colorPalette.emphasized',
           },
         })}
       >
@@ -74,18 +75,19 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
           onClick={() => updateFunnelStatus('active')}
           disabled={loading}
           className={css({
+            colorPalette: 'mint',
             px: 4,
             py: 2,
             fontSize: 'sm',
             fontWeight: 'medium',
-            color: 'neutral.fg',
-            bg: 'mint.600',
+            color: 'colorPalette.fg',
+            bg: 'colorPalette.default',
             borderWidth: '1px',
             borderColor: 'transparent',
             borderRadius: 'none',
             cursor: 'pointer',
             _hover: {
-              bg: 'mint.700',
+              bg: 'colorPalette.emphasized',
             },
             _disabled: {
               opacity: 0.5,

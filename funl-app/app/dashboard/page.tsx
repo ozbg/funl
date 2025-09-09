@@ -34,6 +34,7 @@ export default async function DashboardPage() {
             <Link
               href="/dashboard/funnels/new"
               className={css({
+                colorPalette: 'mint',
                 display: 'inline-flex',
                 alignItems: 'center',
                 px: 4,
@@ -42,10 +43,10 @@ export default async function DashboardPage() {
                 boxShadow: 'sm',
                 fontSize: 'sm',
                 fontWeight: 'medium',
-                color: 'neutral.fg',
-                bg: 'accent.default',
+                color: 'colorPalette.fg',
+                bg: 'colorPalette.default',
                 _hover: {
-                  bg: 'accent.emphasis',
+                  bg: 'colorPalette.emphasized',
                 },
               })}
             >
@@ -83,7 +84,7 @@ export default async function DashboardPage() {
                             align="center"
                             justify="center"
                           >
-                            <span className={css({ color: 'neutral.fg', fontWeight: 'medium', fontSize: 'sm' })}>
+                            <span className={css({ colorPalette: 'mint', color: 'colorPalette.fg', fontWeight: 'medium', fontSize: 'sm' })}>
                               {funnel.name.charAt(0).toUpperCase()}
                             </span>
                           </Flex>
@@ -109,8 +110,8 @@ export default async function DashboardPage() {
                             lineHeight: '1.25rem',
                             fontWeight: 'semibold',
                             borderRadius: 'full',
-                            bg: funnel.status === 'active' ? 'mint.100' : 'neutral.100',
-                            color: funnel.status === 'active' ? 'mint.800' : 'neutral.800',
+                            bg: funnel.status === 'active' ? 'mint.subtle' : 'gray.subtle',
+                            color: funnel.status === 'active' ? 'mint.text' : 'gray.text',
                           })}
                         >
                           {funnel.status}
@@ -147,6 +148,7 @@ export default async function DashboardPage() {
               <Link
                 href="/dashboard/funnels/new"
                 className={css({
+                  colorPalette: 'mint',
                   display: 'inline-flex',
                   alignItems: 'center',
                   px: 4,
@@ -155,10 +157,10 @@ export default async function DashboardPage() {
                   boxShadow: 'sm',
                   fontSize: 'sm',
                   fontWeight: 'medium',
-                  color: 'neutral.fg',
-                  bg: 'accent.default',
+                  color: 'colorPalette.fg',
+                  bg: 'colorPalette.default',
                   _hover: {
-                    bg: 'accent.emphasis',
+                    bg: 'colorPalette.emphasized',
                   },
                 })}
               >

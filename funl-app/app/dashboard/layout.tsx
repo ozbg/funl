@@ -24,7 +24,7 @@ export default async function DashboardLayout({
 
   return (
     <Box minHeight="100vh" bg="bg.muted">
-      <Box as="nav" bg="bg.default" boxShadow="sm" borderBottom="1px solid" borderColor="border.default">
+      <nav className={css({ bg: 'bg.default', boxShadow: 'sm', borderBottom: '1px solid', borderColor: 'border.default' })}>
         <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }}>
           <Flex justify="space-between" h="16" align="center">
             <Flex align="center" gap="6">
@@ -110,10 +110,10 @@ export default async function DashboardLayout({
             </Flex>
           </Flex>
         </Container>
-      </Box>
-      <Container as="main" maxW="7xl" py="6" px={{ base: 4, sm: 6, lg: 8 }}>
+      </nav>
+      <main className={css({ maxW: '7xl', py: 6, px: { base: 4, sm: 6, lg: 8 }, mx: 'auto' })}>
         {children}
-      </Container>
+      </main>
     </Box>
   )
 }

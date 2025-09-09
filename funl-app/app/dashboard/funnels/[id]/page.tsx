@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { generateShortUrl } from '@/lib/qr'
 import FunnelActions from '@/components/FunnelActions'
+import { css } from '@/styled-system/css'
+import { Box, Flex, Stack } from '@/styled-system/jsx'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -32,54 +34,66 @@ export default async function FunnelDetailPage({ params }: PageProps) {
   const publicUrl = generateShortUrl(funnel.short_url)
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{funnel.name}</h1>
-            <p className="text-sm text-gray-500 mt-1">
+    <Box maxW="4xl" mx="auto">
+      <Box mb={8}>
+        <Flex align="center" justify="space-between">
+          <Box>
+            <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{funnel.name}</h1>
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
               Created {new Date(funnel.created_at).toLocaleDateString()}
             </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-              funnel.status === 'active' 
-                ? 'bg-green-100 text-green-800'
-                : 'bg-gray-100 text-gray-800'
-            }`}>
+          </Box>
+          <Flex align="center" gap={3}>
+            <span className={css({
+              px: 2,
+              py: 1,
+              fontSize: 'xs',
+              fontWeight: 'semibold',
+              borderRadius: 'full',
+              bg: funnel.status === 'active' ? 'mint.subtle' : 'gray.subtle',
+              color: funnel.status === 'active' ? 'mint.text' : 'gray.text'
+            })}>
               {funnel.status}
             </span>
             <Link
               href={`/dashboard/funnels/${funnel.id}/edit`}
-              className="px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-500"
+              className={css({ 
+                colorPalette: 'mint',
+                px: 3, 
+                py: 1, 
+                fontSize: 'sm', 
+                fontWeight: 'medium', 
+                color: 'colorPalette.default', 
+                _hover: { color: 'colorPalette.emphasized' } 
+              })}
             >
               Edit
             </Link>
-          </div>
-        </div>
-      </div>
+          </Flex>
+        </Flex>
+      </Box>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <Box display="grid" gridTemplateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={8}>
         {/* QR Code Section */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">QR Code</h2>
+        <Box bg="bg.default" boxShadow="sm" borderRadius="lg" p={6}>
+          <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>QR Code</h2>
           
           {funnel.qr_code_url && (
-            <div className="text-center">
-              <div className="inline-block p-4 bg-white border rounded-lg">
+            <Box textAlign="center">
+              <Box display="inline-block" p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" borderRadius="lg">
                 <Image
                   src={funnel.qr_code_url}
                   alt={`QR Code for ${funnel.name}`}
                   width={200}
                   height={200}
-                  className="mx-auto"
+                  className={css({ mx: 'auto' })}
                 />
-              </div>
+              </Box>
               
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-gray-600">Short URL:</p>
-                <div className="flex items-center justify-center space-x-2">
-                  <code className="px-2 py-1 bg-gray-100 rounded text-sm">
+              <Stack gap={2} mt={4}>
+                <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>Short URL:</p>
+                <Flex align="center" justify="center" gap={2}>
+                  <code className={css({ px: 2, py: 1, bg: 'bg.muted', borderRadius: 'md', fontSize: 'sm' })}>
                     {publicUrl}
                   </code>
                   <FunnelActions 
@@ -87,112 +101,170 @@ export default async function FunnelDetailPage({ params }: PageProps) {
                     currentStatus={funnel.status}
                     publicUrl={publicUrl}
                   />
-                </div>
-              </div>
+                </Flex>
+              </Stack>
 
-              <div className="mt-6 space-y-2">
+              <Stack gap={2} mt={6}>
                 <a
                   href={funnel.qr_code_url}
                   download={`${funnel.name.replace(/[^a-zA-Z0-9]/g, '_')}_QR.png`}
-                  className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  className={css({
+                    colorPalette: 'mint',
+                    w: 'full',
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    px: 4,
+                    py: 2,
+                    borderWidth: '1px',
+                    borderColor: 'transparent',
+                    borderRadius: 'md',
+                    boxShadow: 'sm',
+                    fontSize: 'sm',
+                    fontWeight: 'medium',
+                    color: 'colorPalette.fg',
+                    bg: 'colorPalette.default',
+                    _hover: {
+                      bg: 'colorPalette.emphasized',
+                    },
+                  })}
                 >
                   Download QR Code
                 </a>
                 <Link
                   href={publicUrl}
                   target="_blank"
-                  className="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className={css({
+                    w: 'full',
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    px: 4,
+                    py: 2,
+                    borderWidth: '1px',
+                    borderColor: 'border.default',
+                    borderRadius: 'md',
+                    boxShadow: 'sm',
+                    fontSize: 'sm',
+                    fontWeight: 'medium',
+                    color: 'fg.default',
+                    bg: 'bg.default',
+                    _hover: {
+                      bg: 'bg.muted',
+                    },
+                  })}
                 >
                   Preview Landing Page
                 </Link>
-              </div>
-            </div>
+              </Stack>
+            </Box>
           )}
-        </div>
+        </Box>
 
         {/* Funnel Details */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Funnel Details</h2>
+        <Box bg="bg.default" boxShadow="sm" borderRadius="lg" p={6}>
+          <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>Funnel Details</h2>
           
-          <dl className="space-y-4">
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Type</dt>
-              <dd className="mt-1 text-sm text-gray-900 capitalize">{funnel.type}</dd>
-            </div>
+          <Stack gap={4}>
+            <Box>
+              <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Type</dt>
+              <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default', textTransform: 'capitalize' })}>{funnel.type}</dd>
+            </Box>
             
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Print Size</dt>
-              <dd className="mt-1 text-sm text-gray-900">{funnel.print_size}</dd>
-            </div>
+            <Box>
+              <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Print Size</dt>
+              <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.print_size}</dd>
+            </Box>
 
             {funnel.content?.headline && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Headline</dt>
-                <dd className="mt-1 text-sm text-gray-900">{funnel.content.headline}</dd>
-              </div>
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Headline</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.content.headline}</dd>
+              </Box>
             )}
 
             {funnel.content?.state && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Property State</dt>
-                <dd className="mt-1 text-sm text-gray-900 capitalize">
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Property State</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default', textTransform: 'capitalize' })}>
                   {funnel.content.state.replace('_', ' ')}
                 </dd>
-              </div>
+              </Box>
             )}
 
             {funnel.content?.price && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Price</dt>
-                <dd className="mt-1 text-sm text-gray-900">{funnel.content.price}</dd>
-              </div>
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Price</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.content.price}</dd>
+              </Box>
             )}
 
             {funnel.content?.property_url && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Property Link</dt>
-                <dd className="mt-1 text-sm text-gray-900">
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Property Link</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>
                   <a 
                     href={funnel.content.property_url} 
                     target="_blank"
-                    className="text-blue-600 hover:text-blue-500"
+                    className={css({ 
+                      colorPalette: 'mint',
+                      color: 'colorPalette.default', 
+                      _hover: { color: 'colorPalette.emphasized' } 
+                    })}
                   >
                     View Property
                   </a>
                 </dd>
-              </div>
+              </Box>
             )}
 
             {funnel.content?.video_url && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Video</dt>
-                <dd className="mt-1 text-sm text-gray-900">
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Video</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>
                   <a 
                     href={funnel.content.video_url} 
                     target="_blank"
-                    className="text-blue-600 hover:text-blue-500"
+                    className={css({ 
+                      colorPalette: 'mint',
+                      color: 'colorPalette.default', 
+                      _hover: { color: 'colorPalette.emphasized' } 
+                    })}
                   >
                     View Video
                   </a>
                 </dd>
-              </div>
+              </Box>
             )}
 
             {funnel.content?.custom_message && (
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Custom Message</dt>
-                <dd className="mt-1 text-sm text-gray-900">{funnel.content.custom_message}</dd>
-              </div>
+              <Box>
+                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Custom Message</dt>
+                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.content.custom_message}</dd>
+              </Box>
             )}
-          </dl>
-        </div>
-      </div>
+          </Stack>
+        </Box>
+      </Box>
 
       {/* Actions */}
-      <div className="mt-8 flex justify-between">
+      <Flex mt={8} justify="space-between">
         <Link
           href="/dashboard"
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          className={css({
+            px: 4,
+            py: 2,
+            fontSize: 'sm',
+            fontWeight: 'medium',
+            color: 'fg.default',
+            bg: 'bg.default',
+            borderWidth: '1px',
+            borderColor: 'border.default',
+            borderRadius: 'md',
+            _hover: {
+              bg: 'bg.muted',
+            },
+          })}
         >
           ← Back to Dashboard
         </Link>
@@ -201,7 +273,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
           funnelId={funnel.id}
           currentStatus={funnel.status}
         />
-      </div>
-    </div>
+      </Flex>
+    </Box>
   )
 }

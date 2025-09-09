@@ -60,29 +60,30 @@ export default function NewFunnelPage() {
     _focus: {
       outline: 'none',
       ringWidth: '2px',
-      ringColor: 'accent.default',
-      borderColor: 'accent.default',
+      ringColor: 'colorPalette.default',
+      borderColor: 'colorPalette.default',
     },
   })
 
   const buttonPrimaryStyles = css({
+    colorPalette: 'mint',
     px: 4,
     py: 2,
     borderRadius: 'none',
     boxShadow: 'sm',
     fontSize: 'sm',
     fontWeight: 'medium',
-    color: 'neutral.fg',
-    bg: 'accent.default',
+    color: 'colorPalette.fg',
+    bg: 'colorPalette.default',
     cursor: 'pointer',
     _hover: {
-      bg: 'accent.emphasis',
+      bg: 'colorPalette.emphasized',
     },
     _focus: {
       outline: 'none',
       ringWidth: '2px',
       ringOffset: '2px',
-      ringColor: 'accent.default',
+      ringColor: 'colorPalette.default',
     },
     _disabled: {
       opacity: 0.5,
@@ -109,7 +110,7 @@ export default function NewFunnelPage() {
       outline: 'none',
       ringWidth: '2px',
       ringOffset: '2px',
-      ringColor: 'accent.default',
+      ringColor: 'colorPalette.default',
     },
   })
 
@@ -122,12 +123,12 @@ export default function NewFunnelPage() {
           </h1>
           
           {error && (
-            <Box mb={4} borderRadius="md" bg="red.50" p={4}>
-              <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
+            <Box mb={4} borderRadius="md" bg="red.default" p={4}>
+              <p className={css({ fontSize: 'sm', color: 'red.fg' })}>{error}</p>
             </Box>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form className={css({ colorPalette: 'mint' })} onSubmit={handleSubmit(onSubmit)}>
             <Stack gap={6}>
               {/* Basic Info */}
               <Box>
@@ -141,7 +142,7 @@ export default function NewFunnelPage() {
                   placeholder="e.g., Property for Sale - 123 Main St"
                 />
                 {errors.name && (
-                  <p className={css({ mt: 1, fontSize: 'sm', color: 'red.600' })}>{errors.name.message}</p>
+                  <p className={css({ mt: 1, fontSize: 'sm', color: 'red.text' })}>{errors.name.message}</p>
                 )}
               </Box>
 
@@ -151,7 +152,7 @@ export default function NewFunnelPage() {
                   Funnel Type
                 </label>
                 <Grid columns={{ base: 1, sm: 3 }} gap={3}>
-                  <Box as="label" cursor="pointer">
+                  <label className={css({ cursor: 'pointer' })}>
                     <input
                       type="radio"
                       {...register('type')}
@@ -163,9 +164,9 @@ export default function NewFunnelPage() {
                       borderWidth="1px"
                       borderRadius="lg"
                       textAlign="center"
-                      borderColor={selectedType === 'contact' ? 'accent.default' : 'border.default'}
-                      bg={selectedType === 'contact' ? 'mint.50' : 'bg.default'}
-                      color={selectedType === 'contact' ? 'mint.700' : 'fg.default'}
+                      borderColor={selectedType === 'contact' ? 'colorPalette.default' : 'border.default'}
+                      bg={selectedType === 'contact' ? 'mint.subtle' : 'bg.default'}
+                      color={selectedType === 'contact' ? 'mint.text' : 'fg.default'}
                       _hover={selectedType !== 'contact' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Contact Only</h3>
@@ -173,9 +174,9 @@ export default function NewFunnelPage() {
                         Simple contact card download
                       </p>
                     </Box>
-                  </Box>
+                  </label>
 
-                  <Box as="label" cursor="pointer">
+                  <label className={css({ cursor: 'pointer' })}>
                     <input
                       type="radio"
                       {...register('type')}
@@ -187,9 +188,9 @@ export default function NewFunnelPage() {
                       borderWidth="1px"
                       borderRadius="lg"
                       textAlign="center"
-                      borderColor={selectedType === 'property' ? 'accent.default' : 'border.default'}
-                      bg={selectedType === 'property' ? 'mint.50' : 'bg.default'}
-                      color={selectedType === 'property' ? 'mint.700' : 'fg.default'}
+                      borderColor={selectedType === 'property' ? 'colorPalette.default' : 'border.default'}
+                      bg={selectedType === 'property' ? 'mint.subtle' : 'bg.default'}
+                      color={selectedType === 'property' ? 'mint.text' : 'fg.default'}
                       _hover={selectedType !== 'property' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Property</h3>
@@ -197,9 +198,9 @@ export default function NewFunnelPage() {
                         Contact + property details
                       </p>
                     </Box>
-                  </Box>
+                  </label>
 
-                  <Box as="label" cursor="pointer">
+                  <label className={css({ cursor: 'pointer' })}>
                     <input
                       type="radio"
                       {...register('type')}
@@ -211,9 +212,9 @@ export default function NewFunnelPage() {
                       borderWidth="1px"
                       borderRadius="lg"
                       textAlign="center"
-                      borderColor={selectedType === 'video' ? 'accent.default' : 'border.default'}
-                      bg={selectedType === 'video' ? 'mint.50' : 'bg.default'}
-                      color={selectedType === 'video' ? 'mint.700' : 'fg.default'}
+                      borderColor={selectedType === 'video' ? 'colorPalette.default' : 'border.default'}
+                      bg={selectedType === 'video' ? 'mint.subtle' : 'bg.default'}
+                      color={selectedType === 'video' ? 'mint.text' : 'fg.default'}
                       _hover={selectedType !== 'video' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Video</h3>
@@ -221,7 +222,7 @@ export default function NewFunnelPage() {
                         Contact + video message
                       </p>
                     </Box>
-                  </Box>
+                  </label>
                 </Grid>
               </Box>
 
@@ -315,24 +316,24 @@ export default function NewFunnelPage() {
                   Print Size
                 </label>
                 <Flex gap={4}>
-                  <Box as="label" display="flex" align="center">
+                  <label className={css({ display: 'flex', alignItems: 'center' })}>
                     <input
                       type="radio"
                       {...register('print_size')}
                       value="A4"
-                      className={css({ h: 4, w: 4, color: 'accent.default', borderColor: 'border.default' })}
+                      className={css({ h: 4, w: 4, color: 'colorPalette.default', borderColor: 'border.default' })}
                     />
                     <span className={css({ ml: 2, fontSize: 'sm', color: 'fg.default' })}>A4 (Standard)</span>
-                  </Box>
-                  <Box as="label" display="flex" align="center">
+                  </label>
+                  <label className={css({ display: 'flex', alignItems: 'center' })}>
                     <input
                       type="radio"
                       {...register('print_size')}
                       value="A5"
-                      className={css({ h: 4, w: 4, color: 'accent.default', borderColor: 'border.default' })}
+                      className={css({ h: 4, w: 4, color: 'colorPalette.default', borderColor: 'border.default' })}
                     />
                     <span className={css({ ml: 2, fontSize: 'sm', color: 'fg.default' })}>A5 (Compact)</span>
-                  </Box>
+                  </label>
                 </Flex>
               </Box>
 

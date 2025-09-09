@@ -1,5 +1,5 @@
 /* eslint-disable */
-export type Token = `animations.${AnimationToken}` | `blurs.${BlurToken}` | `borders.${BorderToken}` | `colors.${ColorToken}` | `durations.${DurationToken}` | `easings.${EasingToken}` | `fontSizes.${FontSizeToken}` | `fontWeights.${FontWeightToken}` | `letterSpacings.${LetterSpacingToken}` | `lineHeights.${LineHeightToken}` | `radii.${RadiusToken}` | `sizes.${SizeToken}` | `spacing.${SpacingToken}` | `zIndex.${ZIndexToken}` | `fonts.${FontToken}` | `breakpoints.${BreakpointToken}` | `shadows.${ShadowToken}`
+export type Token = `animations.${AnimationToken}` | `blurs.${BlurToken}` | `borders.${BorderToken}` | `colors.${ColorToken}` | `durations.${DurationToken}` | `easings.${EasingToken}` | `fonts.${FontToken}` | `fontSizes.${FontSizeToken}` | `fontWeights.${FontWeightToken}` | `letterSpacings.${LetterSpacingToken}` | `lineHeights.${LineHeightToken}` | `radii.${RadiusToken}` | `sizes.${SizeToken}` | `spacing.${SpacingToken}` | `zIndex.${ZIndexToken}` | `breakpoints.${BreakpointToken}` | `shadows.${ShadowToken}`
 
 export type ColorPalette = "current" | "black" | "white" | "transparent" | "red" | "red.light" | "red.dark" | "gray" | "gray.light" | "gray.dark" | "mint" | "mint.light" | "mint.dark" | "bg" | "fg" | "border"
 
@@ -14,6 +14,8 @@ export type ColorToken = "current" | "black" | "black.a1" | "black.a2" | "black.
 export type DurationToken = "fastest" | "faster" | "fast" | "normal" | "slow" | "slower" | "slowest"
 
 export type EasingToken = "pulse" | "default" | "emphasized-in" | "emphasized-out"
+
+export type FontToken = "sans" | "serif" | "mono"
 
 export type FontSizeToken = "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "8xl" | "9xl"
 
@@ -31,8 +33,6 @@ export type SpacingToken = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" |
 
 export type ZIndexToken = "hide" | "base" | "docked" | "dropdown" | "sticky" | "banner" | "overlay" | "modal" | "popover" | "skipLink" | "toast" | "tooltip"
 
-export type FontToken = "sans" | "serif" | "mono"
-
 export type BreakpointToken = "sm" | "md" | "lg" | "xl" | "2xl"
 
 export type ShadowToken = "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
@@ -44,6 +44,7 @@ export type Tokens = {
 		colors: ColorToken
 		durations: DurationToken
 		easings: EasingToken
+		fonts: FontToken
 		fontSizes: FontSizeToken
 		fontWeights: FontWeightToken
 		letterSpacings: LetterSpacingToken
@@ -52,7 +53,6 @@ export type Tokens = {
 		sizes: SizeToken
 		spacing: SpacingToken
 		zIndex: ZIndexToken
-		fonts: FontToken
 		breakpoints: BreakpointToken
 		shadows: ShadowToken
 } & { [token: string]: never }

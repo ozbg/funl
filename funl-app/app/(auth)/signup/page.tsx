@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { css } from '@/styled-system/css'
-import { Box, Flex, Stack } from '@/styled-system/jsx'
+import { Box, Stack } from '@/styled-system/jsx'
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -91,8 +91,8 @@ export default function SignupPage() {
     _focus: {
       outline: 'none',
       ringWidth: '2px',
-      ringColor: 'accent.default',
-      borderColor: 'accent.default',
+      ringColor: 'colorPalette.default',
+      borderColor: 'colorPalette.default',
     },
   })
 
@@ -106,18 +106,18 @@ export default function SignupPage() {
           Or{' '}
           <Link 
             href="/login" 
-            className={css({ fontWeight: 'medium', color: 'accent.default', _hover: { color: 'accent.emphasis' } })}
+            className={css({ fontWeight: 'medium', colorPalette: 'mint', color: 'colorPalette.default', _hover: { color: 'colorPalette.emphasized' } })}
           >
             sign in to existing account
           </Link>
         </p>
       </Box>
 
-      <form className={css({ mt: 8 })} onSubmit={handleSignup}>
+      <form className={css({ mt: 8, colorPalette: 'mint' })} onSubmit={handleSignup}>
         <Stack gap={6}>
           {error && (
-            <Box borderRadius="none" bg="red.50" p={4}>
-              <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
+            <Box borderRadius="none" bg="red.default" p={4}>
+              <p className={css({ fontSize: 'sm', color: 'red.fg' })}>{error}</p>
             </Box>
           )}
 
@@ -217,9 +217,10 @@ export default function SignupPage() {
             type="submit"
             disabled={loading}
             className={css({
+              colorPalette: 'mint',
               w: 'full',
               display: 'flex',
-              justify: 'center',
+              justifyContent: 'center',
               py: 2,
               px: 4,
               borderWidth: '1px',
@@ -228,17 +229,17 @@ export default function SignupPage() {
               boxShadow: 'sm',
               fontSize: 'sm',
               fontWeight: 'medium',
-              color: 'neutral.fg',
-              bg: 'accent.default',
+              color: 'colorPalette.fg',
+              bg: 'colorPalette.default',
               cursor: 'pointer',
               _hover: {
-                bg: 'accent.emphasis',
+                bg: 'colorPalette.emphasized',
               },
               _focus: {
                 outline: 'none',
                 ringWidth: '2px',
                 ringOffset: '2px',
-                ringColor: 'accent.default',
+                ringColor: 'colorPalette.default',
               },
               _disabled: {
                 opacity: 0.5,

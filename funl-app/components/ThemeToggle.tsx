@@ -15,8 +15,8 @@ export default function ThemeToggle() {
         right: 4,
         p: 2,
         borderRadius: 'none',
-        bg: 'accent.default',
-        color: 'neutral.fg',
+        bg: 'mint.9',
+        color: 'mint.fg',
         border: '1px solid',
         borderColor: 'border.default',
         cursor: 'pointer',
@@ -24,12 +24,12 @@ export default function ThemeToggle() {
         fontWeight: 'medium',
         zIndex: 50,
         _hover: {
-          bg: 'accent.emphasis',
+          bg: 'mint.10',
         },
         _focus: {
           outline: 'none',
           ringWidth: '2px',
-          ringColor: 'accent.default',
+          ringColor: 'mint.9',
           ringOffset: '2px',
         }
       })}

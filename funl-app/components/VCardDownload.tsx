@@ -42,24 +42,25 @@ export default function VCardDownload({
   }
 
   const defaultStyles = css({
+    colorPalette: 'mint',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     px: 4,
     py: 2,
-    bg: 'accent.default',
-    color: 'neutral.fg',
+    bg: 'colorPalette.default',
+    color: 'colorPalette.fg',
     fontWeight: 'medium',
     borderRadius: 'none',
     cursor: 'pointer',
     transition: 'colors',
     _hover: {
-      bg: 'accent.emphasis',
+      bg: 'colorPalette.emphasized',
     },
     _focus: {
       outline: 'none',
       ringWidth: '2px',
-      ringColor: 'accent.default',
+      ringColor: 'colorPalette.default',
       ringOffset: '2px',
     },
   })

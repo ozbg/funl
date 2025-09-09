@@ -1,9 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { useTracking } from '@/hooks/useTracking'
 import VCardDownload from './VCardDownload'
 import { Funnel, Business } from '@/lib/types'
+import { css } from '@/styled-system/css'
+import { Box, Flex, Stack } from '@/styled-system/jsx'
 
 interface PublicFunnelClientProps {
   funnel: Funnel
@@ -59,50 +62,80 @@ export default function PublicFunnelClient({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto pt-8 pb-16">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <Box minH="100vh" bg="bg.subtle">
+      <Box maxW="md" mx="auto" pt={8} pb={16}>
+        <Box bg="bg.default" borderRadius="lg" boxShadow="lg" overflow="hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8 text-center text-white">
+          <Box 
+            bgGradient="to-r" 
+            gradientFrom="mint.default" 
+            gradientTo="mint.emphasized" 
+            px={6} 
+            py={8} 
+            textAlign="center" 
+            color="mint.fg"
+          >
             {funnel.content?.headline ? (
-              <h1 className="text-xl font-bold mb-2">{funnel.content.headline}</h1>
+              <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>{funnel.content.headline}</h1>
             ) : (
-              <h1 className="text-xl font-bold mb-2">Get in Touch</h1>
+              <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>Get in Touch</h1>
             )}
             
             {funnel.type === 'property' && funnel.content?.state && (
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white bg-opacity-20">
+              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" bg="white.a3" color="mint.text">
                 {funnel.content.state === 'for_sale' && '🏠 For Sale'}
                 {funnel.content.state === 'sold' && '✅ SOLD'}
                 {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
-              </div>
+              </Box>
             )}
             
             {funnel.content?.price && (
-              <p className="text-lg font-semibold mt-2">{funnel.content.price}</p>
+              <p className={css({ fontSize: 'lg', fontWeight: 'semibold', mt: 2 })}>{funnel.content.price}</p>
             )}
-          </div>
+          </Box>
 
           {/* Contact Section */}
-          <div className="p-6">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-blue-600">
+          <Box p={6}>
+            <Box textAlign="center" mb={6}>
+              <Flex 
+                w={20} 
+                h={20} 
+                mx="auto" 
+                mb={4} 
+                bg="mint.subtle" 
+                borderRadius="full" 
+                align="center" 
+                justify="center"
+              >
+                <span className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'mint.text' })}>
                   {business.name.charAt(0).toUpperCase()}
                 </span>
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900">{business.name}</h2>
+              </Flex>
+              <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>{business.name}</h2>
               {business.phone && (
-                <p className="text-gray-600 mt-1">{business.phone}</p>
+                <p className={css({ color: 'fg.muted', mt: 1 })}>{business.phone}</p>
               )}
-            </div>
+            </Box>
 
             {/* Primary CTA */}
-            <div className="space-y-3 mb-6">
+            <Stack gap={3} mb={6}>
               <VCardDownload
                 businessName={business.name}
                 vCardData={vCardData}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                className={css({
+                  colorPalette: 'mint',
+                  w: 'full',
+                  bg: 'colorPalette.default',
+                  color: 'colorPalette.fg',
+                  fontWeight: 'semibold',
+                  py: 3,
+                  px: 4,
+                  borderRadius: 'lg',
+                  transition: 'colors',
+                  _hover: {
+                    bg: 'colorPalette.emphasized'
+                  }
+                })}
                 onClick={handleVCardDownload}
               >
                 📱 Add Contact to Phone
@@ -112,112 +145,232 @@ export default function PublicFunnelClient({
                 <a
                   href={`tel:${business.phone}`}
                   onClick={handleCallClick}
-                  className="w-full block bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg text-center transition-colors"
+                  className={css({
+                    w: 'full',
+                    display: 'block',
+                    bg: 'mint.default',
+                    color: 'mint.fg',
+                    fontWeight: 'semibold',
+                    py: 3,
+                    px: 4,
+                    borderRadius: 'lg',
+                    textAlign: 'center',
+                    transition: 'colors',
+                    _hover: {
+                      bg: 'mint.emphasized'
+                    }
+                  })}
                 >
                   📞 Call Now
                 </a>
               )}
-            </div>
+            </Stack>
 
             {/* Custom Message */}
             {funnel.content?.custom_message && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-gray-700 text-sm">{funnel.content.custom_message}</p>
-              </div>
+              <Box mb={6} p={4} bg="bg.subtle" borderRadius="lg">
+                <p className={css({ color: 'fg.muted', fontSize: 'sm' })}>{funnel.content.custom_message}</p>
+              </Box>
             )}
 
             {/* Property Link */}
             {funnel.type === 'property' && funnel.content?.property_url && (
-              <div className="mb-6">
+              <Box mb={6}>
                 <a
                   href={funnel.content.property_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={handlePropertyClick}
-                  className="w-full block bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg text-center transition-colors"
+                  className={css({
+                    w: 'full',
+                    display: 'block',
+                    bg: 'bg.muted',
+                    color: 'fg.default',
+                    fontWeight: 'medium',
+                    py: 3,
+                    px: 4,
+                    borderRadius: 'lg',
+                    textAlign: 'center',
+                    transition: 'colors',
+                    _hover: {
+                      bg: 'bg.emphasized'
+                    }
+                  })}
                 >
                   🏠 View Property Details
                 </a>
-              </div>
+              </Box>
             )}
 
             {/* Video Link */}
             {funnel.type === 'video' && funnel.content?.video_url && (
-              <div className="mb-6">
+              <Box mb={6}>
                 <a
                   href={funnel.content.video_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={handleVideoClick}
-                  className="w-full block bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition-colors"
+                  className={css({
+                    w: 'full',
+                    display: 'block',
+                    bg: 'red.default',
+                    color: 'red.fg',
+                    fontWeight: 'semibold',
+                    py: 3,
+                    px: 4,
+                    borderRadius: 'lg',
+                    textAlign: 'center',
+                    transition: 'colors',
+                    _hover: {
+                      bg: 'red.emphasized'
+                    }
+                  })}
                 >
                   ▶️ Watch Video
                 </a>
-              </div>
+              </Box>
             )}
 
             {/* Callback Request Form */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Request a Callback</h3>
-              <form onSubmit={handleCallbackSubmit} className="space-y-4">
-                <div>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Your phone number"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <select 
-                    name="preferred_time"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <Box borderTopWidth="1px" borderColor="border.default" pt={6}>
+              <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default', mb: 4 })}>Request a Callback</h3>
+              <form onSubmit={handleCallbackSubmit}>
+                <Stack gap={4}>
+                  <Box>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your name"
+                      required
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        borderWidth: '1px',
+                        borderColor: 'border.default',
+                        borderRadius: 'md',
+                        bg: 'bg.default',
+                        color: 'fg.default',
+                        _focus: {
+                          outline: 'none',
+                          ringWidth: '2px',
+                          ringColor: 'mint.default'
+                        }
+                      })}
+                    />
+                  </Box>
+                  <Box>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Your phone number"
+                      required
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        borderWidth: '1px',
+                        borderColor: 'border.default',
+                        borderRadius: 'md',
+                        bg: 'bg.default',
+                        color: 'fg.default',
+                        _focus: {
+                          outline: 'none',
+                          ringWidth: '2px',
+                          ringColor: 'mint.default'
+                        }
+                      })}
+                    />
+                  </Box>
+                  <Box>
+                    <select 
+                      name="preferred_time"
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        borderWidth: '1px',
+                        borderColor: 'border.default',
+                        borderRadius: 'md',
+                        bg: 'bg.default',
+                        color: 'fg.default',
+                        _focus: {
+                          outline: 'none',
+                          ringWidth: '2px',
+                          ringColor: 'mint.default'
+                        }
+                      })}
+                    >
+                      <option value="">Best time to call</option>
+                      <option value="morning">Morning (9AM - 12PM)</option>
+                      <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                      <option value="evening">Evening (5PM - 8PM)</option>
+                    </select>
+                  </Box>
+                  <Box>
+                    <textarea
+                      name="message"
+                      placeholder="Message (optional)"
+                      rows={3}
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        borderWidth: '1px',
+                        borderColor: 'border.default',
+                        borderRadius: 'md',
+                        bg: 'bg.default',
+                        color: 'fg.default',
+                        _focus: {
+                          outline: 'none',
+                          ringWidth: '2px',
+                          ringColor: 'mint.default'
+                        }
+                      })}
+                    />
+                  </Box>
+                  <button
+                    type="submit"
+                    className={css({
+                      colorPalette: 'mint',
+                      w: 'full',
+                      bg: 'colorPalette.default',
+                      color: 'colorPalette.fg',
+                      fontWeight: 'semibold',
+                      py: 2,
+                      px: 4,
+                      borderRadius: 'md',
+                      transition: 'colors',
+                      _hover: {
+                        bg: 'colorPalette.emphasized'
+                      }
+                    })}
                   >
-                    <option value="">Best time to call</option>
-                    <option value="morning">Morning (9AM - 12PM)</option>
-                    <option value="afternoon">Afternoon (12PM - 5PM)</option>
-                    <option value="evening">Evening (5PM - 8PM)</option>
-                  </select>
-                </div>
-                <div>
-                  <textarea
-                    name="message"
-                    placeholder="Message (optional)"
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
-                >
-                  Request Callback
-                </button>
+                    Request Callback
+                  </button>
+                </Stack>
               </form>
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-gray-500">
+        <Box textAlign="center" mt={8}>
+          <p className={css({ fontSize: 'xs', color: 'fg.muted' })}>
             Powered by{' '}
-            <a href="/" className="text-blue-600 hover:text-blue-500">
+            <Link 
+              href="/" 
+              className={css({ 
+                colorPalette: 'mint', 
+                color: 'colorPalette.default', 
+                _hover: { color: 'colorPalette.emphasized' } 
+              })}
+            >
               FunL.app
-            </a>
+            </Link>
           </p>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }
