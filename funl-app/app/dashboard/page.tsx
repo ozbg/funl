@@ -38,11 +38,11 @@ export default async function DashboardPage() {
                 alignItems: 'center',
                 px: 4,
                 py: 2,
-                borderRadius: 'md',
+                borderRadius: 'none',
                 boxShadow: 'sm',
                 fontSize: 'sm',
                 fontWeight: 'medium',
-                color: 'white',
+                color: 'black',
                 bg: 'accent.default',
                 _hover: {
                   bg: 'accent.emphasis',
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
                             align="center"
                             justify="center"
                           >
-                            <span className={css({ color: 'white', fontWeight: 'medium', fontSize: 'sm' })}>
+                            <span className={css({ color: 'black', fontWeight: 'medium', fontSize: 'sm' })}>
                               {funnel.name.charAt(0).toUpperCase()}
                             </span>
                           </Flex>
@@ -151,11 +151,11 @@ export default async function DashboardPage() {
                   alignItems: 'center',
                   px: 4,
                   py: 2,
-                  borderRadius: 'md',
+                  borderRadius: 'none',
                   boxShadow: 'sm',
                   fontSize: 'sm',
                   fontWeight: 'medium',
-                  color: 'white',
+                  color: 'black',
                   bg: 'accent.default',
                   _hover: {
                     bg: 'accent.emphasis',

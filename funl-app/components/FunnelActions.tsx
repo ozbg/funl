@@ -82,7 +82,7 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
             bg: 'mint.600',
             borderWidth: '1px',
             borderColor: 'transparent',
-            borderRadius: 'md',
+            borderRadius: 'none',
             cursor: 'pointer',
             _hover: {
               bg: 'mint.700',
@@ -109,7 +109,7 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
             bg: 'bg.default',
             borderWidth: '1px',
             borderColor: 'border.default',
-            borderRadius: 'md',
+            borderRadius: 'none',
             cursor: 'pointer',
             _hover: {
               bg: 'bg.muted',

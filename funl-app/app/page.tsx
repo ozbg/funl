@@ -94,7 +94,7 @@ export default async function Home() {
             columns={{ base: 1, md: 3 }} 
             gap={8}
           >
-            <Box bg="bg.default" p={6} borderRadius="xl" boxShadow="md">
+            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
               <Flex
                 w={12}
                 h={12}
@@ -117,7 +117,7 @@ export default async function Home() {
               </p>
             </Box>
 
-            <Box bg="bg.default" p={6} borderRadius="xl" boxShadow="md">
+            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
               <Flex
                 w={12}
                 h={12}
@@ -140,7 +140,7 @@ export default async function Home() {
               </p>
             </Box>
 
-            <Box bg="bg.default" p={6} borderRadius="xl" boxShadow="md">
+            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
               <Flex
                 w={12}
                 h={12}

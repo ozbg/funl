@@ -50,7 +50,7 @@ export default function VCardDownload({
     bg: 'accent.default',
     color: 'white',
     fontWeight: 'medium',
-    borderRadius: 'md',
+    borderRadius: 'none',
     cursor: 'pointer',
     transition: 'colors',
     _hover: {

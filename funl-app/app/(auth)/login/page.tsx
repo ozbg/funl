@@ -57,7 +57,7 @@ export default function LoginPage() {
       <form className={css({ mt: 8 })} onSubmit={handleLogin}>
         <Stack gap={6}>
           {error && (
-            <Box borderRadius="md" bg="red.50" p={4}>
+            <Box borderRadius="none" bg="red.50" p={4}>
               <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
             </Box>
           )}
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 py: 2,
                 borderWidth: '1px',
                 borderColor: 'border.default',
-                borderRadius: 'md',
+                borderRadius: 'none',
                 boxShadow: 'sm',
                 bg: 'bg.default',
                 color: 'fg.default',
@@ -122,7 +122,7 @@ export default function LoginPage() {
                 py: 2,
                 borderWidth: '1px',
                 borderColor: 'border.default',
-                borderRadius: 'md',
+                borderRadius: 'none',
                 boxShadow: 'sm',
                 bg: 'bg.default',
                 color: 'fg.default',
@@ -156,11 +156,11 @@ export default function LoginPage() {
               px: 4,
               borderWidth: '1px',
               borderColor: 'transparent',
-              borderRadius: 'md',
+              borderRadius: 'none',
               boxShadow: 'sm',
               fontSize: 'sm',
               fontWeight: 'medium',
-              color: 'white',
+              color: 'black',
               bg: 'accent.default',
               cursor: 'pointer',
               _hover: {
