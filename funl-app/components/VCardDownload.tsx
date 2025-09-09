@@ -48,7 +48,7 @@ export default function VCardDownload({
     px: 4,
     py: 2,
     bg: 'accent.default',
-    color: 'white',
+    color: 'neutral.fg',
     fontWeight: 'medium',
     borderRadius: 'none',
     cursor: 'pointer',

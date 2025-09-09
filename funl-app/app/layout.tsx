@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { css } from '@/styled-system/css'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
@@ -20,19 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" data-color-mode="dark">
       <body
         className={css({
-          fontFamily: 'var(--font-roboto-mono), monospace',
-          bg: 'bg.default',
-          color: 'fg.default',
           fontSmoothing: 'antialiased',
         })}
         style={{
           fontVariationSettings: robotoMono.style?.fontVariationSettings,
         }}
       >
-        {children}
+        <ThemeProvider>
+          <ThemeToggle />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

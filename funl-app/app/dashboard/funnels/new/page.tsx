@@ -72,7 +72,7 @@ export default function NewFunnelPage() {
     boxShadow: 'sm',
     fontSize: 'sm',
     fontWeight: 'medium',
-    color: 'black',
+    color: 'neutral.fg',
     bg: 'accent.default',
     cursor: 'pointer',
     _hover: {

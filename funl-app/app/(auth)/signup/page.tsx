@@ -228,7 +228,7 @@ export default function SignupPage() {
               boxShadow: 'sm',
               fontSize: 'sm',
               fontWeight: 'medium',
-              color: 'black',
+              color: 'neutral.fg',
               bg: 'accent.default',
               cursor: 'pointer',
               _hover: {

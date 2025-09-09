@@ -78,7 +78,7 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
             py: 2,
             fontSize: 'sm',
             fontWeight: 'medium',
-            color: 'white',
+            color: 'neutral.fg',
             bg: 'mint.600',
             borderWidth: '1px',
             borderColor: 'transparent',

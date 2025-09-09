@@ -17,68 +17,35 @@ export default defineConfig({
   include: ['./src/**/*.{js,jsx,ts,tsx}', './app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   exclude: [],
   
+  conditions: {
+    light: '[data-color-mode=light] &',
+    dark: '[data-color-mode=dark] &',
+  },
+  
   theme: {
     extend: {
       tokens: {
         fonts: {
           mono: { value: 'var(--font-roboto-mono), monospace' }
         }
-      },
-      semanticTokens: {
-        colors: {
-          bg: {
-            canvas: {
-              value: {
-                base: '{colors.white}',
-                _dark: '#000000'  // True black background
-              }
-            },
-            default: {
-              value: {
-                base: '{colors.white}',
-                _dark: '#0a0a0a'  // Near black for content areas
-              }
-            },
-            muted: {
-              value: {
-                base: '#f5f5f5',
-                _dark: '#1a1a1a'
-              }
-            }
-          },
-          accent: {
-            default: {
-              value: {
-                base: '{colors.mint.9}',
-                _dark: '{colors.mint.9}'
-              }
-            },
-            emphasis: {
-              value: {
-                base: '{colors.mint.10}',
-                _dark: '{colors.mint.10}'
-              }
-            },
-            muted: {
-              value: {
-                base: '{colors.mint.3}',
-                _dark: '{colors.mint.3}'
-              }
-            }
-          }
-        }
       }
     }
   },
   
   globalCss: {
-    'html.dark': {
+    'html': {
+      colorScheme: 'dark light',
+    },
+    'html[data-color-mode="light"]': {
+      colorScheme: 'light',
+    },
+    'html[data-color-mode="dark"]': {
       colorScheme: 'dark',
-      bg: '#000000',  // True black
     },
     'body': {
       bg: 'bg.canvas',
       color: 'fg.default',
+      fontFamily: 'mono',
     }
   },
   
