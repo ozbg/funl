@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Card Generator - DFLOW</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            opacity: 0.95;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .input, .textarea, .select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .input:focus, .textarea:focus, .select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .template-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .template-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .template-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .template-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 4px;
+            background: #f9fafb;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-input {
+            width: 50px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .color-hex {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .preview-area {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .preview-canvas-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .business-card-preview {
+            width: 350px;
+            height: 200px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .business-card-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .card-template {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Template Styles */
+        .template-modern {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .template-classic {
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: #333;
+        }
+
+        .template-minimalist {
+            background: white;
+            color: #333;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .template-bold {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .card-content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .card-company {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card-contact {
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .card-contact div {
+            margin-bottom: 2px;
+        }
+
+        .card-qr-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 4px;
+            padding: 8px;
+        }
+
+        .template-modern .card-qr-wrapper,
+        .template-bold .card-qr-wrapper {
+            background: white;
+        }
+
+        .card-qr {
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-description {
+            color: #6b7280;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .price-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-description {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Business Card Generator</h1>
+            <p>Create professional business cards with integrated QR codes</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Sidebar with controls -->
+            <div class="sidebar">
+                <!-- Information Input -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Contact Information</h3>
+                        <p class="card-description">Enter your business details</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="tabs">
+                            <button class="tab active" data-tab="basic">Basic Info</button>
+                            <button class="tab" data-tab="contact">Contact</button>
+                            <button class="tab" data-tab="design">Design</button>
+                        </div>
+
+                        <!-- Basic Info Tab -->
+                        <div class="tab-content" id="basic-tab">
+                            <div class="form-group">
+                                <label class="label">Full Name</label>
+                                <input type="text" class="input" id="fullName" placeholder="John Smith">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Job Title</label>
+                                <input type="text" class="input" id="jobTitle" placeholder="Senior Designer">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Company</label>
+                                <input type="text" class="input" id="company" placeholder="DFLOW Technologies">
+                            </div>
+                        </div>
+
+                        <!-- Contact Tab -->
+                        <div class="tab-content" id="contact-tab" style="display: none;">
+                            <div class="form-group">
+                                <label class="label">Phone</label>
+                                <input type="tel" class="input" id="phone" placeholder="+1 (555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Email</label>
+                                <input type="email" class="input" id="email" placeholder="john@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Website</label>
+                                <input type="url" class="input" id="website" placeholder="www.example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Address</label>
+                                <textarea class="textarea" id="address" placeholder="123 Main St, City, State 12345"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Design Tab -->
+                        <div class="tab-content" id="design-tab" style="display: none;">
+                            <div class="form-group">
+                                <label class="label">Choose Template</label>
+                                <div class="template-grid">
+                                    <div class="template-option selected" data-template="modern">
+                                        <div class="template-preview">Modern</div>
+                                    </div>
+                                    <div class="template-option" data-template="classic">
+                                        <div class="template-preview">Classic</div>
+                                    </div>
+                                    <div class="template-option" data-template="minimalist">
+                                        <div class="template-preview">Minimalist</div>
+                                    </div>
+                                    <div class="template-option" data-template="bold">
+                                        <div class="template-preview">Bold</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Brand Colors</label>
+                                <div class="color-picker-group">
+                                    <div>
+                                        <label class="label" style="font-size: 0.75rem;">Primary Color</label>
+                                        <div class="color-input-wrapper">
+                                            <input type="color" class="color-input" id="primaryColor" value="#667eea">
+                                            <input type="text" class="color-hex" id="primaryHex" value="#667eea">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="label" style="font-size: 0.75rem;">Secondary Color</label>
+                                        <div class="color-input-wrapper">
+                                            <input type="color" class="color-input" id="secondaryColor" value="#764ba2">
+                                            <input type="text" class="color-hex" id="secondaryHex" value="#764ba2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="updatePreview()">
+                        Update Preview
+                    </button>
+                    <button class="btn btn-success" style="flex: 1;" onclick="generateQRCode()">
+                        Generate QR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="preview-area">
+                <div class="preview-controls">
+                    <h2 class="preview-title">Preview</h2>
+                    <div class="preview-actions">
+                        <button class="btn btn-secondary" onclick="rotateCard()">
+                            Rotate
+                        </button>
+                        <button class="btn btn-primary" onclick="openPurchaseModal()">
+                            Purchase & Download
+                        </button>
+                    </div>
+                </div>
+
+                <div class="preview-canvas-wrapper">
+                    <div id="businessCard" class="business-card-preview">
+                        <div class="card-template template-modern" id="cardTemplate">
+                            <div class="card-content-wrapper">
+                                <div class="card-info">
+                                    <div>
+                                        <div class="card-name" id="previewName">Your Name</div>
+                                        <div class="card-title" id="previewTitle">Job Title</div>
+                                        <div class="card-company" id="previewCompany">Company Name</div>
+                                    </div>
+                                    <div class="card-contact">
+                                        <div id="previewPhone">📱 Phone</div>
+                                        <div id="previewEmail">✉️ Email</div>
+                                        <div id="previewWebsite">🌐 Website</div>
+                                        <div id="previewAddress">📍 Address</div>
+                                    </div>
+                                </div>
+                                <div class="card-qr-wrapper">
+                                    <canvas id="qrCanvas" class="card-qr"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
+                    <p style="font-size: 0.875rem; color: #6b7280;">
+                        <strong>Tip:</strong> Business cards are standard 3.5" × 2" (88.9mm × 50.8mm). 
+                        The preview shows your design at actual print size ratio.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Get Your Business Cards</h3>
+                <p class="modal-description">Download print-ready files for professional printing</p>
+            </div>
+            <div class="modal-body">
+                <div class="price-card">
+                    <div class="price">$9.99</div>
+                    <div class="price-description">One-time purchase • Unlimited downloads</div>
+                </div>
+                <ul class="features-list">
+                    <li>High-resolution PDF (300 DPI)</li>
+                    <li>Print-ready with bleed marks</li>
+                    <li>Standard business card size (3.5" × 2")</li>
+                    <li>CMYK color profile for professional printing</li>
+                    <li>PNG version for digital use</li>
+                    <li>Integrated QR code included</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePurchaseModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="downloadBusinessCard()">
+                    Download Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentTemplate = 'modern';
+        let isRotated = false;
+        let qrGenerated = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', switchTab);
+            });
+
+            // Set up template selection
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.addEventListener('click', selectTemplate);
+            });
+
+            // Set up color inputs
+            document.getElementById('primaryColor').addEventListener('input', updatePrimaryColor);
+            document.getElementById('secondaryColor').addEventListener('input', updateSecondaryColor);
+            document.getElementById('primaryHex').addEventListener('input', updatePrimaryFromHex);
+            document.getElementById('secondaryHex').addEventListener('input', updateSecondaryFromHex);
+
+            // Set up input listeners for live preview
+            const inputs = ['fullName', 'jobTitle', 'company', 'phone', 'email', 'website', 'address'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePreview);
+            });
+
+            // Initial preview update
+            updatePreview();
+            updateColors();
+        });
+
+        function switchTab(e) {
+            const targetTab = e.target.dataset.tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            e.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(`${targetTab}-tab`).style.display = 'block';
+        }
+
+        function selectTemplate(e) {
+            const template = e.currentTarget.dataset.template;
+            
+            // Update selection UI
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            e.currentTarget.classList.add('selected');
+            
+            // Update template
+            currentTemplate = template;
+            updateCardTemplate();
+        }
+
+        function updateCardTemplate() {
+            const cardTemplate = document.getElementById('cardTemplate');
+            cardTemplate.className = `card-template template-${currentTemplate}`;
+            updateColors();
+        }
+
+        function updatePrimaryColor(e) {
+            document.getElementById('primaryHex').value = e.target.value;
+            updateColors();
+        }
+
+        function updateSecondaryColor(e) {
+            document.getElementById('secondaryHex').value = e.target.value;
+            updateColors();
+        }
+
+        function updatePrimaryFromHex(e) {
+            document.getElementById('primaryColor').value = e.target.value;
+            updateColors();
+        }
+
+        function updateSecondaryFromHex(e) {
+            document.getElementById('secondaryColor').value = e.target.value;
+            updateColors();
+        }
+
+        function updateColors() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+        }
+
+        function updatePreview() {
+            // Update name
+            const fullName = document.getElementById('fullName').value || 'Your Name';
+            document.getElementById('previewName').textContent = fullName;
+            
+            // Update title
+            const jobTitle = document.getElementById('jobTitle').value || 'Job Title';
+            document.getElementById('previewTitle').textContent = jobTitle;
+            
+            // Update company
+            const company = document.getElementById('company').value || 'Company Name';
+            document.getElementById('previewCompany').textContent = company;
+            
+            // Update contact info
+            const phone = document.getElementById('phone').value;
+            document.getElementById('previewPhone').textContent = phone ? `📱 ${phone}` : '📱 Phone';
+            
+            const email = document.getElementById('email').value;
+            document.getElementById('previewEmail').textContent = email ? `✉️ ${email}` : '✉️ Email';
+            
+            const website = document.getElementById('website').value;
+            document.getElementById('previewWebsite').textContent = website ? `🌐 ${website}` : '🌐 Website';
+            
+            const address = document.getElementById('address').value;
+            document.getElementById('previewAddress').textContent = address ? `📍 ${address.substring(0, 30)}${address.length > 30 ? '...' : ''}` : '📍 Address';
+        }
+
+        function generateQRCode() {
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Generate vCard data
+            const vCardData = generateVCard();
+            
+            // Create QR code
+            const qr = qrcode(0, 'M');
+            qr.addData(vCardData);
+            qr.make();
+            
+            // Set canvas size
+            const size = 64; // Small size for business card
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Draw QR code
+            const moduleCount = qr.getModuleCount();
+            const cellSize = size / moduleCount;
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, size, size);
+            ctx.fillStyle = '#000000';
+            
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            
+            qrGenerated = true;
+        }
+
+        function generateVCard() {
+            const fullName = document.getElementById('fullName').value || 'Your Name';
+            const jobTitle = document.getElementById('jobTitle').value;
+            const company = document.getElementById('company').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const website = document.getElementById('website').value;
+            const address = document.getElementById('address').value;
+            
+            let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+            vcard += `FN:${fullName}\n`;
+            
+            if (company) vcard += `ORG:${company}\n`;
+            if (jobTitle) vcard += `TITLE:${jobTitle}\n`;
+            if (phone) vcard += `TEL:${phone}\n`;
+            if (email) vcard += `EMAIL:${email}\n`;
+            if (website) vcard += `URL:${website}\n`;
+            if (address) vcard += `ADR:;;${address.replace(/\n/g, ' ')};;;;\n`;
+            
+            vcard += 'END:VCARD';
+            return vcard;
+        }
+
+        function rotateCard() {
+            const card = document.getElementById('businessCard');
+            isRotated = !isRotated;
+            
+            if (isRotated) {
+                card.style.transform = 'rotateY(180deg)';
+                // In a real implementation, you'd show the back of the card here
+            } else {
+                card.style.transform = 'rotateY(0deg)';
+            }
+        }
+
+        function openPurchaseModal() {
+            if (!qrGenerated) {
+                alert('Please generate a QR code first by clicking "Generate QR"');
+                return;
+            }
+            document.getElementById('purchaseModal').classList.add('active');
+        }
+
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').classList.remove('active');
+        }
+
+        function downloadBusinessCard() {
+            // Generate high-resolution business card
+            const businessCard = document.getElementById('businessCard');
+            
+            // Create a scaled version for high DPI
+            html2canvas(businessCard, {
+                scale: 4, // 4x resolution for print quality
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                // Create PDF with proper dimensions (3.5" x 2" at 300 DPI)
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'in',
+                    format: [2, 3.5]
+                });
+                
+                // Add the canvas as an image
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', 0, 0, 3.5, 2);
+                
+                // Save PDF
+                pdf.save('business-card.pdf');
+                
+                // Also save as PNG
+                const link = document.createElement('a');
+                link.download = 'business-card.png';
+                link.href = imgData;
+                link.click();
+                
+                closePurchaseModal();
+                
+                // Show success message
+                alert('Your business card has been downloaded successfully!');
+            });
+        }
+    </script>
+</body>
+</html>

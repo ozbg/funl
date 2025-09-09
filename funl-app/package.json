@@ -1,0 +1,45 @@
+{
+  "name": "funl-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack --port 37542 --hostname 0.0.0.0",
+    "build": "panda codegen && next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "prepare": "panda codegen"
+  },
+  "dependencies": {
+    "@ark-ui/react": "^5.23.0",
+    "@radix-ui/themes": "^3.2.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.2",
+    "@tanstack/react-query": "^5.87.1",
+    "@types/qrcode": "^1.5.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.542.0",
+    "nanoid": "^5.1.5",
+    "next": "15.5.2",
+    "qrcode": "^1.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.5",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@pandacss/dev": "^1.2.0",
+    "@park-ui/cli": "^0.9.0",
+    "@park-ui/panda-preset": "^0.43.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "typescript": "^5"
+  }
+}

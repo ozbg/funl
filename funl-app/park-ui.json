@@ -1,0 +1,7 @@
+{
+  "outputPath": "./src/components/ui",
+  "jsFramework": "react",
+  "importMap": {
+    "~/components/ui/*": "./src/components/ui/*"
+  }
+}

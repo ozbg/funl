@@ -1,0 +1,60 @@
+Core Value & Positioning
+	•	Value prop clarity: Right now it sounds like “digital business card + campaign landing page.” You want to be crisp about the “why.” Is it: “Turn every sign into a live, trackable funnel that gets buyers into your phone, not lost on portals”?
+	•	Differentiation: Why wouldn’t an agent just put a QR code to their own website or realestate.com listing? Your pitch should hammer:
+	•	Easier → they don’t need to know design/web/QR generation.
+	•	Smarter → dynamic funnels (update messaging post-sale, swap CTA mid-campaign).
+	•	Stickier → analytics + central platform + vCard save (not just a link).
+
+⸻
+
+🛠 Product Gaps
+	1.	Contact capture
+	•	Right now you have “add vCard” and “request callback.”
+	•	But do you also want buyer contact capture (name, phone/email when they request callback)? This creates a lead list inside the app.
+	2.	Analytics depth
+	•	Simple traffic stats are good, but agents/tradies will want:
+	•	How many scans?
+	•	How many added contact?
+	•	How many callback requests?
+	•	Even a weekly email digest would make it feel useful.
+	3.	Branding control
+	•	Agents may want their logo/headshot on the funnel page and QR printable (A4/A5 template).
+	•	Tradies may want their business name prominent.
+	•	Worth limiting customisation but allowing enough to feel personal.
+	4.	Team use cases
+	•	Real estate agencies with multiple agents → do you support one master account with sub-users/funnels?
+	•	Tradie companies → one brand, many staff.
+	5.	Lifecycle funnel swaps
+	•	You mention “dynamic (For Sale → Sold).”
+	•	Maybe add: Scheduled funnel swaps (e.g. after auction, change automatically).
+	6.	Trust & spam prevention
+	•	Buyers might hesitate to click QR → land on a page with just a random phone number. Consider:
+	•	Verified agent profiles (tick mark).
+	•	HTTPS branded domain (e.g. funl.app/agent-name not just funl.au/xyz123).
+
+⸻
+
+💸 Business Model
+	•	Subscriptions via Stripe — ✅.
+	•	Do you also want to offer:
+	•	Free tier (1 funnel, FunL branding, no analytics) → growth hack.
+	•	Upsells (branded QR templates, more funnels, video hosting).
+	•	One-click print fulfilment (recurring physical revenue).
+
+⸻
+
+🚀 Adoption Barriers
+	•	Real estate agents already spend $$ on marketing. You want to be the easy bolt-on, not another tool.
+	•	Tradies are lower-tech — keep onboarding frictionless: sign up, upload logo + phone, print QR.
+	•	You may need to solve: “How do I get them to put the QR code out in the real world?” (printing + shipping solves this).
+
+⸻
+
+📈 Future Growth
+	•	Beyond real estate & tradies:
+	•	Events (QR on banners → funnel for performers/speakers).
+	•	Retail (shop windows, “scan to follow” or “get offer”).
+	•	Recruitment (“scan to apply”).
+	•	Integrations:
+	•	CRM sync (HubSpot, Salesforce, even Google Sheets).
+	•	Calendar integration for callback booking.

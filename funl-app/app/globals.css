@@ -1,0 +1,69 @@
+@layer reset, base, tokens, recipes, utilities;
+
+/* Panda CSS Reset */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  #root,
+  #__next {
+    isolation: isolate;
+  }
+}
+
+/* Custom styles */
+@layer base {
+  :root {
+    --font-roboto-mono: 'Roboto Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-roboto-mono);
+    background: var(--colors-bg-default);
+    color: var(--colors-fg-default);
+  }
+}

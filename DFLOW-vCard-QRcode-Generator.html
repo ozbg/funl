@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFLOW QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: hsl(220, 14%, 96%);
+            min-height: 100vh;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: left;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-left h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+
+        .header-left p {
+            font-size: 1rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+
+        .header-tips {
+            max-width: 20rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        /* Card Styles */
+        .card {
+            background: hsl(0, 0%, 100%);
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .card-header {
+            padding: 1rem 1rem 0;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-description {
+            font-size: 0.8rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+            line-height: 1.4;
+        }
+
+        .card-content {
+            padding: 1.25rem;
+        }
+
+        .card-footer {
+            padding: 0 1rem 1rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .field-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .field-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox {
+            width: 1rem;
+            height: 1rem;
+            accent-color: hsl(221.2, 83.2%, 53.3%);
+        }
+
+        .label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+
+        .badge {
+            background: hsl(210, 40%, 98%);
+            color: hsl(215.4, 16.3%, 46.9%);
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            padding: 0.1rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .input, .textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: hsl(0, 0%, 100%);
+        }
+
+        .input:focus, .textarea:focus {
+            outline: none;
+            border-color: hsl(221.2, 83.2%, 53.3%);
+            box-shadow: 0 0 0 2px hsl(221.2, 83.2%, 53.3%, 0.2);
+        }
+
+        .input:disabled, .textarea:disabled {
+            background: hsl(210, 40%, 98%);
+            color: hsl(215.4, 16.3%, 46.9%);
+            cursor: not-allowed;
+        }
+
+        /* Slider Styles */
+        .slider-group {
+            margin-bottom: 0.75rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 0.375rem;
+            border-radius: 0.25rem;
+            background: hsl(210, 40%, 98%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: hsl(221.2, 83.2%, 53.3%);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: hsl(221.2, 83.2%, 53.3%);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .color-preview {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: hsl(221.2, 83.2%, 53.3%);
+            color: hsl(210, 40%, 98%);
+        }
+
+        .btn-primary:hover {
+            background: hsl(221.2, 83.2%, 45%);
+        }
+
+        .btn-secondary {
+            background: hsl(210, 40%, 98%);
+            color: hsl(222.2, 84%, 4.9%);
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .btn-secondary:hover {
+            background: hsl(210, 40%, 94%);
+        }
+
+        .btn-destructive {
+            background: hsl(0, 72.2%, 50.6%);
+            color: hsl(210, 40%, 98%);
+        }
+
+        .btn-destructive:hover {
+            background: hsl(0, 72.2%, 45%);
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* QR Preview */
+        .qr-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qr-placeholder {
+            width: 16rem;
+            height: 16rem;
+            border: 2px dashed hsl(214.3, 31.8%, 91.4%);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: hsl(215.4, 16.3%, 46.9%);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tips-list {
+            list-style: none;
+            space-y: 0.5rem;
+        }
+
+        .tips-list li {
+            font-size: 0.8rem;
+            color: hsl(215.4, 16.3%, 46.9%);
+            margin-bottom: 0.25rem;
+        }
+
+        .tips-list li:before {
+            content: "•";
+            color: hsl(221.2, 83.2%, 53.3%);
+            margin-right: 0.5rem;
+        }
+
+        /* Icons */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>DFLOW Contact QR Generator</h1>
+                <p>vCard QR Code Generator</p>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column - Form -->
+            <div style="display: flex; flex-direction: column;">
+                <!-- Size Control Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            Contact Information
+                        </h3>
+                        <p class="card-description">Select which fields to include in your QR code.</p>
+                        <p class="card-description">Fewer fields = smaller, more scannable QR codes.</p>
+                    </div>
+                    <div class="card-content">
+                        <form id="contactForm">
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeFirstName" class="checkbox" checked>
+                                    <label for="includeFirstName" class="label">First Name</label>
+                                    <span class="badge">Essential</span>
+                                </div>
+                                <input type="text" id="firstName" class="input" placeholder="John">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeLastName" class="checkbox" checked>
+                                    <label for="includeLastName" class="label">Last Name</label>
+                                    <span class="badge">Essential</span>
+                                </div>
+                                <input type="text" id="lastName" class="input" placeholder="Smith">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeOrganization" class="checkbox" checked>
+                                    <label for="includeOrganization" class="label">Organization</label>
+                                    <span class="badge">Essential</span>
+                                </div>
+                                <input type="text" id="organization" class="input" placeholder="Acme Corporation">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeTitle" class="checkbox">
+                                    <label for="includeTitle" class="label">Job Title</label>
+                                </div>
+                                <input type="text" id="title" class="input" placeholder="Software Engineer">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includePhone" class="checkbox" checked>
+                                    <label for="includePhone" class="label">Phone</label>
+                                    <span class="badge">Essential</span>
+                                </div>
+                                <input type="tel" id="phone" class="input" placeholder="+1 (555) 123-4567">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeEmail" class="checkbox" checked>
+                                    <label for="includeEmail" class="label">Email</label>
+                                    <span class="badge">Essential</span>
+                                </div>
+                                <input type="email" id="email" class="input" placeholder="john@example.com">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeWebsite" class="checkbox">
+                                    <label for="includeWebsite" class="label">Website</label>
+                                </div>
+                                <input type="url" id="website" class="input" placeholder="https://www.example.com">
+                            </div>
+
+                            <div class="field-group">
+                                <div class="field-header">
+                                    <input type="checkbox" id="includeAddress" class="checkbox">
+                                    <label for="includeAddress" class="label">Address</label>
+                                </div>
+                                <textarea id="address" class="textarea" rows="3" placeholder="123 Main St, City, State 12345"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Preview -->
+            <div style="display: flex; flex-direction: column; height: 100%;">
+                <!-- QR Preview Card -->
+                <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="card-header">
+                        <h3 class="card-title">QR Code Preview</h3>
+                    </div>
+                    <div class="card-content" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                        <div class="qr-preview">
+                            <div class="qr-placeholder" id="qrPlaceholder">
+                                Fill in the form and click Generate to create your QR code
+                            </div>
+                            <div class="qr-container" id="qrContainer" style="display: none;">
+                                <canvas id="qrCanvas"></canvas>
+                                <svg id="qrSvg" style="display: none;"></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="download-buttons" id="downloadButtons" style="display: none;">
+                            <button id="downloadPngBtn" class="btn btn-primary">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                PNG
+                            </button>
+                            <button id="downloadSvgBtn" class="btn btn-secondary">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                SVG
+                            </button>
+                            <button id="downloadPdfBtn" class="btn btn-destructive">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CMYK Color Controls Card -->
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 21h7a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4z"></path>
+                                </svg>
+                                <h3 class="card-title" style="margin: 0;">Settings</h3>
+                            </div>
+                            <div id="colorPreview" class="color-preview"></div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span class="label">Cyan</span>
+                                <span id="cyanValue">0%</span>
+                            </div>
+                            <input type="range" id="cyan" class="slider" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span class="label">Magenta</span>
+                                <span id="magentaValue">0%</span>
+                            </div>
+                            <input type="range" id="magenta" class="slider" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span class="label">Yellow</span>
+                                <span id="yellowValue">0%</span>
+                            </div>
+                            <input type="range" id="yellow" class="slider" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span class="label">Black</span>
+                                <span id="blackValue">100%</span>
+                            </div>
+                            <input type="range" id="black" class="slider" min="0" max="100" value="100">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" id="generateBtn" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600;">
+                            Generate QR Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentQRData = null;
+        let currentSize = 175; // Fixed size
+        let currentColor = '#000000';
+
+        // CMYK to RGB conversion
+        function cmykToRgb(c, m, y, k) {
+            c = c / 100;
+            m = m / 100;
+            y = y / 100;
+            k = k / 100;
+            
+            const r = Math.round(255 * (1 - c) * (1 - k));
+            const g = Math.round(255 * (1 - m) * (1 - k));
+            const b = Math.round(255 * (1 - y) * (1 - k));
+            
+            return { r, g, b };
+        }
+
+        // Update color preview
+        function updateColorPreview() {
+            const c = document.getElementById('cyan').value;
+            const m = document.getElementById('magenta').value;
+            const y = document.getElementById('yellow').value;
+            const k = document.getElementById('black').value;
+            
+            document.getElementById('cyanValue').textContent = c + '%';
+            document.getElementById('magentaValue').textContent = m + '%';
+            document.getElementById('yellowValue').textContent = y + '%';
+            document.getElementById('blackValue').textContent = k + '%';
+            
+            const rgb = cmykToRgb(c, m, y, k);
+            const colorPreview = document.getElementById('colorPreview');
+            colorPreview.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        }
+
+        // Update size display (now fixed at 175px)
+        function updateSizeDisplay() {
+            // Size is now fixed at 175px, no need to update display
+        }
+
+        // Update field states based on checkboxes
+        function updateFieldStates() {
+            const fields = ['firstName', 'lastName', 'organization', 'title', 'phone', 'email', 'website', 'address'];
+            
+            fields.forEach(field => {
+                const checkbox = document.getElementById('include' + field.charAt(0).toUpperCase() + field.slice(1));
+                const input = document.getElementById(field);
+                input.disabled = !checkbox.checked;
+            });
+        }
+
+        // Generate vCard string
+        function generateVCard() {
+            const fields = ['firstName', 'lastName', 'organization', 'title', 'phone', 'email', 'website', 'address'];
+            const data = {};
+            
+            fields.forEach(field => {
+                const checkbox = document.getElementById('include' + field.charAt(0).toUpperCase() + field.slice(1));
+                const input = document.getElementById(field);
+                data[field] = checkbox.checked ? input.value : '';
+            });
+
+            let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+            
+            if (data.firstName || data.lastName) {
+                vcard += `FN:${data.firstName} ${data.lastName}`.trim() + '\n';
+                vcard += `N:${data.lastName};${data.firstName};;;\n`;
+            }
+            
+            if (data.organization) vcard += `ORG:${data.organization}\n`;
+            if (data.title) vcard += `TITLE:${data.title}\n`;
+            if (data.phone) vcard += `TEL:${data.phone}\n`;
+            if (data.email) vcard += `EMAIL:${data.email}\n`;
+            if (data.website) vcard += `URL:${data.website}\n`;
+            if (data.address) vcard += `ADR:;;${data.address.replace(/\n/g, ' ')};;;;\n`;
+            
+            vcard += 'END:VCARD';
+            return vcard;
+        }
+
+        // Generate QR Code
+        function generateQR() {
+            try {
+                const vcard = generateVCard();
+                const size = 175; // Fixed size
+                const canvas = document.getElementById('qrCanvas');
+                const svgElement = document.getElementById('qrSvg');
+                const placeholder = document.getElementById('qrPlaceholder');
+                const container = document.getElementById('qrContainer');
+                const ctx = canvas.getContext('2d');
+                
+                // Get CMYK values and convert to RGB
+                const c = document.getElementById('cyan').value;
+                const m = document.getElementById('magenta').value;
+                const y = document.getElementById('yellow').value;
+                const k = document.getElementById('black').value;
+                const rgb = cmykToRgb(c, m, y, k);
+                currentColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                currentSize = size;
+                
+                // Create QR code
+                const qr = qrcode(0, 'M');
+                qr.addData(vcard);
+                qr.make();
+                currentQRData = qr;
+                
+                const moduleCount = qr.getModuleCount();
+                const cellSize = Math.floor(size / moduleCount);
+                const margin = Math.floor((size - cellSize * moduleCount) / 2);
+                
+                // Draw canvas version
+                canvas.width = size;
+                canvas.height = size;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, size, size);
+                ctx.fillStyle = currentColor;
+                
+                for (let row = 0; row < moduleCount; row++) {
+                    for (let col = 0; col < moduleCount; col++) {
+                        if (qr.isDark(row, col)) {
+                            ctx.fillRect(
+                                margin + col * cellSize,
+                                margin + row * cellSize,
+                                cellSize,
+                                cellSize
+                            );
+                        }
+                    }
+                }
+                
+                // Create SVG version
+                generateSVG(qr, size, currentColor);
+                
+                placeholder.style.display = 'none';
+                container.style.display = 'block';
+                document.getElementById('downloadButtons').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('QR Generation Error:', error);
+                alert('Error generating QR code. Please check your input and try again.');
+            }
+        }
+
+        // Generate SVG version
+        function generateSVG(qr, size, color) {
+            const svgElement = document.getElementById('qrSvg');
+            const moduleCount = qr.getModuleCount();
+            const cellSize = Math.floor(size / moduleCount);
+            const margin = Math.floor((size - cellSize * moduleCount) / 2);
+            
+            let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+            svgContent += `<rect width="${size}" height="${size}" fill="white"/>`;
+            
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        const x = margin + col * cellSize;
+                        const y = margin + row * cellSize;
+                        svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}"/>`;
+                    }
+                }
+            }
+            
+            svgContent += '</svg>';
+            svgElement.innerHTML = svgContent;
+        }
+
+        // Download functions
+        function downloadPNG() {
+            const canvas = document.getElementById('qrCanvas');
+            const link = document.createElement('a');
+            link.download = 'contact-qr-code.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function downloadSVG() {
+            const svgElement = document.getElementById('qrSvg');
+            const svgData = svgElement.innerHTML;
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.download = 'contact-qr-code.svg';
+            link.href = url;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadPDF() {
+            if (!currentQRData) return;
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            const moduleCount = currentQRData.getModuleCount();
+            const pageSize = 200;
+            const cellSize = pageSize / moduleCount;
+            const startX = (210 - pageSize) / 2;
+            const startY = (297 - pageSize) / 2;
+            
+            const c = document.getElementById('cyan').value;
+            const m = document.getElementById('magenta').value;
+            const y = document.getElementById('yellow').value;
+            const k = document.getElementById('black').value;
+            
+            pdf.setFontSize(16);
+            pdf.text('Contact QR Code', 105, 20, { align: 'center' });
+            
+            pdf.setFontSize(10);
+            pdf.text(`CMYK: C${c}% M${m}% Y${y}% K${k}%`, 105, 30, { align: 'center' });
+            
+            const rgb = cmykToRgb(c, m, y, k);
+            pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+            
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (currentQRData.isDark(row, col)) {
+                        const x = startX + col * cellSize;
+                        const y = startY + row * cellSize;
+                        pdf.rect(x, y, cellSize, cellSize, 'F');
+                    }
+                }
+            }
+            
+            pdf.save('contact-qr-code.pdf');
+        }
+
+        // Event listeners
+        document.getElementById('generateBtn').addEventListener('click', generateQR);
+        document.getElementById('downloadPngBtn').addEventListener('click', downloadPNG);
+        document.getElementById('downloadSvgBtn').addEventListener('click', downloadSVG);
+        document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+
+        // Color slider event listeners
+        ['cyan', 'magenta', 'yellow', 'black'].forEach(color => {
+            document.getElementById(color).addEventListener('input', updateColorPreview);
+        });
+
+        // Size slider event listener (removed - size is now fixed)
+        // document.getElementById('qrSize').addEventListener('input', updateSizeDisplay);
+
+        // Checkbox event listeners
+        const fields = ['firstName', 'lastName', 'organization', 'title', 'phone', 'email', 'website', 'address'];
+        fields.forEach(field => {
+            const checkbox = document.getElementById('include' + field.charAt(0).toUpperCase() + field.slice(1));
+            checkbox.addEventListener('change', updateFieldStates);
+        });
+
+        // Initialize
+        updateColorPreview();
+        // updateSizeDisplay(); // Size is now fixed
+        updateFieldStates();
+    </script>
+</body>
+</html>

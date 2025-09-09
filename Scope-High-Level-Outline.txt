@@ -1,0 +1,63 @@
+
+FunL.app
+
+“Turn every sign into a live, trackable funnel that gets buyers into your phone, not lost
+Differentiation: Why wouldn’t an agent just put a QR code to their own website or realestate.com listing? Your pitch should hammer:
+	•	Easier → they don’t need to know design/web/QR generation.
+	•	Smarter → dynamic funnels (update messaging post-sale, swap CTA mid-campaign).
+	•	Stickier → analytics + central platform + vCard save (not just a link).
+
+Funnel for sellers
+Removing friction connecting buyers with sellers
+click QRcode - seller contact info in buyers phones
+Sellers can add pump ups videos, testimonials etc to help buyers take step - call to action
+
+
+Targeting Real Estate initially
+
+Agents sign up , add contact info once
+Then generate a Funnel (they can have multiple funnels)
+Each funnel starts with a printed - UV safe - weather proof QR code 
+A4 size - printed with call to a action (take photo)
+That unique quote directs to FunL.au site
+Each funnel is very simple - but dynamic for various cases
+And the funnel can be changed throughout the campaign (For Sale messaging, changes to sold etc)
+
+Basic Funnel Example 1
+- Large QR code Vynl sticker on property for sale signage - property is for sale
+- Prospect click on QR code
+- Mobile friendly page Shows agent contact at top call to action �Add contact� vCard
+- Beneath that �See property info� link to real estate.com
+- Request call back time
+- In future state - video plays at top , stunning property message , meet agent CTA
+
+Basic Funnel Example 2
+- Large QR code Vynl sticker on property for sale signage - property has sold
+- Prospect click on QR code
+- Mobile friendly page Shows agent contact at top call to action �Add contact� vCard
+- Beneath that �Sold for $123,456,789�
+- Request call back time
+- In future state - video plays at top , another property sold , meet agent CTA
+
+Basic Funnel Example 3
+- A5 �Reliable Electrician� card put up on notice boards
+- Prospect click on QR code
+- Mobile friendly page Shows tradie at top call to action �Add contact� vCard
+- Beneath that �See my work� photos reel
+- Request call back time
+- In future state - video plays at top , reliable tradie message , meet tradie CTA
+
+
+Platform 
+- very clean and simple sign up add your contact details 
+- generate a funnel (can have one or many funnels)
+- minimal template of QR code funnel printable templates (A4 or A5 only)
+- one line of text on printed QR code sticker (Reliable Plumber, or Property Detail, or Contact Agent)
+- then choose from 3 possible funnels
+- first type is contact only - contact vCard / request call back time
+- Second type , has top and bottom half  (contact vCard / request call back time, website link at bottom (realestate.com or business website)
+- third , future state , has video top, contact vCard middle / request call back time , website link at bottom
+- platform captures traffic for basic analytics + daily or weekly traffic updates.
+- Request call back time - emails sent to business
+- Stripe payment with subscriptions (keeps funnel live)
+- System generates the QRcodes as PDF (for client to print) or they can 1 click buy through platform (we print and deliver)

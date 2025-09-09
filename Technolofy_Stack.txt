@@ -1,0 +1,121 @@
+Technology Stack:
+
+  Frontend:
+  - Next.js 15.5 (React 19.1)
+  - TypeScript
+  - Tailwind CSS
+  - React Query (TanStack)
+  - React Hook Form + Zod
+  - Zustand (state management)
+  - DnD Kit (drag & drop)
+  - React Native
+
+  Backend:
+  - Supabase (database, auth, real-time)
+  - Next.js API routes
+  - SendGrid (email)
+
+  UI Components:
+  - Radix UI
+  - Lucide Icons
+  - Class Variance Authority
+
+  Development:
+  - ESLint
+  - PostCSS/Autoprefixer
+  - Turbopack
+
+
+Universal Components Architecture:
+
+  Web-Only initial prototype:
+  - All components built with React/Next.js
+  - Web-first approach using responsive design
+
+  Component Structure:
+  - UI Components: Radix-based primitives (button, alert)
+  - Provider Components: Context/state management
+
+  Shared Logic:
+  - Supabase client (web SDK only)
+  - Sync platform (browser-based)
+  - Form validation (React Hook Form)
+  - State management (Zustand)
+
+
+⏺ Security Architecture:
+
+  Authentication:
+  - Supabase Auth (JWT-based)
+  - Session management via SSR cookies
+  - AuthGuard/AuthWrapper components
+  - User context isolation
+
+  Database Security:
+  - Row Level Security (RLS) policies
+  - User-tenant isolation
+  - Prepared statements (via Supabase)
+  - No direct SQL exposure
+
+  API Security:
+  - Next.js API routes (server-side)
+  - Environment variables for secrets
+  - SendGrid API key protection
+
+  Data Protection:
+  - Client-side validation (Zod schemas)
+  - Server-side validation
+  - XSS prevention (React default)
+  - HTTPS enforcement
+
+  File Security:
+  - Supabase Storage policies
+  - Validated file types
+  - Size limits
+  - Secure URLs with expiration
+
+  Sync Platform:
+  - Offline-first encryption
+  - Queue-based conflict resolution
+  - User-scoped data access
+  - Audit logging
+
+  Best Practices:
+  - No secrets in code
+  - ENV-based configuration
+  - Security audit tools (per SECURITY_AUDIT_GUIDE.md)
+  - Regular dependency updates
+
+
+
+⏺ Database Architecture:
+
+  Type:
+  - PostgreSQL (via Supabase)
+  - Relational database with JSONB support
+  - Real-time subscriptions
+  - Built-in auth tables
+
+  Architecture Patterns:
+  - Multi-tenant: business_id isolation
+  - RLS Policies: Row-level security
+  - JSONB Fields: Flexible metadata
+  - UUID Keys: Distributed friendly
+  - Soft Deletes: deleted_at timestamps
+
+  Sync Architecture:
+  - Universal Sync platform (SYNC_PLATFORM.md)
+  - Queue-based conflict resolution
+  - Optimistic updates
+  - Offline-first design
+
+  Performance:
+  - Indexed foreign keys
+  - Composite indexes for queries
+  - JSONB GIN indexes
+  - Connection pooling
+
+  Migrations:
+  - Sequential versioning
+  - DDL via apply_migration
+  - Rollback capable

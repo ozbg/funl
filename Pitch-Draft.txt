@@ -1,0 +1,60 @@
+FunL.app
+
+Turn every sign into a live funnel that connects buyers and sellers instantly.
+
+⸻
+
+🚩 The Problem
+	•	Buyers see a sign or flyer → they look up the property/tradie online → they get distracted or lost in the noise.
+	•	Sellers miss the chance to capture buyer attention in the moment.
+	•	Agents and tradies don’t have an easy way to connect physical marketing with instant digital contact.
+
+⸻
+
+💡 The Solution
+
+FunL.app gives sellers a simple, dynamic funnel:
+	1.	Print a weatherproof QR code on a sign or flyer.
+	2.	Buyer scans → instant mobile page with seller’s contact info + call-to-action.
+	3.	Seller can change the funnel anytime (For Sale → Sold → New Listing).
+
+⸻
+
+🎯 Example Use Cases
+
+Real Estate
+	•	QR code on “For Sale” sign.
+	•	Buyer scans → page with agent contact button + property info.
+	•	Later → funnel updates to “Sold for $X” + “Meet the agent.”
+
+Tradies
+	•	QR code on notice board card.
+	•	Prospect scans → contact info + photo gallery + callback request.
+
+⸻
+
+🔑 Why FunL is Different
+	•	Dynamic funnels → update messaging anytime (no reprint).
+	•	Contact-first design → add seller contact in 1 tap (vCard).
+	•	Lead capture → buyers request callback directly.
+	•	Simple templates → no design or tech skills needed.
+	•	Analytics → see scans, contacts added, callbacks requested.
+
+⸻
+
+💸 Business Model
+	•	Subscription (keeps funnels live).
+	•	1-click QR printing + delivery.
+	•	Free tier available to test with one funnel.
+
+⸻
+
+🌱 Roadmap
+	•	Video on funnel pages (agent intro, testimonial).
+	•	Team accounts for agencies.
+	•	CRM + calendar integrations.
+	•	Expansion beyond real estate/trades → events, retail, recruitment.
+
+⸻
+
+⚡ FunL.app = QR codes that sell, not just link.
