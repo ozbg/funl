@@ -4,7 +4,6 @@ export const CreateFunnelSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   type: z.enum(['contact', 'property', 'video']),
   content: z.object({
-    headline: z.string().max(200, 'Headline too long').optional(),
     state: z.enum(['for_sale', 'sold', 'coming_soon']).optional(),
     price: z.string().max(50, 'Price too long').optional(),
     property_url: z.string().url('Invalid URL').optional().or(z.literal('')),

@@ -76,11 +76,7 @@ export default function PublicFunnelClient({
             colorPalette="mint"
             color="colorPalette.fg"
           >
-            {funnel.content?.headline ? (
-              <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>{funnel.content.headline}</h1>
-            ) : (
-              <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>Get in Touch</h1>
-            )}
+            <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>Get in Touch</h1>
             
             {funnel.type === 'property' && funnel.content?.state && (
               <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">

@@ -175,12 +175,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
               <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.print_size}</dd>
             </Box>
 
-            {funnel.content?.headline && (
-              <Box>
-                <dt className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted' })}>Headline</dt>
-                <dd className={css({ mt: 1, fontSize: 'sm', color: 'fg.default' })}>{funnel.content.headline}</dd>
-              </Box>
-            )}
 
             {funnel.content?.state && (
               <Box>

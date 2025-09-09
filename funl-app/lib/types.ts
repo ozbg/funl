@@ -46,7 +46,6 @@ export interface Funnel {
 }
 
 export interface FunnelContent {
-  headline?: string
   state?: 'for_sale' | 'sold' | 'coming_soon'
   price?: string
   property_url?: string

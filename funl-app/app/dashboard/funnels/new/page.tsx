@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
+import FunnelPreview from '@/components/FunnelPreview'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
@@ -20,7 +21,16 @@ export default function NewFunnelPage() {
     }
   })
 
-  const selectedType = watch('type')
+  // Watch specific form fields to trigger re-renders
+  const watchedName = watch('name')
+  const watchedType = watch('type') 
+  const watchedState = watch('content.state')
+  const watchedPrice = watch('content.price')
+  const watchedPropertyUrl = watch('content.property_url')
+  const watchedVideoUrl = watch('content.video_url')
+  const watchedCustomMessage = watch('content.custom_message')
+  
+  const selectedType = watchedType
 
   const onSubmit = async (data: CreateFunnelInput) => {
     setLoading(true)
@@ -112,12 +122,16 @@ export default function NewFunnelPage() {
   })
 
   return (
-    <Container maxW="2xl" mx="auto">
-      <Box bg="bg.default" boxShadow="md">
-        <Box px={{ base: 4, sm: 6 }} py={5}>
-          <h1 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 6 })}>
-            Create New Funnel
-          </h1>
+    <Container maxW="7xl" mx="auto">
+      <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default', mb: 8, textAlign: 'center' })}>
+        Create New Funnel
+      </h1>
+      
+      <Grid columns={{ base: 1, lg: 2 }} gap={8}>
+        {/* Form Column */}
+        <Box>
+          <Box bg="bg.default" boxShadow="md">
+            <Box px={{ base: 4, sm: 6 }} py={5}>
           
           {error && (
             <Box mb={4} colorPalette="red" bg="colorPalette.default" p={4}>
@@ -130,13 +144,13 @@ export default function NewFunnelPage() {
               {/* Basic Info */}
               <Box>
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                  Funnel Name
+                  Name
                 </label>
                 <input
                   type="text"
                   {...register('name', { required: 'Name is required' })}
                   className={inputStyles}
-                  placeholder="e.g., Property for Sale - 123 Main St"
+                  placeholder=""
                 />
                 {errors.name && (
                   <p className={css({ colorPalette: 'red', mt: 1, fontSize: 'sm', color: 'colorPalette.text' })}>{errors.name.message}</p>
@@ -146,7 +160,7 @@ export default function NewFunnelPage() {
               {/* Funnel Type */}
               <Box>
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                  Funnel Type
+                  Type
                 </label>
                 <Grid columns={{ base: 1, sm: 3 }} gap={3}>
                   <label className={css({ cursor: 'pointer' })}>
@@ -166,7 +180,7 @@ export default function NewFunnelPage() {
                       color={selectedType === 'contact' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'contact' ? { borderColor: 'border.default' } : {}}
                     >
-                      <h3 className={css({ fontWeight: 'medium' })}>Contact Only</h3>
+                      <h3 className={css({ fontWeight: 'medium' })}>Contact Card</h3>
                       <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
                         Simple contact card download
                       </p>
@@ -190,7 +204,7 @@ export default function NewFunnelPage() {
                       color={selectedType === 'property' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'property' ? { borderColor: 'border.default' } : {}}
                     >
-                      <h3 className={css({ fontWeight: 'medium' })}>Property</h3>
+                      <h3 className={css({ fontWeight: 'medium' })}>Property + Contact</h3>
                       <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
                         Contact + property details
                       </p>
@@ -214,7 +228,7 @@ export default function NewFunnelPage() {
                       color={selectedType === 'video' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'video' ? { borderColor: 'border.default' } : {}}
                     >
-                      <h3 className={css({ fontWeight: 'medium' })}>Video</h3>
+                      <h3 className={css({ fontWeight: 'medium' })}>Video + Contact</h3>
                       <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
                         Contact + video message
                       </p>
@@ -225,17 +239,6 @@ export default function NewFunnelPage() {
 
               {/* Content Fields */}
               <Stack gap={4}>
-                <Box>
-                  <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                    Headline (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    {...register('content.headline')}
-                    className={inputStyles}
-                    placeholder="e.g., Beautiful Family Home for Sale"
-                  />
-                </Box>
 
                 {selectedType === 'property' && (
                   <>
@@ -353,8 +356,31 @@ export default function NewFunnelPage() {
               </Flex>
             </Stack>
           </form>
+            </Box>
+          </Box>
         </Box>
-      </Box>
+        
+        {/* Preview Column */}
+        <Box>
+          <Box bg="bg.default" boxShadow="md" p={6} position="sticky" top={6}>
+            <FunnelPreview 
+              key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedCustomMessage}`}
+              formData={{
+                name: watchedName || '',
+                type: watchedType || 'contact',
+                content: {
+                  state: watchedState || '',
+                  price: watchedPrice || '',
+                  property_url: watchedPropertyUrl || '',
+                  video_url: watchedVideoUrl || '',
+                  custom_message: watchedCustomMessage || ''
+                }
+              }}
+              businessName="Your Business"
+            />
+          </Box>
+        </Box>
+      </Grid>
     </Container>
   )
 }
