@@ -38,7 +38,7 @@ Turn every sign into a live, trackable funnel that gets buyers into your phone.
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15.5, React 19, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 15.5, React 19, TypeScript, Panda CSS
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
 - **State**: Zustand
 - **Validation**: Zod

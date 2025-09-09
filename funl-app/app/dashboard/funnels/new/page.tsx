@@ -53,13 +53,12 @@ export default function NewFunnelPage() {
     py: 2,
     borderWidth: '1px',
     borderColor: 'border.default',
-    borderRadius: 'none',
     boxShadow: 'sm',
     bg: 'bg.default',
     color: 'fg.default',
     _focus: {
       outline: 'none',
-      ringWidth: '2px',
+      ringWidth: '2',
       ringColor: 'colorPalette.default',
       borderColor: 'colorPalette.default',
     },
@@ -69,7 +68,6 @@ export default function NewFunnelPage() {
     colorPalette: 'mint',
     px: 4,
     py: 2,
-    borderRadius: 'none',
     boxShadow: 'sm',
     fontSize: 'sm',
     fontWeight: 'medium',
@@ -81,12 +79,12 @@ export default function NewFunnelPage() {
     },
     _focus: {
       outline: 'none',
-      ringWidth: '2px',
-      ringOffset: '2px',
+      ringWidth: '2',
+      ringOffset: '2',
       ringColor: 'colorPalette.default',
     },
     _disabled: {
-      opacity: 0.5,
+      opacity: 'disabled',
       cursor: 'not-allowed',
     },
   })
@@ -96,7 +94,6 @@ export default function NewFunnelPage() {
     py: 2,
     borderWidth: '1px',
     borderColor: 'border.default',
-    borderRadius: 'none',
     boxShadow: 'sm',
     fontSize: 'sm',
     fontWeight: 'medium',
@@ -108,23 +105,23 @@ export default function NewFunnelPage() {
     },
     _focus: {
       outline: 'none',
-      ringWidth: '2px',
-      ringOffset: '2px',
+      ringWidth: '2',
+      ringOffset: '2',
       ringColor: 'colorPalette.default',
     },
   })
 
   return (
     <Container maxW="2xl" mx="auto">
-      <Box bg="bg.default" boxShadow="md" borderRadius="lg">
+      <Box bg="bg.default" boxShadow="md">
         <Box px={{ base: 4, sm: 6 }} py={5}>
           <h1 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 6 })}>
             Create New Funnel
           </h1>
           
           {error && (
-            <Box mb={4} borderRadius="md" bg="red.default" p={4}>
-              <p className={css({ fontSize: 'sm', color: 'red.fg' })}>{error}</p>
+            <Box mb={4} colorPalette="red" bg="colorPalette.default" p={4}>
+              <p className={css({ colorPalette: 'red', fontSize: 'sm', color: 'colorPalette.fg' })}>{error}</p>
             </Box>
           )}
 
@@ -142,7 +139,7 @@ export default function NewFunnelPage() {
                   placeholder="e.g., Property for Sale - 123 Main St"
                 />
                 {errors.name && (
-                  <p className={css({ mt: 1, fontSize: 'sm', color: 'red.text' })}>{errors.name.message}</p>
+                  <p className={css({ colorPalette: 'red', mt: 1, fontSize: 'sm', color: 'colorPalette.text' })}>{errors.name.message}</p>
                 )}
               </Box>
 
@@ -162,11 +159,11 @@ export default function NewFunnelPage() {
                     <Box
                       p={4}
                       borderWidth="1px"
-                      borderRadius="lg"
-                      textAlign="center"
+                                           textAlign="center"
                       borderColor={selectedType === 'contact' ? 'colorPalette.default' : 'border.default'}
-                      bg={selectedType === 'contact' ? 'mint.subtle' : 'bg.default'}
-                      color={selectedType === 'contact' ? 'mint.text' : 'fg.default'}
+                      colorPalette={selectedType === 'contact' ? 'mint' : undefined}
+                      bg={selectedType === 'contact' ? 'colorPalette.subtle' : 'bg.default'}
+                      color={selectedType === 'contact' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'contact' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Contact Only</h3>
@@ -186,11 +183,11 @@ export default function NewFunnelPage() {
                     <Box
                       p={4}
                       borderWidth="1px"
-                      borderRadius="lg"
-                      textAlign="center"
+                                           textAlign="center"
                       borderColor={selectedType === 'property' ? 'colorPalette.default' : 'border.default'}
-                      bg={selectedType === 'property' ? 'mint.subtle' : 'bg.default'}
-                      color={selectedType === 'property' ? 'mint.text' : 'fg.default'}
+                      colorPalette={selectedType === 'property' ? 'mint' : undefined}
+                      bg={selectedType === 'property' ? 'colorPalette.subtle' : 'bg.default'}
+                      color={selectedType === 'property' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'property' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Property</h3>
@@ -210,11 +207,11 @@ export default function NewFunnelPage() {
                     <Box
                       p={4}
                       borderWidth="1px"
-                      borderRadius="lg"
-                      textAlign="center"
+                                           textAlign="center"
                       borderColor={selectedType === 'video' ? 'colorPalette.default' : 'border.default'}
-                      bg={selectedType === 'video' ? 'mint.subtle' : 'bg.default'}
-                      color={selectedType === 'video' ? 'mint.text' : 'fg.default'}
+                      colorPalette={selectedType === 'video' ? 'mint' : undefined}
+                      bg={selectedType === 'video' ? 'colorPalette.subtle' : 'bg.default'}
+                      color={selectedType === 'video' ? 'colorPalette.text' : 'fg.default'}
                       _hover={selectedType !== 'video' ? { borderColor: 'border.default' } : {}}
                     >
                       <h3 className={css({ fontWeight: 'medium' })}>Video</h3>

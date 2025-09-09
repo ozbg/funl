@@ -10,15 +10,18 @@ export function generateShortUrl(shortId: string): string {
   return `${baseUrl}/f/${shortId}`
 }
 
-export async function generateQRCode(url: string): Promise<string> {
+export async function generateQRCode(url: string, options?: { 
+  darkColor?: string 
+  lightColor?: string 
+}): Promise<string> {
   try {
     return await QRCode.toDataURL(url, {
       type: 'image/png',
       width: 400,
       margin: 2,
       color: {
-        dark: '#000000',
-        light: '#FFFFFF'
+        dark: options?.darkColor || '#000000',
+        light: options?.lightColor || '#FFFFFF'
       },
       errorCorrectionLevel: 'M'
     })
@@ -28,15 +31,18 @@ export async function generateQRCode(url: string): Promise<string> {
   }
 }
 
-export async function generateQRCodeBuffer(url: string): Promise<Buffer> {
+export async function generateQRCodeBuffer(url: string, options?: { 
+  darkColor?: string 
+  lightColor?: string 
+}): Promise<Buffer> {
   try {
     return await QRCode.toBuffer(url, {
       type: 'png',
       width: 400,
       margin: 2,
       color: {
-        dark: '#000000',
-        light: '#FFFFFF'
+        dark: options?.darkColor || '#000000',
+        light: options?.lightColor || '#FFFFFF'
       },
       errorCorrectionLevel: 'M'
     })

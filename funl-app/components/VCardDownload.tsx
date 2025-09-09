@@ -51,7 +51,6 @@ export default function VCardDownload({
     bg: 'colorPalette.default',
     color: 'colorPalette.fg',
     fontWeight: 'medium',
-    borderRadius: 'none',
     cursor: 'pointer',
     transition: 'colors',
     _hover: {
@@ -59,9 +58,9 @@ export default function VCardDownload({
     },
     _focus: {
       outline: 'none',
-      ringWidth: '2px',
+      ringWidth: '2',
       ringColor: 'colorPalette.default',
-      ringOffset: '2px',
+      ringOffset: '2',
     },
   })
 

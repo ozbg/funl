@@ -84,13 +84,12 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
             bg: 'colorPalette.default',
             borderWidth: '1px',
             borderColor: 'transparent',
-            borderRadius: 'none',
             cursor: 'pointer',
             _hover: {
               bg: 'colorPalette.emphasized',
             },
             _disabled: {
-              opacity: 0.5,
+              opacity: 'disabled',
               cursor: 'not-allowed',
             },
           })}
@@ -111,13 +110,12 @@ export default function FunnelActions({ funnelId, currentStatus, publicUrl }: Fu
             bg: 'bg.default',
             borderWidth: '1px',
             borderColor: 'border.default',
-            borderRadius: 'none',
             cursor: 'pointer',
             _hover: {
               bg: 'bg.muted',
             },
             _disabled: {
-              opacity: 0.5,
+              opacity: 'disabled',
               cursor: 'not-allowed',
             },
           })}

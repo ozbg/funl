@@ -64,7 +64,7 @@ export default function PublicFunnelClient({
   return (
     <Box minH="100vh" bg="bg.subtle">
       <Box maxW="md" mx="auto" pt={8} pb={16}>
-        <Box bg="bg.default" borderRadius="lg" boxShadow="lg" overflow="hidden">
+        <Box bg="bg.default" boxShadow="lg" overflow="hidden">
           {/* Header */}
           <Box 
             bgGradient="to-r" 
@@ -73,7 +73,8 @@ export default function PublicFunnelClient({
             px={6} 
             py={8} 
             textAlign="center" 
-            color="mint.fg"
+            colorPalette="mint"
+            color="colorPalette.fg"
           >
             {funnel.content?.headline ? (
               <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 2 })}>{funnel.content.headline}</h1>
@@ -82,7 +83,7 @@ export default function PublicFunnelClient({
             )}
             
             {funnel.type === 'property' && funnel.content?.state && (
-              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" bg="white.a3" color="mint.text">
+              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
                 {funnel.content.state === 'for_sale' && '🏠 For Sale'}
                 {funnel.content.state === 'sold' && '✅ SOLD'}
                 {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
@@ -102,12 +103,13 @@ export default function PublicFunnelClient({
                 h={20} 
                 mx="auto" 
                 mb={4} 
-                bg="mint.subtle" 
+                colorPalette="mint"
+                bg="colorPalette.subtle" 
                 borderRadius="full" 
                 align="center" 
                 justify="center"
               >
-                <span className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'mint.text' })}>
+                <span className={css({ colorPalette: 'mint', fontSize: '2xl', fontWeight: 'bold', color: 'colorPalette.text' })}>
                   {business.name.charAt(0).toUpperCase()}
                 </span>
               </Flex>
@@ -130,7 +132,6 @@ export default function PublicFunnelClient({
                   fontWeight: 'semibold',
                   py: 3,
                   px: 4,
-                  borderRadius: 'lg',
                   transition: 'colors',
                   _hover: {
                     bg: 'colorPalette.emphasized'
@@ -148,16 +149,16 @@ export default function PublicFunnelClient({
                   className={css({
                     w: 'full',
                     display: 'block',
-                    bg: 'mint.default',
-                    color: 'mint.fg',
+                    colorPalette: 'mint',
+                    bg: 'colorPalette.default',
+                    color: 'colorPalette.fg',
                     fontWeight: 'semibold',
                     py: 3,
                     px: 4,
-                    borderRadius: 'lg',
-                    textAlign: 'center',
+                      textAlign: 'center',
                     transition: 'colors',
                     _hover: {
-                      bg: 'mint.emphasized'
+                      bg: 'colorPalette.emphasized'
                     }
                   })}
                 >
@@ -168,7 +169,7 @@ export default function PublicFunnelClient({
 
             {/* Custom Message */}
             {funnel.content?.custom_message && (
-              <Box mb={6} p={4} bg="bg.subtle" borderRadius="lg">
+              <Box mb={6} p={4} bg="bg.subtle">
                 <p className={css({ color: 'fg.muted', fontSize: 'sm' })}>{funnel.content.custom_message}</p>
               </Box>
             )}
@@ -189,8 +190,7 @@ export default function PublicFunnelClient({
                     fontWeight: 'medium',
                     py: 3,
                     px: 4,
-                    borderRadius: 'lg',
-                    textAlign: 'center',
+                      textAlign: 'center',
                     transition: 'colors',
                     _hover: {
                       bg: 'bg.emphasized'
@@ -213,16 +213,16 @@ export default function PublicFunnelClient({
                   className={css({
                     w: 'full',
                     display: 'block',
-                    bg: 'red.default',
-                    color: 'red.fg',
+                    colorPalette: 'red',
+                    bg: 'colorPalette.default',
+                    color: 'colorPalette.fg',
                     fontWeight: 'semibold',
                     py: 3,
                     px: 4,
-                    borderRadius: 'lg',
-                    textAlign: 'center',
+                      textAlign: 'center',
                     transition: 'colors',
                     _hover: {
-                      bg: 'red.emphasized'
+                      bg: 'colorPalette.emphasized'
                     }
                   })}
                 >
@@ -248,12 +248,11 @@ export default function PublicFunnelClient({
                         py: 2,
                         borderWidth: '1px',
                         borderColor: 'border.default',
-                        borderRadius: 'md',
                         bg: 'bg.default',
                         color: 'fg.default',
                         _focus: {
                           outline: 'none',
-                          ringWidth: '2px',
+                          ringWidth: '2',
                           ringColor: 'mint.default'
                         }
                       })}
@@ -271,12 +270,11 @@ export default function PublicFunnelClient({
                         py: 2,
                         borderWidth: '1px',
                         borderColor: 'border.default',
-                        borderRadius: 'md',
                         bg: 'bg.default',
                         color: 'fg.default',
                         _focus: {
                           outline: 'none',
-                          ringWidth: '2px',
+                          ringWidth: '2',
                           ringColor: 'mint.default'
                         }
                       })}
@@ -291,12 +289,11 @@ export default function PublicFunnelClient({
                         py: 2,
                         borderWidth: '1px',
                         borderColor: 'border.default',
-                        borderRadius: 'md',
                         bg: 'bg.default',
                         color: 'fg.default',
                         _focus: {
                           outline: 'none',
-                          ringWidth: '2px',
+                          ringWidth: '2',
                           ringColor: 'mint.default'
                         }
                       })}
@@ -318,12 +315,11 @@ export default function PublicFunnelClient({
                         py: 2,
                         borderWidth: '1px',
                         borderColor: 'border.default',
-                        borderRadius: 'md',
                         bg: 'bg.default',
                         color: 'fg.default',
                         _focus: {
                           outline: 'none',
-                          ringWidth: '2px',
+                          ringWidth: '2',
                           ringColor: 'mint.default'
                         }
                       })}
@@ -339,7 +335,6 @@ export default function PublicFunnelClient({
                       fontWeight: 'semibold',
                       py: 2,
                       px: 4,
-                      borderRadius: 'md',
                       transition: 'colors',
                       _hover: {
                         bg: 'colorPalette.emphasized'

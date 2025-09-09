@@ -3,7 +3,6 @@ import { Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { css } from '@/styled-system/css'
 import { ThemeProvider } from '@/components/ThemeProvider'
-import ThemeToggle from '@/components/ThemeToggle'
 
 const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
@@ -29,7 +28,6 @@ export default function RootLayout({
         })}
       >
         <ThemeProvider>
-          <ThemeToggle />
           {children}
         </ThemeProvider>
       </body>

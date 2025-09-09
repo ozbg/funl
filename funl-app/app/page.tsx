@@ -16,11 +16,12 @@ export default async function Home() {
     <Box 
       minHeight="100vh" 
       bgGradient="to-br" 
-      gradientFrom="mint.50" 
-      gradientTo="mint.100" 
+      gradientFrom="mint.subtle" 
+      gradientTo="mint.muted" 
       display="flex" 
       alignItems="center" 
       justifyContent="center"
+      colorPalette="mint"
     >
       <Container maxW="4xl" px={{ base: 4, sm: 6, lg: 8 }} textAlign="center">
         <Stack gap={8}>
@@ -32,7 +33,7 @@ export default async function Home() {
               mb: 6 
             })}>
               Turn every sign into a 
-              <span className={css({ color: 'accent.default' })}> live funnel</span>
+              <span className={css({ color: 'colorPalette.default' })}> live funnel</span>
             </h1>
             <p className={css({ 
               fontSize: 'xl', 
@@ -54,15 +55,15 @@ export default async function Home() {
             <Link
               href="/signup"
               className={css({
+                colorPalette: 'mint',
                 px: 8,
                 py: 3,
-                bg: 'accent.default',
-                color: 'accent.fg',
+                bg: 'colorPalette.default',
+                color: 'colorPalette.fg',
                 fontWeight: 'semibold',
-                borderRadius: 'lg',
                 boxShadow: 'lg',
                 _hover: {
-                  bg: 'accent.emphasis',
+                  bg: 'colorPalette.emphasized',
                 },
                 transition: 'colors',
               })}
@@ -78,7 +79,6 @@ export default async function Home() {
                 borderColor: 'border.default',
                 color: 'fg.default',
                 fontWeight: 'semibold',
-                borderRadius: 'lg',
                 _hover: {
                   bg: 'bg.muted',
                 },
@@ -94,18 +94,17 @@ export default async function Home() {
             columns={{ base: 1, md: 3 }} 
             gap={8}
           >
-            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
+            <Box bg="bg.default" p={6} boxShadow="md" colorPalette="mint">
               <Flex
                 w={12}
                 h={12}
-                bg="mint.100"
-                borderRadius="lg"
-                align="center"
+                bg="colorPalette.subtle"
+                               align="center"
                 justify="center"
                 mb={4}
                 mx="auto"
               >
-                <svg className={css({ w: 6, h: 6, color: 'mint.600' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={css({ w: 6, h: 6, color: 'colorPalette.default' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </Flex>
@@ -117,18 +116,17 @@ export default async function Home() {
               </p>
             </Box>
 
-            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
+            <Box bg="bg.default" p={6} boxShadow="md" colorPalette="mint">
               <Flex
                 w={12}
                 h={12}
-                bg="mint.100"
-                borderRadius="lg"
-                align="center"
+                bg="colorPalette.subtle"
+                               align="center"
                 justify="center"
                 mb={4}
                 mx="auto"
               >
-                <svg className={css({ w: 6, h: 6, color: 'mint.600' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={css({ w: 6, h: 6, color: 'colorPalette.default' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </Flex>
@@ -140,18 +138,17 @@ export default async function Home() {
               </p>
             </Box>
 
-            <Box bg="bg.default" p={6} borderRadius="none" boxShadow="md">
+            <Box bg="bg.default" p={6} boxShadow="md" colorPalette="mint">
               <Flex
                 w={12}
                 h={12}
-                bg="mint.100"
-                borderRadius="lg"
-                align="center"
+                bg="colorPalette.subtle"
+                               align="center"
                 justify="center"
                 mb={4}
                 mx="auto"
               >
-                <svg className={css({ w: 6, h: 6, color: 'mint.600' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={css({ w: 6, h: 6, color: 'colorPalette.default' })} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </Flex>

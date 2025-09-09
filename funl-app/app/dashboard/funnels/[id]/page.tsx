@@ -50,8 +50,9 @@ export default async function FunnelDetailPage({ params }: PageProps) {
               fontSize: 'xs',
               fontWeight: 'semibold',
               borderRadius: 'full',
-              bg: funnel.status === 'active' ? 'mint.subtle' : 'gray.subtle',
-              color: funnel.status === 'active' ? 'mint.text' : 'gray.text'
+              colorPalette: funnel.status === 'active' ? 'mint' : 'gray',
+              bg: 'colorPalette.subtle',
+              color: 'colorPalette.text'
             })}>
               {funnel.status}
             </span>
@@ -75,12 +76,12 @@ export default async function FunnelDetailPage({ params }: PageProps) {
 
       <Box display="grid" gridTemplateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={8}>
         {/* QR Code Section */}
-        <Box bg="bg.default" boxShadow="sm" borderRadius="lg" p={6}>
+        <Box bg="bg.default" boxShadow="sm" p={6}>
           <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>QR Code</h2>
           
           {funnel.qr_code_url && (
             <Box textAlign="center">
-              <Box display="inline-block" p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" borderRadius="lg">
+              <Box display="inline-block" p={4} bg="bg.default" borderWidth="1px" borderColor="border.default">
                 <Image
                   src={funnel.qr_code_url}
                   alt={`QR Code for ${funnel.name}`}
@@ -93,7 +94,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
               <Stack gap={2} mt={4}>
                 <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>Short URL:</p>
                 <Flex align="center" justify="center" gap={2}>
-                  <code className={css({ px: 2, py: 1, bg: 'bg.muted', borderRadius: 'md', fontSize: 'sm' })}>
+                  <code className={css({ px: 2, py: 1, bg: 'bg.muted', fontSize: 'sm' })}>
                     {publicUrl}
                   </code>
                   <FunnelActions 
@@ -118,7 +119,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
                     py: 2,
                     borderWidth: '1px',
                     borderColor: 'transparent',
-                    borderRadius: 'md',
                     boxShadow: 'sm',
                     fontSize: 'sm',
                     fontWeight: 'medium',
@@ -143,7 +143,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
                     py: 2,
                     borderWidth: '1px',
                     borderColor: 'border.default',
-                    borderRadius: 'md',
                     boxShadow: 'sm',
                     fontSize: 'sm',
                     fontWeight: 'medium',
@@ -162,7 +161,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
         </Box>
 
         {/* Funnel Details */}
-        <Box bg="bg.default" boxShadow="sm" borderRadius="lg" p={6}>
+        <Box bg="bg.default" boxShadow="sm" p={6}>
           <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>Funnel Details</h2>
           
           <Stack gap={4}>
@@ -260,7 +259,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
             bg: 'bg.default',
             borderWidth: '1px',
             borderColor: 'border.default',
-            borderRadius: 'md',
             _hover: {
               bg: 'bg.muted',
             },

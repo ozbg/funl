@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Container } from '@/styled-system/jsx'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default async function DashboardLayout({
   children,
@@ -107,6 +108,7 @@ export default async function DashboardLayout({
                   Sign out
                 </button>
               </form>
+              <ThemeToggle />
             </Flex>
           </Flex>
         </Container>

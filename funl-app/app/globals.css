@@ -61,6 +61,78 @@
     --font-roboto-mono: 'Roboto Mono', monospace;
   }
 
+  /* Light theme colors */
+  :root, .light {
+    --colors-bg-canvas: #fdfdfd;
+    --colors-bg-default: #ffffff;
+    --colors-bg-subtle: #f8f9fa;
+    --colors-bg-muted: #f1f3f5;
+    --colors-bg-emphasized: #e9ecef;
+    --colors-bg-disabled: #dee2e6;
+    
+    --colors-fg-default: #212529;
+    --colors-fg-muted: #495057;
+    --colors-fg-subtle: #6c757d;
+    --colors-fg-disabled: #adb5bd;
+    --colors-fg-error: #dc3545;
+    
+    --colors-border-default: #dee2e6;
+    --colors-border-muted: #e9ecef;
+    --colors-border-subtle: #f1f3f5;
+    --colors-border-disabled: #ced4da;
+    --colors-border-outline: #495057;
+    --colors-border-error: #dc3545;
+    
+    /* Mint colors for light theme */
+    --colors-mint-default: #0ca678;
+    --colors-mint-emphasized: #099268;
+    --colors-mint-fg: #ffffff;
+    --colors-mint-text: #0ca678;
+    --colors-mint-subtle: #d1f2eb;
+    --colors-mint-muted: #a3e7d1;
+  }
+
+  /* Dark theme colors */
+  .dark {
+    --colors-bg-canvas: #0d1117;
+    --colors-bg-default: #161b22;
+    --colors-bg-subtle: #21262d;
+    --colors-bg-muted: #30363d;
+    --colors-bg-emphasized: #484f58;
+    --colors-bg-disabled: #656d76;
+    
+    --colors-fg-default: #f0f6fc;
+    --colors-fg-muted: #8b949e;
+    --colors-fg-subtle: #656d76;
+    --colors-fg-disabled: #484f58;
+    --colors-fg-error: #f85149;
+    
+    --colors-border-default: #30363d;
+    --colors-border-muted: #21262d;
+    --colors-border-subtle: #161b22;
+    --colors-border-disabled: #484f58;
+    --colors-border-outline: #8b949e;
+    --colors-border-error: #f85149;
+    
+    /* Mint colors for dark theme */
+    --colors-mint-default: #39d87a;
+    --colors-mint-emphasized: #2ea043;
+    --colors-mint-fg: #0d1117;
+    --colors-mint-text: #39d87a;
+    --colors-mint-subtle: #0d2818;
+    --colors-mint-muted: #1a5d39;
+  }
+
+  /* ColorPalette variables - these map to whatever the current colorPalette is set to */
+  :root {
+    --colors-colorpalette-default: var(--colors-mint-default);
+    --colors-colorpalette-emphasized: var(--colors-mint-emphasized);
+    --colors-colorpalette-fg: var(--colors-mint-fg);
+    --colors-colorpalette-text: var(--colors-mint-text);
+    --colors-colorpalette-subtle: var(--colors-mint-subtle);
+    --colors-colorpalette-muted: var(--colors-mint-muted);
+  }
+
   body {
     font-family: var(--font-roboto-mono);
     background: var(--colors-bg-default);

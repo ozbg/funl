@@ -39,7 +39,6 @@ export default async function DashboardPage() {
                 alignItems: 'center',
                 px: 4,
                 py: 2,
-                borderRadius: 'none',
                 boxShadow: 'sm',
                 fontSize: 'sm',
                 fontWeight: 'medium',
@@ -58,7 +57,7 @@ export default async function DashboardPage() {
 
       <Box mt={8}>
         {funnels && funnels.length > 0 ? (
-          <Box bg="bg.default" boxShadow="sm" overflow="hidden" borderRadius={{ sm: 'md' }}>
+          <Box bg="bg.default" boxShadow="sm" overflow="hidden" >
             <Stack divideY="1px" divideColor="border.default">
               {funnels.map((funnel) => (
                 <Box key={funnel.id}>
@@ -80,7 +79,8 @@ export default async function DashboardPage() {
                             h={10}
                             w={10}
                             borderRadius="full"
-                            bg="accent.default"
+                            colorPalette="mint"
+                            bg="colorPalette.default"
                             align="center"
                             justify="center"
                           >
@@ -110,8 +110,9 @@ export default async function DashboardPage() {
                             lineHeight: '1.25rem',
                             fontWeight: 'semibold',
                             borderRadius: 'full',
-                            bg: funnel.status === 'active' ? 'mint.subtle' : 'gray.subtle',
-                            color: funnel.status === 'active' ? 'mint.text' : 'gray.text',
+                            colorPalette: funnel.status === 'active' ? 'mint' : 'gray',
+                            bg: 'colorPalette.subtle',
+                            color: 'colorPalette.text',
                           })}
                         >
                           {funnel.status}
@@ -153,8 +154,7 @@ export default async function DashboardPage() {
                   alignItems: 'center',
                   px: 4,
                   py: 2,
-                  borderRadius: 'none',
-                  boxShadow: 'sm',
+                    boxShadow: 'sm',
                   fontSize: 'sm',
                   fontWeight: 'medium',
                   color: 'colorPalette.fg',

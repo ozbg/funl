@@ -28,12 +28,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const updateHtmlAttribute = (newTheme: Theme) => {
-    document.documentElement.setAttribute('data-theme', newTheme)
+    if (typeof document !== 'undefined') {
+      // Remove both classes first
+      document.documentElement.classList.remove('light', 'dark')
+      // Add the appropriate class - Panda CSS uses .dark & and .light & selectors
+      document.documentElement.classList.add(newTheme)
+    }
   }
 
   const handleSetTheme = (newTheme: Theme) => {
     setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme)
+    }
     updateHtmlAttribute(newTheme)
   }
 
@@ -42,10 +49,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     handleSetTheme(newTheme)
   }
 
-  // Prevent hydration mismatch
+  // Prevent hydration mismatch - always render with dark theme initially
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: 'dark', setTheme: handleSetTheme, toggleTheme }}>
+      <ThemeContext.Provider value={{ theme: 'dark', setTheme: () => {}, toggleTheme: () => {} }}>
         {children}
       </ThemeContext.Provider>
     )

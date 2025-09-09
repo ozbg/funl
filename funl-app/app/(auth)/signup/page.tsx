@@ -84,20 +84,19 @@ export default function SignupPage() {
     py: 2,
     borderWidth: '1px',
     borderColor: 'border.default',
-    borderRadius: 'md',
     boxShadow: 'sm',
     bg: 'bg.default',
     color: 'fg.default',
     _focus: {
       outline: 'none',
-      ringWidth: '2px',
+      ringWidth: '2',
       ringColor: 'colorPalette.default',
       borderColor: 'colorPalette.default',
     },
   })
 
   return (
-    <Box bg="bg.default" py={8} px={4} boxShadow="md" borderRadius={{ sm: 'lg' }}>
+    <Box bg="bg.default" py={8} px={4} boxShadow="md">
       <Box mx={{ sm: 'auto' }} w={{ sm: 'full' }} maxW={{ sm: 'md' }}>
         <h2 className={css({ textAlign: 'center', fontSize: '3xl', fontWeight: 'extrabold', color: 'fg.default' })}>
           Create your FunL account
@@ -116,8 +115,8 @@ export default function SignupPage() {
       <form className={css({ mt: 8, colorPalette: 'mint' })} onSubmit={handleSignup}>
         <Stack gap={6}>
           {error && (
-            <Box borderRadius="none" bg="red.default" p={4}>
-              <p className={css({ fontSize: 'sm', color: 'red.fg' })}>{error}</p>
+            <Box colorPalette="red" bg="colorPalette.default" p={4}>
+              <p className={css({ colorPalette: 'red', fontSize: 'sm', color: 'colorPalette.fg' })}>{error}</p>
             </Box>
           )}
 
@@ -225,8 +224,7 @@ export default function SignupPage() {
               px: 4,
               borderWidth: '1px',
               borderColor: 'transparent',
-              borderRadius: 'none',
-              boxShadow: 'sm',
+                        boxShadow: 'sm',
               fontSize: 'sm',
               fontWeight: 'medium',
               color: 'colorPalette.fg',
@@ -237,12 +235,12 @@ export default function SignupPage() {
               },
               _focus: {
                 outline: 'none',
-                ringWidth: '2px',
-                ringOffset: '2px',
+                ringWidth: '2',
+                ringOffset: '2',
                 ringColor: 'colorPalette.default',
               },
               _disabled: {
-                opacity: 0.5,
+                opacity: 'disabled',
                 cursor: 'not-allowed',
               },
             })}
