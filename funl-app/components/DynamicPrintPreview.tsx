@@ -114,50 +114,32 @@ export default function DynamicPrintPreview({
 
   return (
     <Box className={className}>
-      <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-        Print Preview
-      </h3>
-      
-      {/* Simple Preview Button */}
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        width="400px"
-        height="300px"
-        mx="auto"
-        bg="gray.50"
-        borderWidth="1px"
-        borderColor="gray.300"
-        borderRadius="md"
-      >
+      {/* Preview Button */}
+      <Box display="flex" justifyContent="center">
         <button
           onClick={handlePreviewPDF}
           disabled={generatingPDF || !layoutTemplate}
           className={css({
-            px: 6,
-            py: 3,
-            bg: 'blue.500',
-            color: 'white',
-            borderRadius: 'md',
+            colorPalette: 'blue',
+            px: 3,
+            py: 2,
             fontSize: 'sm',
             fontWeight: 'medium',
+            color: 'colorPalette.fg',
+            bg: 'colorPalette.default',
+            borderRadius: 'md',
             cursor: 'pointer',
-            _hover: { bg: 'blue.600' },
-            _disabled: { 
-              bg: 'gray.300',
+            _hover: {
+              bg: 'colorPalette.emphasized',
+            },
+            _disabled: {
+              opacity: 'disabled',
               cursor: 'not-allowed',
-              color: 'gray.500'
-            }
+            },
           })}
         >
           {generatingPDF ? 'Generating Preview...' : 'Preview PDF'}
         </button>
-        
-        <p className={css({ fontSize: 'xs', color: 'gray.500', mt: 2, textAlign: 'center' })}>
-          Click to preview the actual PDF output
-        </p>
       </Box>
       
       {/* PDF Modal */}
@@ -216,21 +198,6 @@ export default function DynamicPrintPreview({
           </Box>
         </Box>
       )}
-      
-      {/* Print Info */}
-      <Box mt={3} textAlign="center">
-        <p className={css({ fontSize: 'xs', color: 'fg.muted' })}>
-          {pageSize.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </p>
-        <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
-          {dimensions.width} × {dimensions.height}mm
-        </p>
-        {layoutTemplate && (
-          <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
-            {layoutTemplate.name}
-          </p>
-        )}
-      </Box>
     </Box>
   )
 }

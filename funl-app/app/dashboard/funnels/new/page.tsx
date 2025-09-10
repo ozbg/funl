@@ -373,23 +373,22 @@ export default function NewFunnelPage() {
                 </select>
               </Box>
 
-              {/* Print Preview */}
+              {/* PDF Actions */}
               <Box mt={4}>
-                <DynamicPrintPreview 
-                  pageSize={watchedPrintType || 'A4-portrait'}
-                  data={{
-                    business_name: business?.name || 'Sample Business Name',
-                    funnel_name: watchedName || 'Sample Funnel',
-                    custom_message: watchedCustomMessage || 'Your custom message here',
-                    phone: business?.phone || '+61 400 123 456',
-                    email: business?.email || 'contact@business.com',
-                    website: business?.website || 'www.business.com',
-                    contact_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/preview`
-                  }}
-                />
-                
-                {/* Download PDF Button */}
-                <Flex justify="center" mt={3}>
+                <Flex justify="center" gap={3}>
+                  <DynamicPrintPreview 
+                    pageSize={watchedPrintType || 'A4-portrait'}
+                    data={{
+                      business_name: business?.name || 'Sample Business Name',
+                      funnel_name: watchedName || 'Sample Funnel',
+                      custom_message: watchedCustomMessage || 'Your custom message here',
+                      phone: business?.phone || '+61 400 123 456',
+                      email: business?.email || 'contact@business.com',
+                      website: business?.website || 'www.business.com',
+                      contact_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/preview`
+                    }}
+                  />
+                  
                   <button
                     type="button"
                     onClick={handleDownloadPDF}
