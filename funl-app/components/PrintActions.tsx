@@ -11,7 +11,7 @@ interface PrintActionsProps {
   funnelId: string
   funnelName: string
   shortUrl: string
-  printType: 'A4_portrait' | 'A5_portrait' | 'A5_landscape'
+  printType: 'A4_portrait' | 'A5_portrait' | 'A5_landscape' | 'business_card_landscape'
   businessData: {
     name: string
     phone?: string

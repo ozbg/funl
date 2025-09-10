@@ -7,21 +7,30 @@ import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
-import DynamicPrintPreview from '@/components/DynamicPrintPreview'
 import { createClient } from '@/lib/supabase/client'
 import { Business } from '@/lib/types'
-import { downloadLayoutPDF, generatePDFFilename } from '@/lib/pdf-utils'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [business, setBusiness] = useState<Business | null>(null)
-  const [downloadingPDF, setDownloadingPDF] = useState(false)
+  const [funnelCount, setFunnelCount] = useState<number>(0)
+  const [defaultNameSet, setDefaultNameSet] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateFunnelInput>({
+  // Generate default name with ID and date
+  const generateDefaultName = (count: number) => {
+    const now = new Date()
+    const day = now.getDate()
+    const month = now.toLocaleDateString('en-US', { month: 'short' })
+    const year = now.getFullYear()
+    return `${count + 1} - ${day} ${month} ${year}`
+  }
+
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<CreateFunnelInput>({
     defaultValues: {
+      name: '',
       type: 'contact',
       print_type: 'A4-portrait',
       content: {}
@@ -36,57 +45,40 @@ export default function NewFunnelPage() {
   const watchedPropertyUrl = watch('content.property_url')
   const watchedVideoUrl = watch('content.video_url')
   const watchedCustomMessage = watch('content.custom_message')
-  const watchedPrintType = watch('print_type')
   
   const selectedType = watchedType
 
-  // Fetch business data on component mount
+  // Fetch business data and funnel count on component mount
   useEffect(() => {
-    const fetchBusiness = async () => {
+    const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase
+        // Fetch business data
+        const { data: businessData } = await supabase
           .from('businesses')
           .select('*')
           .eq('id', user.id)
           .single()
-        if (data) setBusiness(data)
+        if (businessData) setBusiness(businessData)
+
+        // Fetch funnel count to generate default name
+        const { count } = await supabase
+          .from('funnels')
+          .select('*', { count: 'exact', head: true })
+          .eq('business_id', user.id)
+        
+        const funnelNumber = count || 0
+        setFunnelCount(funnelNumber)
+        
+        // Set default name only once
+        if (!defaultNameSet) {
+          setValue('name', generateDefaultName(funnelNumber))
+          setDefaultNameSet(true)
+        }
       }
     }
-    fetchBusiness()
-  }, [supabase])
-
-  const handleDownloadPDF = async () => {
-    setDownloadingPDF(true)
-    try {
-      const pdfData = {
-        business_name: business?.name,
-        funnel_name: watchedName,
-        custom_message: watchedCustomMessage,
-        phone: business?.phone,
-        email: business?.email,
-        website: business?.website,
-        contact_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/preview`
-      }
-
-      const filename = generatePDFFilename(
-        business?.name,
-        watchedName,
-        watchedPrintType || 'A4-portrait'
-      )
-
-      await downloadLayoutPDF(
-        watchedPrintType || 'A4-portrait',
-        pdfData,
-        filename
-      )
-    } catch (error) {
-      console.error('Failed to download PDF:', error)
-      setError('Failed to download PDF. Please try again.')
-    } finally {
-      setDownloadingPDF(false)
-    }
-  }
+    fetchData()
+  }, [supabase, setValue, defaultNameSet])
 
   const onSubmit = async (data: CreateFunnelInput) => {
     setLoading(true)
@@ -356,66 +348,6 @@ export default function NewFunnelPage() {
                   />
                 </Box>
               </Stack>
-
-              {/* Print Type */}
-              <Box>
-                <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                  Print Type
-                </label>
-                <select
-                  {...register('print_type')}
-                  className={inputStyles}
-                >
-                  <option value="A4-portrait">A4 Portrait</option>
-                  <option value="A4-landscape">A4 Landscape</option>
-                  <option value="A5-landscape">A5 Landscape</option>
-                  <option value="business-card-landscape">Business Card</option>
-                </select>
-              </Box>
-
-              {/* PDF Actions */}
-              <Box mt={4}>
-                <Flex justify="center" gap={3}>
-                  <DynamicPrintPreview 
-                    pageSize={watchedPrintType || 'A4-portrait'}
-                    data={{
-                      business_name: business?.name || 'Sample Business Name',
-                      funnel_name: watchedName || 'Sample Funnel',
-                      custom_message: watchedCustomMessage || 'Your custom message here',
-                      phone: business?.phone || '+61 400 123 456',
-                      email: business?.email || 'contact@business.com',
-                      website: business?.website || 'www.business.com',
-                      contact_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/preview`
-                    }}
-                  />
-                  
-                  <button
-                    type="button"
-                    onClick={handleDownloadPDF}
-                    disabled={downloadingPDF}
-                    className={css({
-                      colorPalette: 'blue',
-                      px: 3,
-                      py: 2,
-                      fontSize: 'sm',
-                      fontWeight: 'medium',
-                      color: 'colorPalette.fg',
-                      bg: 'colorPalette.default',
-                      borderRadius: 'md',
-                      cursor: 'pointer',
-                      _hover: {
-                        bg: 'colorPalette.emphasized',
-                      },
-                      _disabled: {
-                        opacity: 'disabled',
-                        cursor: 'not-allowed',
-                      },
-                    })}
-                  >
-                    {downloadingPDF ? 'Generating PDF...' : 'Download PDF'}
-                  </button>
-                </Flex>
-              </Box>
 
               {/* Actions */}
               <Flex justify="end" gap={3} pt={6} borderTop="1px solid" borderColor="border.default">

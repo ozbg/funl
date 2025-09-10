@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         type: validatedData.type,
         short_url: shortId, // Store just the short ID
         content: validatedData.content || {},
-        print_size: validatedData.print_size,
+        print_type: validatedData.print_type.replace('-', '_'), // Convert hyphen to underscore for DB
         qr_code_url: qrCodeDataUrl, // Store as data URL for now
         status: 'draft',
       })
