@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Stack } from '@/styled-system/jsx'
-import { generatePrintPDF, downloadPDF } from '@/lib/pdf-generator'
+import { downloadLayoutPDF } from '@/lib/pdf-utils'
 import { generateShortUrl } from '@/lib/qr'
 import { createClient } from '@/lib/supabase/client'
 
@@ -36,41 +36,26 @@ export default function PrintActions({
     setDownloading(true)
     
     try {
-      // Fetch the print layout
-      const { data: layout, error: layoutError } = await supabase
-        .from('print_layouts')
-        .select('*')
-        .eq('print_type', printType)
-        .eq('is_active', true)
-        .eq('is_default', true)
-        .single()
-
-      if (layoutError || !layout) {
-        console.error('Failed to fetch layout:', layoutError)
-        alert('Failed to fetch print layout')
-        return
-      }
+      // Convert old print_type format to new PageSize format
+      const pageSize = printType.replace('_', '-') as any // e.g., 'A4_portrait' -> 'A4-portrait'
 
       // Generate the full URL for QR code
       const fullUrl = generateShortUrl(shortUrl)
 
-      // Prepare print data
-      const printData = {
+      // Prepare layout data using new format
+      const layoutData = {
         business_name: businessData.name,
         custom_message: customMessage,
-        contact_phone: businessData.phone,
-        contact_email: businessData.email,
+        phone: businessData.phone,
+        email: businessData.email,
         website: businessData.website,
         funnel_name: funnelName,
-        qr_url: fullUrl
+        contact_url: fullUrl
       }
 
-      // Generate PDF
-      const pdfBlob = await generatePrintPDF(layout, printData)
-      
-      // Download PDF
+      // Generate and download PDF using the new system
       const filename = `${funnelName.replace(/[^a-zA-Z0-9]/g, '_')}_print.pdf`
-      downloadPDF(pdfBlob, filename)
+      await downloadLayoutPDF(pageSize, layoutData, filename)
       
     } catch (error) {
       console.error('Error generating PDF:', error)

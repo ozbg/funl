@@ -1,163 +1,257 @@
+// PDF Generator - High-quality vector PDF generation from rendered layouts
+
 import { jsPDF } from 'jspdf'
-import { generateQRCode } from './qr'
+import { RenderedLayout, RenderedElement, PageSize } from '@/lib/types/layout'
+import { generateQRCodeBuffer } from '@/lib/qr'
 
-interface LayoutElement {
-  id: string
-  type: 'qr_code' | 'text' | 'image'
-  field?: string
-  position: { x: number; y: number } // percentage based
-  size: { width: number; height: number } // percentage based
-  alignment?: 'left' | 'center' | 'right'
-  fontSize?: number
-  fontWeight?: string
-}
-
-interface PrintLayout {
-  id: string
-  name: string
-  print_type: 'A4_portrait' | 'A5_portrait' | 'A5_landscape'
-  layout_config: {
-    elements: LayoutElement[]
-  }
-}
-
-interface PrintData {
-  business_name?: string
-  custom_message?: string
-  contact_phone?: string
-  contact_email?: string
-  website?: string
-  funnel_name?: string
-  qr_url: string
-}
-
-// Paper dimensions in mm (without bleed)
-const PAPER_SIZES = {
-  A4_portrait: { width: 210, height: 297 },
-  A5_portrait: { width: 148, height: 210 },
-  A5_landscape: { width: 210, height: 148 }
-}
-
-// 5mm bleed on all sides
-const BLEED = 5
-
-export async function generatePrintPDF(
-  layout: PrintLayout,
-  data: PrintData
-): Promise<Blob> {
-  const paperSize = PAPER_SIZES[layout.print_type]
-  
-  // Create PDF with bleed area
-  const orientation = layout.print_type.includes('landscape') ? 'landscape' : 'portrait'
-  const pdf = new jsPDF({
-    orientation: orientation as 'portrait' | 'landscape',
-    unit: 'mm',
-    format: [
-      paperSize.width + (BLEED * 2),
-      paperSize.height + (BLEED * 2)
-    ]
-  })
-
-  // Set 150 DPI for print quality
-  const scale = 150 / 72 // Convert from default 72 DPI to 150 DPI
-
-  // White background with bleed
-  pdf.setFillColor(255, 255, 255)
-  pdf.rect(0, 0, paperSize.width + (BLEED * 2), paperSize.height + (BLEED * 2), 'F')
-
-  // Generate QR code
-  const qrCodeDataUrl = await generateQRCode(data.qr_url)
-
-  // Process each element in the layout
-  for (const element of layout.layout_config.elements) {
-    // Calculate actual position with bleed offset
-    const x = (element.position.x / 100) * paperSize.width + BLEED
-    const y = (element.position.y / 100) * paperSize.height + BLEED
-    const width = (element.size.width / 100) * paperSize.width
-    const height = (element.size.height / 100) * paperSize.height
-
-    switch (element.type) {
-      case 'qr_code':
-        // Add QR code image
-        const qrSize = Math.min(width, height)
-        let qrX = x
-        
-        if (element.alignment === 'center') {
-          qrX = x - (qrSize / 2)
-        } else if (element.alignment === 'right') {
-          qrX = x - qrSize
-        }
-        
-        pdf.addImage(qrCodeDataUrl, 'PNG', qrX, y, qrSize, qrSize)
-        break
-
-      case 'text':
-        const value = data[element.field as keyof PrintData] as string
-        if (!value) break
-
-        // Set font properties
-        const fontSize = (element.fontSize || 14) * 0.75 // Convert to PDF points
-        pdf.setFontSize(fontSize)
-        
-        if (element.fontWeight === 'bold') {
-          pdf.setFont('helvetica', 'bold')
-        } else {
-          pdf.setFont('helvetica', 'normal')
-        }
-
-        // Calculate text position based on alignment
-        let textX = x
-        let textAlign: 'left' | 'center' | 'right' = element.alignment || 'left'
-        
-        if (element.alignment === 'center') {
-          textX = x
-          textAlign = 'center'
-        } else if (element.alignment === 'right') {
-          textX = x + width
-          textAlign = 'right'
-        }
-
-        // Add text with word wrap
-        const lines = pdf.splitTextToSize(value, width)
-        pdf.text(lines, textX, y, {
-          align: textAlign,
-          baseline: 'top'
-        })
-        break
+export class PDFGenerator {
+  private static getJsPDFFormat(pageSize: PageSize): [number, number] {
+    // jsPDF expects dimensions in mm
+    switch (pageSize) {
+      case 'A4-portrait':
+        return [210, 297]
+      case 'A4-landscape':
+        return [297, 210]
+      case 'A5-landscape':
+        return [210, 148]
+      case 'business-card-landscape':
+        return [90, 55]
+      default:
+        return [210, 297]
     }
   }
 
-  // Add crop marks (optional - for professional printing)
-  pdf.setDrawColor(0, 0, 0)
-  pdf.setLineWidth(0.1)
-  
-  // Top-left corner
-  pdf.line(0, BLEED, BLEED - 2, BLEED) // horizontal
-  pdf.line(BLEED, 0, BLEED, BLEED - 2) // vertical
-  
-  // Top-right corner
-  pdf.line(paperSize.width + BLEED + 2, BLEED, paperSize.width + (BLEED * 2), BLEED)
-  pdf.line(paperSize.width + BLEED, 0, paperSize.width + BLEED, BLEED - 2)
-  
-  // Bottom-left corner
-  pdf.line(0, paperSize.height + BLEED, BLEED - 2, paperSize.height + BLEED)
-  pdf.line(BLEED, paperSize.height + BLEED + 2, BLEED, paperSize.height + (BLEED * 2))
-  
-  // Bottom-right corner
-  pdf.line(paperSize.width + BLEED + 2, paperSize.height + BLEED, paperSize.width + (BLEED * 2), paperSize.height + BLEED)
-  pdf.line(paperSize.width + BLEED, paperSize.height + BLEED + 2, paperSize.width + BLEED, paperSize.height + (BLEED * 2))
+  private static getOptimalFontSize(
+    text: string,
+    maxWidth: number,
+    maxHeight: number,
+    baseFontSize: number,
+    pdf: jsPDF
+  ): number {
+    let fontSize = baseFontSize
+    
+    // Start with base font size and scale down if needed
+    while (fontSize > 6) {
+      pdf.setFontSize(fontSize)
+      const textWidth = pdf.getTextWidth(text)
+      const textHeight = fontSize * 0.352778 // Convert pt to mm
+      
+      if (textWidth <= maxWidth && textHeight <= maxHeight) {
+        return fontSize
+      }
+      
+      fontSize -= 0.5
+    }
+    
+    return Math.max(fontSize, 6) // Minimum readable size
+  }
 
-  // Return as blob
-  return pdf.output('blob')
-}
+  private static wrapText(text: string, maxWidth: number, pdf: jsPDF): string[] {
+    const words = text.split(' ')
+    const lines: string[] = []
+    let currentLine = ''
 
-export function downloadPDF(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word
+      const testWidth = pdf.getTextWidth(testLine)
+      
+      if (testWidth <= maxWidth) {
+        currentLine = testLine
+      } else {
+        if (currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+        } else {
+          // Single word is too long, force break
+          lines.push(word)
+        }
+      }
+    }
+    
+    if (currentLine) {
+      lines.push(currentLine)
+    }
+    
+    return lines
+  }
+
+  private static async renderElement(
+    element: RenderedElement,
+    pdf: jsPDF
+  ): Promise<void> {
+    const { position, size, style, content, type } = element
+
+    switch (type) {
+      case 'text':
+        if (!content.trim()) return
+
+        // Set font properties
+        pdf.setFont('helvetica', style.fontWeight === 'bold' ? 'bold' : 'normal')
+        pdf.setTextColor(style.color)
+        
+        // Calculate optimal font size
+        const optimalFontSize = this.getOptimalFontSize(
+          content,
+          size.width,
+          size.height,
+          style.fontSize,
+          pdf
+        )
+        
+        pdf.setFontSize(optimalFontSize)
+        
+        // Wrap text if needed
+        const lines = this.wrapText(content, size.width, pdf)
+        const lineHeight = optimalFontSize * 0.352778 * 1.2 // Convert pt to mm with line spacing
+        
+        // Calculate starting Y position based on alignment
+        let startY = position.y
+        const totalTextHeight = lines.length * lineHeight
+        
+        if (lines.length > 1) {
+          // Vertical centering for multi-line text
+          startY = position.y + (size.height - totalTextHeight) / 2 + lineHeight
+        } else {
+          // Single line vertical centering
+          startY = position.y + (size.height / 2) + (optimalFontSize * 0.352778 / 2)
+        }
+
+        // Render each line
+        lines.forEach((line, index) => {
+          const lineY = startY + (index * lineHeight)
+          let lineX = position.x
+
+          // Horizontal alignment
+          if (style.alignment === 'center') {
+            lineX = position.x + (size.width - pdf.getTextWidth(line)) / 2
+          } else if (style.alignment === 'right') {
+            lineX = position.x + size.width - pdf.getTextWidth(line)
+          }
+
+          pdf.text(line, lineX, lineY)
+        })
+        break
+
+      case 'qrcode':
+        if (!content.trim()) return
+
+        try {
+          // Generate QR code as buffer
+          const qrBuffer = await generateQRCodeBuffer(content)
+          
+          // Convert buffer to base64 for jsPDF
+          const qrBase64 = qrBuffer.toString('base64')
+          
+          // Add QR code image to PDF
+          pdf.addImage(
+            `data:image/png;base64,${qrBase64}`,
+            'PNG',
+            position.x,
+            position.y,
+            size.width,
+            size.height
+          )
+        } catch (error) {
+          console.error('Failed to generate QR code for PDF:', error)
+          // Fallback: render as text
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(8)
+          pdf.setTextColor('#666666')
+          pdf.text('QR Code', position.x, position.y + size.height / 2)
+        }
+        break
+
+      case 'image':
+        // For now, render placeholder for images
+        // In future versions, this would load and embed actual images
+        pdf.setFillColor(240, 240, 240)
+        pdf.rect(position.x, position.y, size.width, size.height, 'F')
+        
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(10)
+        pdf.setTextColor('#666666')
+        
+        const imgText = 'Image'
+        const imgTextWidth = pdf.getTextWidth(imgText)
+        const imgTextX = position.x + (size.width - imgTextWidth) / 2
+        const imgTextY = position.y + size.height / 2
+        
+        pdf.text(imgText, imgTextX, imgTextY)
+        break
+
+      default:
+        console.warn(`Unknown element type: ${type}`)
+    }
+  }
+
+  static async generatePDF(layout: RenderedLayout): Promise<Uint8Array> {
+    const [width, height] = this.getJsPDFFormat(layout.pageSize)
+    
+    // Create new PDF document
+    const pdf = new jsPDF({
+      orientation: width > height ? 'landscape' : 'portrait',
+      unit: 'mm',
+      format: [width, height],
+      putOnlyUsedFonts: true,
+      compress: true
+    })
+
+    // Set high quality rendering
+    pdf.setProperties({
+      title: 'Generated Layout',
+      subject: 'Print Layout',
+      creator: 'FunL Dynamic Layout Generator'
+    })
+
+    // Optional: Add margin guides for debugging (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+      pdf.setDrawColor(200, 200, 200)
+      pdf.setLineWidth(0.1)
+      const margin = layout.margin
+      pdf.rect(margin, margin, width - 2 * margin, height - 2 * margin)
+    }
+
+    // Render all elements
+    for (const element of layout.elements) {
+      await this.renderElement(element, pdf)
+    }
+
+    // Return PDF as Uint8Array for download
+    return new Uint8Array(pdf.output('arraybuffer'))
+  }
+
+  static async generatePDFBlob(layout: RenderedLayout): Promise<Blob> {
+    const pdfData = await this.generatePDF(layout)
+    return new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' })
+  }
+
+  static async downloadPDF(layout: RenderedLayout, filename: string = 'layout.pdf'): Promise<void> {
+    try {
+      const pdfBlob = await this.generatePDFBlob(layout)
+      
+      // Create download link
+      const url = URL.createObjectURL(pdfBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      
+      // Trigger download
+      document.body.appendChild(link)
+      link.click()
+      
+      // Cleanup
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download PDF:', error)
+      throw new Error('Failed to generate PDF for download')
+    }
+  }
+
+  // Utility method for preview generation (returns data URL)
+  static async generatePDFDataURL(layout: RenderedLayout): Promise<string> {
+    const pdfData = await this.generatePDF(layout)
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(pdfData)))
+    return `data:application/pdf;base64,${base64}`
+  }
 }
