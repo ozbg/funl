@@ -309,8 +309,8 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
               </label>
               <input
                 type="range"
-                min="60"
-                max="300"
+                min="40"
+                max="400"
                 value={qrWidth}
                 onChange={(e) => setQrWidth(Number(e.target.value))}
                 className={css({
@@ -342,8 +342,8 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
               </label>
               <input
                 type="range"
-                min="60"
-                max="300"
+                min="40"
+                max="400"
                 value={qrHeight}
                 onChange={(e) => setQrHeight(Number(e.target.value))}
                 className={css({
