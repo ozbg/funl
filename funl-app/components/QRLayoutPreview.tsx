@@ -1,25 +1,80 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Stack, Flex } from '@/styled-system/jsx'
+import { createClient } from '@/lib/supabase/client'
 
 interface QRLayoutPreviewProps {
   qrCodeUrl: string
   funnelName: string
+  funnelId: string
+  initialStickerSettings?: {
+    wordTop?: string
+    wordBottom?: string
+    wordLeft?: string
+    wordRight?: string
+    textSize?: number
+    textDistance?: number
+    verticalDistance?: number
+    qrWidth?: number
+    qrHeight?: number
+  }
 }
 
-export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPreviewProps) {
-  const [wordTop, setWordTop] = useState('TOP TEXT')
-  const [wordBottom, setWordBottom] = useState('BOTTOM TEXT')
-  const [wordLeft, setWordLeft] = useState('LEFT')
-  const [wordRight, setWordRight] = useState('RIGHT')
-  const [textSize, setTextSize] = useState(18) // Font size in pixels
-  const [textDistance, setTextDistance] = useState(30) // Distance from edges for left/right in pixels
-  const [verticalDistance, setVerticalDistance] = useState(20) // Distance from edges for top/bottom in pixels
-  const [qrWidth, setQrWidth] = useState(120) // QR code width in pixels
-  const [qrHeight, setQrHeight] = useState(120) // QR code height in pixels
+export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initialStickerSettings }: QRLayoutPreviewProps) {
+  const [wordTop, setWordTop] = useState(initialStickerSettings?.wordTop ?? 'TOP TEXT')
+  const [wordBottom, setWordBottom] = useState(initialStickerSettings?.wordBottom ?? 'BOTTOM TEXT')
+  const [wordLeft, setWordLeft] = useState(initialStickerSettings?.wordLeft ?? 'LEFT')
+  const [wordRight, setWordRight] = useState(initialStickerSettings?.wordRight ?? 'RIGHT')
+  const [textSize, setTextSize] = useState(initialStickerSettings?.textSize ?? 18) // Font size in pixels
+  const [textDistance, setTextDistance] = useState(initialStickerSettings?.textDistance ?? 30) // Distance from edges for left/right in pixels
+  const [verticalDistance, setVerticalDistance] = useState(initialStickerSettings?.verticalDistance ?? 20) // Distance from edges for top/bottom in pixels
+  const [qrWidth, setQrWidth] = useState(initialStickerSettings?.qrWidth ?? 120) // QR code width in pixels
+  const [qrHeight, setQrHeight] = useState(initialStickerSettings?.qrHeight ?? 120) // QR code height in pixels
   const [downloading, setDownloading] = useState(false)
+  const supabase = createClient()
+
+  // Save sticker settings to database with debouncing
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      try {
+        const stickerSettings = {
+          wordTop,
+          wordBottom,
+          wordLeft,
+          wordRight,
+          textSize,
+          textDistance,
+          verticalDistance,
+          qrWidth,
+          qrHeight
+        }
+
+        // First get the current content to preserve it
+        const { data: currentFunnel } = await supabase
+          .from('funnels')
+          .select('content')
+          .eq('id', funnelId)
+          .single()
+
+        await supabase
+          .from('funnels')
+          .update({
+            content: {
+              ...currentFunnel?.content,
+              sticker_settings: stickerSettings
+            }
+          })
+          .eq('id', funnelId)
+
+      } catch (error) {
+        console.error('Error saving sticker settings:', error)
+      }
+    }, 500) // Debounce for 500ms
+
+    return () => clearTimeout(timeoutId)
+  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, funnelId, supabase])
 
 
   const handleDownloadSVG = async () => {
@@ -76,7 +131,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
   return (
     <Box bg="bg.default" boxShadow="sm" p={6}>
       <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>
-        QR Layout Preview
+        Create Sticker
       </h2>
       
       <Flex gap={6}>
@@ -372,13 +427,13 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
         
         {/* QR Layout Preview */}
         <Box flex="1">
-          <h3 className={css({ fontSize: 'md', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-            Preview (A5 Size)
-          </h3>
           
           {/* SVG Preview */}
           <Box mx="auto" maxW="296px">
-              <Box
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', textAlign: 'center', mb: 2 })}>
+              Preview
+            </p>
+            <Box
                 bg="white"
                 borderWidth="2px"
                 borderColor="border.default"
