@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Stack, Flex } from '@/styled-system/jsx'
 import Image from 'next/image'
+import html2canvas from 'html2canvas'
 
 interface QRLayoutPreviewProps {
   qrCodeUrl: string
@@ -20,6 +21,88 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
   const [verticalDistance, setVerticalDistance] = useState(20) // Distance from edges for top/bottom in pixels
   const [qrWidth, setQrWidth] = useState(120) // QR code width in pixels
   const [qrHeight, setQrHeight] = useState(120) // QR code height in pixels
+  const [downloading, setDownloading] = useState(false)
+  const previewRef = useRef<HTMLDivElement>(null)
+
+  const handleDownloadPNG = async () => {
+    if (!previewRef.current) return
+    
+    setDownloading(true)
+    try {
+      // Capture the preview div as PNG
+      const canvas = await html2canvas(previewRef.current, {
+        backgroundColor: 'white',
+        scale: 3, // High resolution
+        useCORS: true,
+        allowTaint: true
+      })
+      
+      // Create download link
+      const link = document.createElement('a')
+      link.download = `${funnelName}_sticker.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+      
+    } catch (error) {
+      console.error('Failed to generate PNG:', error)
+      alert('Failed to generate PNG')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const handleDownloadSVG = async () => {
+    if (!previewRef.current) return
+    
+    setDownloading(true)
+    try {
+      // Create SVG representation of the current layout
+      const svgContent = `
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="296" height="420" viewBox="0 0 296 420">
+          <rect width="296" height="420" fill="white" stroke="#ccc" stroke-width="2"/>
+          
+          <!-- Top Text -->
+          <text x="148" y="${verticalDistance + 15}" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;">${wordTop}</text>
+          
+          <!-- Bottom Text -->
+          <text x="148" y="${420 - verticalDistance}" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;">${wordBottom}</text>
+          
+          <!-- Left Text (Rotated) -->
+          <text x="${textDistance}" y="210" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;" 
+                transform="rotate(-90 ${textDistance} 210)">${wordLeft}</text>
+          
+          <!-- Right Text (Rotated) -->
+          <text x="${296 - textDistance}" y="210" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;" 
+                transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
+          
+          <!-- QR Code Image -->
+          ${qrCodeUrl ? `<image x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" xlink:href="${qrCodeUrl}" style="border: 2px solid #ccc;"/>` : `<rect x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" fill="#f0f0f0" stroke="#000" stroke-width="2"/><text x="148" y="210" text-anchor="middle" font-family="Arial" font-size="12" fill="#666">QR CODE</text>`}
+        </svg>
+      `
+      
+      // Create download link
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' })
+      const link = document.createElement('a')
+      link.download = `${funnelName}_sticker.svg`
+      link.href = URL.createObjectURL(blob)
+      link.click()
+      URL.revokeObjectURL(link.href)
+      
+    } catch (error) {
+      console.error('Failed to generate SVG:', error)
+      alert('Failed to generate SVG')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   return (
     <Box bg="bg.default" boxShadow="sm" p={6}>
@@ -326,6 +409,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
           
           {/* A5 Paper Preview Container */}
           <Box
+            ref={previewRef}
             position="relative"
             bg="white"
             borderWidth="2px"
@@ -457,6 +541,59 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
               </Box>
             </Box>
           </Box>
+          
+          {/* Download Buttons */}
+          <Flex gap={3} mt={4} justifyContent="center">
+            <button
+              onClick={handleDownloadPNG}
+              disabled={downloading}
+              className={css({
+                colorPalette: 'mint',
+                px: 4,
+                py: 2,
+                fontSize: 'sm',
+                fontWeight: 'bold',
+                color: 'colorPalette.fg',
+                bg: 'colorPalette.default',
+                borderRadius: 'md',
+                cursor: 'pointer',
+                _hover: {
+                  bg: 'colorPalette.emphasized',
+                },
+                _disabled: {
+                  opacity: 'disabled',
+                  cursor: 'not-allowed',
+                },
+              })}
+            >
+              {downloading ? 'Generating...' : '🖼️ Download PNG'}
+            </button>
+            
+            <button
+              onClick={handleDownloadSVG}
+              disabled={downloading}
+              className={css({
+                colorPalette: 'blue',
+                px: 4,
+                py: 2,
+                fontSize: 'sm',
+                fontWeight: 'bold',
+                color: 'colorPalette.fg',
+                bg: 'colorPalette.default',
+                borderRadius: 'md',
+                cursor: 'pointer',
+                _hover: {
+                  bg: 'colorPalette.emphasized',
+                },
+                _disabled: {
+                  opacity: 'disabled',
+                  cursor: 'not-allowed',
+                },
+              })}
+            >
+              {downloading ? 'Generating...' : '📐 Download SVG'}
+            </button>
+          </Flex>
         </Box>
       </Flex>
     </Box>
