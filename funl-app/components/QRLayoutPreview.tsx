@@ -407,25 +407,29 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
             Preview (A5 Size)
           </h3>
           
-          {/* A5 Paper Preview Container */}
-          <Box
-            ref={previewRef}
-            position="relative"
-            bg="white"
-            borderWidth="2px"
-            borderColor="border.default"
-            borderStyle="solid"
-            width="296px"  // A5 width scaled down (148mm -> ~296px at 2px/mm)
-            height="420px" // A5 height scaled down (210mm -> ~420px at 2px/mm)
-            mx="auto"
-            overflow="visible" // Changed from hidden to visible
-          >
-            {/* Layout Container */}
-            <Box
-              position="absolute"
-              inset="0"
-              p={4}
-            >
+          <Flex gap={4} justifyContent="center">
+            {/* HTML Preview */}
+            <Box>
+              <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2, textAlign: 'center' })}>
+                HTML Preview
+              </h4>
+              <Box
+                ref={previewRef}
+                position="relative"
+                bg="white"
+                borderWidth="2px"
+                borderColor="border.default"
+                borderStyle="solid"
+                width="296px"  // A5 width scaled down (148mm -> ~296px at 2px/mm)
+                height="420px" // A5 height scaled down (210mm -> ~420px at 2px/mm)
+                overflow="visible" // Changed from hidden to visible
+              >
+                {/* Layout Container */}
+                <Box
+                  position="absolute"
+                  inset="0"
+                  p={4}
+                >
               {/* Top Text */}
               <Box
                 position="absolute"
@@ -539,8 +543,129 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
               >
                 {wordBottom}
               </Box>
+                </Box>
+              </Box>
             </Box>
-          </Box>
+            
+            {/* SVG Preview */}
+            <Box>
+              <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2, textAlign: 'center' })}>
+                SVG Preview
+              </h4>
+              <Box
+                bg="white"
+                borderWidth="2px"
+                borderColor="border.default"
+                borderStyle="solid"
+                width="296px"
+                height="420px"
+                overflow="visible"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                  width="296"
+                  height="420"
+                  viewBox="0 0 296 420"
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  <rect width="296" height="420" fill="white" stroke="#ccc" strokeWidth="2"/>
+                  
+                  {/* Top Text */}
+                  <text 
+                    x="148" 
+                    y={verticalDistance + textSize} 
+                    textAnchor="middle" 
+                    fontFamily="Arial" 
+                    fontWeight="bold" 
+                    fontSize={textSize} 
+                    fill="black" 
+                    style={{ textTransform: 'uppercase' }}
+                  >
+                    {wordTop}
+                  </text>
+                  
+                  {/* Bottom Text */}
+                  <text 
+                    x="148" 
+                    y={420 - verticalDistance} 
+                    textAnchor="middle" 
+                    fontFamily="Arial" 
+                    fontWeight="bold" 
+                    fontSize={textSize} 
+                    fill="black" 
+                    style={{ textTransform: 'uppercase' }}
+                  >
+                    {wordBottom}
+                  </text>
+                  
+                  {/* Left Text (Rotated) */}
+                  <text 
+                    x={textDistance} 
+                    y="210" 
+                    textAnchor="middle" 
+                    fontFamily="Arial" 
+                    fontWeight="bold" 
+                    fontSize={textSize} 
+                    fill="black" 
+                    style={{ textTransform: 'uppercase' }}
+                    transform={`rotate(-90 ${textDistance} 210)`}
+                  >
+                    {wordLeft}
+                  </text>
+                  
+                  {/* Right Text (Rotated) */}
+                  <text 
+                    x={296 - textDistance} 
+                    y="210" 
+                    textAnchor="middle" 
+                    fontFamily="Arial" 
+                    fontWeight="bold" 
+                    fontSize={textSize} 
+                    fill="black" 
+                    style={{ textTransform: 'uppercase' }}
+                    transform={`rotate(90 ${296 - textDistance} 210)`}
+                  >
+                    {wordRight}
+                  </text>
+                  
+                  {/* QR Code */}
+                  {qrCodeUrl ? (
+                    <image 
+                      x={148 - qrWidth/2} 
+                      y={210 - qrHeight/2} 
+                      width={qrWidth} 
+                      height={qrHeight} 
+                      xlinkHref={qrCodeUrl}
+                      style={{ border: '2px solid #ccc' }}
+                    />
+                  ) : (
+                    <>
+                      <rect 
+                        x={148 - qrWidth/2} 
+                        y={210 - qrHeight/2} 
+                        width={qrWidth} 
+                        height={qrHeight} 
+                        fill="#f0f0f0" 
+                        stroke="#000" 
+                        strokeWidth="2"
+                      />
+                      <text 
+                        x="148" 
+                        y="210" 
+                        textAnchor="middle" 
+                        fontFamily="Arial" 
+                        fontSize="12" 
+                        fill="#666"
+                      >
+                        QR CODE
+                      </text>
+                    </>
+                  )}
+                </svg>
+              </Box>
+            </Box>
+          </Flex>
           
           {/* Download Buttons */}
           <Flex gap={3} mt={4} justifyContent="center">
