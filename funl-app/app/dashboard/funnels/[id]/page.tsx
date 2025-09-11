@@ -53,31 +53,23 @@ export default async function FunnelDetailPage({ params }: PageProps) {
             </p>
           </Box>
           <Flex align="center" gap={3}>
-            <span className={css({
-              px: 2,
-              py: 1,
-              fontSize: 'xs',
-              fontWeight: 'semibold',
-              borderRadius: 'full',
-              colorPalette: funnel.status === 'active' ? 'mint' : 'gray',
-              bg: 'colorPalette.subtle',
-              color: 'colorPalette.text'
-            })}>
-              {funnel.status}
-            </span>
             <Link
-              href={`/dashboard/funnels/${funnel.id}/edit`}
-              className={css({ 
-                colorPalette: 'mint',
-                px: 3, 
-                py: 1, 
-                fontSize: 'sm', 
-                fontWeight: 'medium', 
-                color: 'colorPalette.default', 
-                _hover: { color: 'colorPalette.emphasized' } 
+              href="/dashboard"
+              className={css({
+                px: 4,
+                py: 2,
+                fontSize: 'sm',
+                fontWeight: 'medium',
+                color: 'fg.default',
+                bg: 'bg.default',
+                borderWidth: '1px',
+                borderColor: 'border.default',
+                _hover: {
+                  bg: 'bg.muted',
+                },
               })}
             >
-              Edit
+              ← Back to Dashboard
             </Link>
           </Flex>
         </Flex>
@@ -92,32 +84,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
       />
 
 
-      {/* Actions */}
-      <Flex mt={8} justify="space-between">
-        <Link
-          href="/dashboard"
-          className={css({
-            px: 4,
-            py: 2,
-            fontSize: 'sm',
-            fontWeight: 'medium',
-            color: 'fg.default',
-            bg: 'bg.default',
-            borderWidth: '1px',
-            borderColor: 'border.default',
-            _hover: {
-              bg: 'bg.muted',
-            },
-          })}
-        >
-          ← Back to Dashboard
-        </Link>
-        
-        <FunnelActions 
-          funnelId={funnel.id}
-          currentStatus={funnel.status}
-        />
-      </Flex>
     </Box>
   )
 }

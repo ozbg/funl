@@ -60,66 +60,80 @@ export default async function DashboardPage() {
           <Box bg="bg.default" boxShadow="sm" overflow="hidden" >
             <Stack divideY="1px" divideColor="border.default">
               {funnels.map((funnel) => (
-                <Box key={funnel.id}>
-                  <Link
-                    href={`/dashboard/funnels/${funnel.id}`}
-                    className={css({
-                      display: 'block',
-                      px: { base: 4, sm: 6 },
-                      py: 4,
-                      _hover: {
-                        bg: 'bg.muted',
-                      },
-                    })}
-                  >
-                    <Flex justify="space-between" align="center">
-                      <Flex align="center" gap={4}>
-                        <Box flexShrink={0}>
-                          <Flex
-                            h={10}
-                            w={10}
-                            borderRadius="full"
-                            colorPalette="mint"
-                            bg="colorPalette.default"
-                            align="center"
-                            justify="center"
-                          >
-                            <span className={css({ colorPalette: 'mint', color: 'colorPalette.fg', fontWeight: 'medium', fontSize: 'sm' })}>
-                              {funnel.name.charAt(0).toUpperCase()}
-                            </span>
-                          </Flex>
-                        </Box>
-                        <Box>
-                          <Box fontSize="sm" fontWeight="medium" color="fg.default">
-                            {funnel.name}
-                          </Box>
-                          <Box fontSize="sm" color="fg.muted">
-                            Type: {funnel.type} • Status: {funnel.status}
-                          </Box>
-                          <Box fontSize="xs" color="fg.muted" mt={1}>
-                            Created {new Date(funnel.created_at).toLocaleDateString()}
-                          </Box>
-                        </Box>
-                      </Flex>
-                      <Flex align="center">
-                        <span
+                <Box key={funnel.id} px={{ base: 4, sm: 6 }} py={4}>
+                  <Flex justify="space-between" align="center">
+                    <Flex align="center" gap={4}>
+                      <Box flexShrink={0}>
+                        <Flex
+                          h={10}
+                          w={10}
+                          borderRadius="full"
+                          colorPalette="mint"
+                          bg="colorPalette.default"
+                          align="center"
+                          justify="center"
+                        >
+                          <span className={css({ colorPalette: 'mint', color: 'colorPalette.fg', fontWeight: 'medium', fontSize: 'sm' })}>
+                            {funnel.name.charAt(0).toUpperCase()}
+                          </span>
+                        </Flex>
+                      </Box>
+                      <Box>
+                        <Link
+                          href={`/dashboard/funnels/${funnel.id}`}
                           className={css({
-                            px: 2,
-                            display: 'inline-flex',
-                            fontSize: 'xs',
-                            lineHeight: '1.25rem',
-                            fontWeight: 'semibold',
-                            borderRadius: 'full',
-                            colorPalette: funnel.status === 'active' ? 'mint' : 'gray',
-                            bg: 'colorPalette.subtle',
-                            color: 'colorPalette.text',
+                            fontSize: 'sm',
+                            fontWeight: 'medium',
+                            color: 'fg.default',
+                            textDecoration: 'none',
+                            _hover: {
+                              textDecoration: 'underline'
+                            }
                           })}
                         >
-                          {funnel.status}
-                        </span>
-                      </Flex>
+                          {funnel.name}
+                        </Link>
+                        <Box fontSize="sm" color="fg.muted">
+                          Type: {funnel.type} • Status: {funnel.status}
+                        </Box>
+                        <Box fontSize="xs" color="fg.muted" mt={1}>
+                          Created {new Date(funnel.created_at).toLocaleDateString()}
+                        </Box>
+                      </Box>
                     </Flex>
-                  </Link>
+                    <Flex gap={2}>
+                      <Link
+                        href={`/dashboard/funnels/new?edit=${funnel.id}`}
+                        className={css({
+                          colorPalette: 'mint',
+                          px: 3,
+                          py: 1,
+                          fontSize: 'sm',
+                          fontWeight: 'medium',
+                          color: 'colorPalette.default',
+                          textDecoration: 'none',
+                          _hover: { color: 'colorPalette.emphasized' }
+                        })}
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/dashboard/funnels/${funnel.id}`}
+                        className={css({
+                          colorPalette: 'mint',
+                          px: 3,
+                          py: 1,
+                          fontSize: 'sm',
+                          fontWeight: 'medium',
+                          color: 'colorPalette.default',
+                          textDecoration: 'none',
+                          _hover: { color: 'colorPalette.emphasized' }
+                        })}
+                      >
+                        Sticker
+                      </Link>
+                    </Flex>
+                  </Flex>
                 </Box>
               ))}
             </Stack>
