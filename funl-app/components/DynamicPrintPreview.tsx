@@ -5,15 +5,16 @@ import { css } from '@/styled-system/css'
 import { Box } from '@/styled-system/jsx'
 import { createClient } from '@/lib/supabase/client'
 import { LayoutTemplate, LayoutData, PageSize, PAGE_DIMENSIONS } from '@/lib/types/layout'
+import PrintLayoutPreview from './PrintLayoutPreview'
 
 interface DynamicPrintPreviewProps {
-  pageSize: PageSize
+  layoutId: string
   data: LayoutData
   className?: string
 }
 
 export default function DynamicPrintPreview({
-  pageSize,
+  layoutId,
   data,
   className
 }: DynamicPrintPreviewProps) {
@@ -31,23 +32,26 @@ export default function DynamicPrintPreview({
       try {
         setLoading(true)
         setError(null)
-
+        
+        console.log('🔍 Fetching layout for ID:', layoutId)
+        
         const { data: template, error } = await supabase
-          .from('layout_templates')
+          .from('print_layouts')
           .select('*')
-          .eq('page_size', pageSize)
+          .eq('id', layoutId)
           .eq('is_active', true)
-          .eq('is_default', true)
           .single()
+
+        console.log('📄 Layout query result:', { template, error })
 
         if (error) {
           console.error('Database error:', error)
-          setError(`No layout template found for ${pageSize}. Please create one in the database.`)
+          setError(`Layout not found. Database error: ${error.message}`)
           return
         }
 
         if (!template) {
-          setError(`No layout template found for ${pageSize}. Please create one in the database.`)
+          setError(`Layout not found. Please check the layout ID.`)
           return
         }
 
@@ -55,32 +59,34 @@ export default function DynamicPrintPreview({
         
       } catch (err) {
         console.error('Error fetching layout:', err)
-        setError(`Failed to load layout for ${pageSize}. Please ensure database is properly configured.`)
+        setError(`Failed to load layout. Please ensure database is properly configured.`)
       } finally {
         setLoading(false)
       }
     }
 
     fetchLayoutTemplate()
-  }, [pageSize, supabase])
+  }, [layoutId, supabase])
 
   const handlePreviewPDF = async () => {
     setGeneratingPDF(true)
     try {
-      const response = await fetch('/api/generate-pdf', {
+      const response = await fetch('/api/generate-pdf-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pageSize,
+          layoutId,
           data,
           returnDataURL: true  // Request PDF as data URL for preview
         })
       })
 
       if (!response.ok) {
-        throw new Error('Failed to generate PDF')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('PDF Generation Error:', errorData)
+        throw new Error(errorData.error || 'Failed to generate PDF')
       }
 
       const result = await response.json()
@@ -110,10 +116,30 @@ export default function DynamicPrintPreview({
     )
   }
 
-  const dimensions = PAGE_DIMENSIONS[pageSize]
+  if (!layoutTemplate) {
+    return (
+      <Box className={className} textAlign="center" py={4}>
+        <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>No layout template loaded</p>
+      </Box>
+    )
+  }
 
   return (
     <Box className={className}>
+      {/* Live Layout Preview */}
+      <Box display="flex" justifyContent="center" mb={4}>
+        <PrintLayoutPreview
+          printType={layoutTemplate.print_type as 'A4_portrait' | 'A5_portrait' | 'A5_landscape'}
+          funnelName={data.funnel_name}
+          businessName={data.business_name}
+          customMessage={data.custom_message}
+          contactPhone={data.phone}
+          contactEmail={data.email}
+          website={data.website}
+          scale={0.3}
+        />
+      </Box>
+
       {/* Preview Button */}
       <Box display="flex" justifyContent="center">
         <button
@@ -138,7 +164,7 @@ export default function DynamicPrintPreview({
             },
           })}
         >
-          {generatingPDF ? 'Generating Preview...' : 'Preview PDF'}
+          {generatingPDF ? 'Generating PDF...' : 'Generate PDF'}
         </button>
       </Box>
       

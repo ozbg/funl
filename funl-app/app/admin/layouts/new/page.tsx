@@ -7,26 +7,16 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { createClient } from '@/lib/supabase/client'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid } from '@/styled-system/jsx'
-import Canvas from '@/components/LayoutEditor/Canvas'
-import ElementPalette from '@/components/LayoutEditor/ElementPalette'
-import PropertiesPanel from '@/components/LayoutEditor/PropertiesPanel'
+import SimpleKonvaEditor from '@/components/LayoutEditor/SimpleKonvaEditor'
+import EnhancedPropertiesPanel from '@/components/LayoutEditor/EnhancedPropertiesPanel'
 import { nanoid } from 'nanoid'
-
-interface LayoutElement {
-  id: string
-  type: 'qr_code' | 'text' | 'image'
-  field?: string
-  position: { x: number; y: number }
-  size: { width: number; height: number }
-  alignment?: 'left' | 'center' | 'right'
-  fontSize?: number
-  fontWeight?: string
-}
+import { EnhancedLayoutElement } from '@/lib/types/layout-enhanced'
+import { exportToDatabase, validateForExport } from '@/lib/layout-converter'
 
 export default function NewLayoutPage() {
   const [layoutName, setLayoutName] = useState('')
   const [printType, setPrintType] = useState<'A4_portrait' | 'A5_portrait' | 'A5_landscape'>('A4_portrait')
-  const [elements, setElements] = useState<LayoutElement[]>([])
+  const [elements, setElements] = useState<EnhancedLayoutElement[]>([])
   const [selectedElementId, setSelectedElementId] = useState<string>()
   const [saving, setSaving] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -49,8 +39,8 @@ export default function NewLayoutPage() {
     setIsAdmin(true)
   }
 
-  const handleElementAdd = (elementData: Omit<LayoutElement, 'id'>) => {
-    const newElement: LayoutElement = {
+  const handleElementAdd = (elementData: Omit<EnhancedLayoutElement, 'id'>) => {
+    const newElement: EnhancedLayoutElement = {
       ...elementData,
       id: nanoid()
     }
@@ -66,7 +56,7 @@ export default function NewLayoutPage() {
     )
   }
 
-  const handleElementUpdate = (id: string, updates: Partial<LayoutElement>) => {
+  const handleElementUpdate = (id: string, updates: Partial<EnhancedLayoutElement>) => {
     setElements(prev => 
       prev.map(el => 
         el.id === id ? { ...el, ...updates } : el
@@ -96,9 +86,27 @@ export default function NewLayoutPage() {
       return
     }
 
+    // Validate elements for export
+    const validation = validateForExport(elements)
+    if (!validation.isValid) {
+      alert(`Cannot save layout: ${validation.errors.join(', ')}`)
+      return
+    }
+
+    // Show warnings if any
+    if (validation.warnings.length > 0) {
+      const proceed = confirm(
+        `The following features will be simplified when saving:\n\n${validation.warnings.join('\n')}\n\nContinue?`
+      )
+      if (!proceed) return
+    }
+
     setSaving(true)
     
     try {
+      // Convert enhanced format back to database format
+      const databaseConfig = exportToDatabase(elements)
+      
       const { error } = await supabase
         .from('print_layouts')
         .insert({
@@ -106,7 +114,7 @@ export default function NewLayoutPage() {
           print_type: printType,
           is_active: true,
           is_default: false,
-          layout_config: { elements }
+          layout_config: databaseConfig
         })
 
       if (error) {
@@ -245,35 +253,26 @@ export default function NewLayoutPage() {
           </Grid>
         </Box>
 
-        {/* Editor Interface */}
-        <Grid columns={{ base: 1, lg: '300px 1fr 280px' }} gap={6}>
-          {/* Element Palette */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={4} h="fit">
-            <ElementPalette />
-          </Box>
-
-          {/* Canvas */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={6}>
-            <Canvas
-              printType={printType}
-              elements={elements}
-              selectedElement={selectedElementId}
-              onElementAdd={handleElementAdd}
-              onElementMove={handleElementMove}
-              onElementSelect={setSelectedElementId}
-              scale={0.5}
-            />
-          </Box>
-
-          {/* Properties Panel */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={4} h="fit">
-            <PropertiesPanel
-              selectedElement={selectedElement || null}
+        {/* Simple Konva Layout Editor */}
+        <Box height="calc(100vh - 200px)" borderWidth="1px" borderColor="border.default">
+          <SimpleKonvaEditor
+            printType={printType}
+            elements={elements}
+            onElementsChange={setElements}
+            onSelectionChange={(ids) => setSelectedElementId(ids[0] || undefined)}
+          />
+        </Box>
+        
+        {/* Properties Panel (if element selected) */}
+        {selectedElement && (
+          <Box mt={4} bg="bg.default" borderWidth="1px" borderColor="border.default" p={4}>
+            <EnhancedPropertiesPanel
+              selectedElement={selectedElement}
               onElementUpdate={handleElementUpdate}
               onElementDelete={handleElementDelete}
             />
           </Box>
-        </Grid>
+        )}
 
         {/* Help Text */}
         <Box mt={6} p={4} bg="bg.subtle" borderWidth="1px" borderColor="border.default">

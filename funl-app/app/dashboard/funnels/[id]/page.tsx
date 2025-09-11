@@ -4,9 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { generateShortUrl } from '@/lib/qr'
 import FunnelActions from '@/components/FunnelActions'
-import PrintActions from '@/components/PrintActions'
-import DynamicPrintPreview from '@/components/DynamicPrintPreview'
-import PrintTypeSelector from '@/components/PrintTypeSelector'
+import FunnelPrintSection from '@/components/FunnelPrintSection'
+import QRLayoutPreview from '@/components/QRLayoutPreview'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack } from '@/styled-system/jsx'
 
@@ -83,6 +82,12 @@ export default async function FunnelDetailPage({ params }: PageProps) {
           </Flex>
         </Flex>
       </Box>
+
+      {/* QR Layout Preview Section */}
+      <QRLayoutPreview 
+        qrCodeUrl={funnel.qr_code_url || ''}
+        funnelName={funnel.name}
+      />
 
       <Box display="grid" gridTemplateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap={8}>
         {/* QR Code Section */}
@@ -169,45 +174,19 @@ export default async function FunnelDetailPage({ params }: PageProps) {
 
               {/* Print Actions */}
               <Box mt={6} pt={6} borderTopWidth="1px" borderColor="border.default">
-                <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>Print Options</h3>
-                
-                {/* Print Type Selector */}
-                <PrintTypeSelector 
+                <FunnelPrintSection
                   funnelId={funnel.id}
-                  initialPrintType={funnel.print_type || 'A4_portrait'}
+                  funnelName={funnel.name}
+                  shortUrl={funnel.short_url}
+                  initialLayoutId={funnel.print_layout_id || ''}
+                  businessData={{
+                    name: business?.name || 'Sample Business',
+                    phone: business?.phone,
+                    email: business?.email,
+                    website: business?.website
+                  }}
+                  customMessage={funnel.content?.custom_message}
                 />
-                
-                {/* PDF Preview and Download Actions */}
-                <Box mt={4}>
-                  <Stack gap={3}>
-                    <DynamicPrintPreview 
-                      pageSize={(funnel.print_type || 'A4_portrait').replace(/_/g, '-') as any}
-                      data={{
-                        business_name: business?.name || 'Sample Business Name',
-                        funnel_name: funnel.name || 'Sample Funnel',
-                        custom_message: funnel.content?.custom_message || 'Your custom message here',
-                        phone: business?.phone || '+61 400 123 456',
-                        email: business?.email || 'contact@business.com',
-                        website: business?.website || 'www.business.com',
-                        contact_url: generateShortUrl(funnel.short_url)
-                      }}
-                    />
-                    
-                    <PrintActions
-                      funnelId={funnel.id}
-                      funnelName={funnel.name}
-                      shortUrl={funnel.short_url}
-                      printType={(funnel.print_type || 'A4_portrait') as any}
-                      businessData={{
-                        name: business?.name || '',
-                        phone: business?.phone,
-                        email: business?.email,
-                        website: business?.website
-                      }}
-                      customMessage={funnel.content?.custom_message}
-                    />
-                  </Stack>
-                </Box>
               </Box>
             </Box>
           )}

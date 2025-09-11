@@ -7,32 +7,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { createClient } from '@/lib/supabase/client'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid } from '@/styled-system/jsx'
-import Canvas from '@/components/LayoutEditor/Canvas'
-import ElementPalette from '@/components/LayoutEditor/ElementPalette'
-import PropertiesPanel from '@/components/LayoutEditor/PropertiesPanel'
+import SimpleKonvaEditor from '@/components/LayoutEditor/SimpleKonvaEditor'
+import EnhancedPropertiesPanel from '@/components/LayoutEditor/EnhancedPropertiesPanel'
 import { nanoid } from 'nanoid'
 
-interface LayoutElement {
-  id: string
-  type: 'qr_code' | 'text' | 'image'
-  field?: string
-  position: { x: number; y: number }
-  size: { width: number; height: number }
-  alignment?: 'left' | 'center' | 'right'
-  fontSize?: number
-  fontWeight?: string
-}
+import { EnhancedLayoutElement, EnhancedPrintLayout } from '@/lib/types/layout-enhanced'
+import { importFromDatabase, exportToDatabase, validateForExport } from '@/lib/layout-converter'
 
-interface PrintLayout {
-  id: string
-  name: string
-  print_type: 'A4_portrait' | 'A5_portrait' | 'A5_landscape'
-  is_active: boolean
-  is_default: boolean
-  layout_config: {
-    elements: LayoutElement[]
-  }
-}
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -40,10 +21,10 @@ interface PageProps {
 
 export default function EditLayoutPage({ params }: PageProps) {
   const [layoutId, setLayoutId] = useState<string>('')
-  const [layout, setLayout] = useState<PrintLayout | null>(null)
+  const [layout, setLayout] = useState<EnhancedPrintLayout | null>(null)
   const [layoutName, setLayoutName] = useState('')
   const [printType, setPrintType] = useState<'A4_portrait' | 'A5_portrait' | 'A5_landscape'>('A4_portrait')
-  const [elements, setElements] = useState<LayoutElement[]>([])
+  const [elements, setElements] = useState<EnhancedLayoutElement[]>([])
   const [selectedElementId, setSelectedElementId] = useState<string>()
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -86,28 +67,15 @@ export default function EditLayoutPage({ params }: PageProps) {
     setLayout(data)
     setLayoutName(data.name)
     setPrintType(data.print_type)
-    setElements(data.layout_config.elements || [])
+    
+    // Convert from database format to enhanced format
+    const enhancedElements = importFromDatabase(data.layout_config)
+    setElements(enhancedElements)
     setLoading(false)
   }
 
-  const handleElementAdd = (elementData: Omit<LayoutElement, 'id'>) => {
-    const newElement: LayoutElement = {
-      ...elementData,
-      id: nanoid()
-    }
-    setElements(prev => [...prev, newElement])
-    setSelectedElementId(newElement.id)
-  }
 
-  const handleElementMove = (id: string, position: { x: number; y: number }) => {
-    setElements(prev => 
-      prev.map(el => 
-        el.id === id ? { ...el, position } : el
-      )
-    )
-  }
-
-  const handleElementUpdate = (id: string, updates: Partial<LayoutElement>) => {
+  const handleElementUpdate = (id: string, updates: Partial<EnhancedLayoutElement>) => {
     setElements(prev => 
       prev.map(el => 
         el.id === id ? { ...el, ...updates } : el
@@ -124,6 +92,34 @@ export default function EditLayoutPage({ params }: PageProps) {
 
   const selectedElement = elements.find(el => el.id === selectedElementId)
 
+  const handleViewJSON = () => {
+    const databaseConfig = exportToDatabase(elements)
+    const jsonString = JSON.stringify(databaseConfig, null, 2)
+    
+    // Create a new window to display the JSON
+    const newWindow = window.open('', '_blank', 'width=600,height=800')
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Layout JSON Export</title>
+            <style>
+              body { font-family: monospace; margin: 20px; }
+              pre { background: #f5f5f5; padding: 20px; border-radius: 5px; overflow: auto; }
+              button { margin: 10px 0; padding: 8px 16px; }
+            </style>
+          </head>
+          <body>
+            <h2>Database JSON Format</h2>
+            <button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent)">Copy to Clipboard</button>
+            <pre>${jsonString}</pre>
+          </body>
+        </html>
+      `)
+      newWindow.document.close()
+    }
+  }
+
   const handleSave = async () => {
     if (!layoutName.trim()) {
       alert('Please enter a layout name')
@@ -137,15 +133,33 @@ export default function EditLayoutPage({ params }: PageProps) {
       return
     }
 
+    // Validate elements for export
+    const validation = validateForExport(elements)
+    if (!validation.isValid) {
+      alert(`Cannot save layout: ${validation.errors.join(', ')}`)
+      return
+    }
+
+    // Show warnings if any
+    if (validation.warnings.length > 0) {
+      const proceed = confirm(
+        `The following features will be simplified when saving:\n\n${validation.warnings.join('\n')}\n\nContinue?`
+      )
+      if (!proceed) return
+    }
+
     setSaving(true)
     
     try {
+      // Convert enhanced format back to database format
+      const databaseConfig = exportToDatabase(elements)
+      
       const { error } = await supabase
         .from('print_layouts')
         .update({
           name: layoutName,
           print_type: printType,
-          layout_config: { elements }
+          layout_config: databaseConfig
         })
         .eq('id', layoutId)
 
@@ -243,6 +257,12 @@ export default function EditLayoutPage({ params }: PageProps) {
           </Box>
           <Flex gap={3}>
             <button
+              onClick={handleViewJSON}
+              className={buttonStyles}
+            >
+              📄 View JSON
+            </button>
+            <button
               onClick={() => router.back()}
               className={buttonStyles}
             >
@@ -293,35 +313,26 @@ export default function EditLayoutPage({ params }: PageProps) {
           </Grid>
         </Box>
 
-        {/* Editor Interface */}
-        <Grid columns={{ base: 1, lg: '300px 1fr 280px' }} gap={6}>
-          {/* Element Palette */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={4} h="fit">
-            <ElementPalette />
-          </Box>
-
-          {/* Canvas */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={6}>
-            <Canvas
-              printType={printType}
-              elements={elements}
-              selectedElement={selectedElementId}
-              onElementAdd={handleElementAdd}
-              onElementMove={handleElementMove}
-              onElementSelect={setSelectedElementId}
-              scale={0.5}
-            />
-          </Box>
-
-          {/* Properties Panel */}
-          <Box bg="bg.default" borderWidth="1px" borderColor="border.default" p={4} h="fit">
-            <PropertiesPanel
-              selectedElement={selectedElement || null}
+        {/* Simple Konva Layout Editor */}
+        <Box height="calc(100vh - 200px)" borderWidth="1px" borderColor="border.default">
+          <SimpleKonvaEditor
+            printType={printType}
+            elements={elements}
+            onElementsChange={setElements}
+            onSelectionChange={(ids) => setSelectedElementId(ids[0] || undefined)}
+          />
+        </Box>
+        
+        {/* Properties Panel (if element selected) */}
+        {selectedElement && (
+          <Box mt={4} bg="bg.default" borderWidth="1px" borderColor="border.default" p={4}>
+            <EnhancedPropertiesPanel
+              selectedElement={selectedElement}
               onElementUpdate={handleElementUpdate}
               onElementDelete={handleElementDelete}
             />
           </Box>
-        </Grid>
+        )}
 
         {/* Status Info */}
         {layout.is_default && (

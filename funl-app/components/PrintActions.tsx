@@ -11,7 +11,7 @@ interface PrintActionsProps {
   funnelId: string
   funnelName: string
   shortUrl: string
-  printType: 'A4_portrait' | 'A5_portrait' | 'A5_landscape' | 'business_card_landscape'
+  layoutId: string
   businessData: {
     name: string
     phone?: string
@@ -25,7 +25,7 @@ export default function PrintActions({
   funnelId,
   funnelName,
   shortUrl,
-  printType,
+  layoutId,
   businessData,
   customMessage
 }: PrintActionsProps) {
@@ -36,9 +36,6 @@ export default function PrintActions({
     setDownloading(true)
     
     try {
-      // Convert old print_type format to new PageSize format
-      const pageSize = printType.replace('_', '-') as any // e.g., 'A4_portrait' -> 'A4-portrait'
-
       // Generate the full URL for QR code
       const fullUrl = generateShortUrl(shortUrl)
 
@@ -50,12 +47,39 @@ export default function PrintActions({
         email: businessData.email,
         website: businessData.website,
         funnel_name: funnelName,
-        contact_url: fullUrl
+        contact_url: fullUrl,
+        word_top: 'TOP TEXT',
+        word_bottom: 'BOTTOM TEXT', 
+        word_left: 'LEFT',
+        word_right: 'RIGHT'
       }
 
-      // Generate and download PDF using the new system
-      const filename = `${funnelName.replace(/[^a-zA-Z0-9]/g, '_')}_print.pdf`
-      await downloadLayoutPDF(pageSize, layoutData, filename)
+      // Use the new API that accepts layoutId
+      const response = await fetch('/api/generate-pdf-simple', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          layoutId,
+          data: layoutData
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF')
+      }
+
+      // Download the PDF
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${funnelName.replace(/[^a-zA-Z0-9]/g, '_')}_print.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
       
     } catch (error) {
       console.error('Error generating PDF:', error)

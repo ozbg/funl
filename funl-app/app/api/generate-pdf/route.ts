@@ -33,11 +33,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Convert pageSize format (A4-portrait) to print_type format (A4_portrait)
+    const printType = pageSize.replace(/-/g, '_')
+    
     // Fetch the layout template from database ONLY - NO FALLBACKS
     const { data: template, error: templateError } = await supabase
-      .from('layout_templates')
+      .from('print_layouts')
       .select('*')
-      .eq('page_size', pageSize)
+      .eq('print_type', printType)
       .eq('is_active', true)
       .eq('is_default', true)
       .single()
@@ -57,15 +60,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!LayoutEngine.validateLayoutDefinition(template.layout_definition)) {
-      console.error('Invalid layout definition:', template.layout_definition)
+    // print_layouts uses 'layout_config' instead of 'layout_definition'
+    if (!LayoutEngine.validateLayoutDefinition(template.layout_config)) {
+      console.error('Invalid layout definition:', template.layout_config)
       return NextResponse.json(
         { error: `Invalid layout template for ${pageSize}. Please check the database configuration.` },
         { status: 500 }
       )
     }
 
-    const layoutDefinition: LayoutDefinition = template.layout_definition
+    const layoutDefinition: LayoutDefinition = template.layout_config
 
     // Render the layout
     const renderedLayout = LayoutEngine.renderLayout(layoutDefinition, data)
