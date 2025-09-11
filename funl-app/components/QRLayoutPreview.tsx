@@ -1,10 +1,8 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Stack, Flex } from '@/styled-system/jsx'
-import Image from 'next/image'
-import html2canvas from 'html2canvas'
 
 interface QRLayoutPreviewProps {
   qrCodeUrl: string
@@ -22,38 +20,9 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
   const [qrWidth, setQrWidth] = useState(120) // QR code width in pixels
   const [qrHeight, setQrHeight] = useState(120) // QR code height in pixels
   const [downloading, setDownloading] = useState(false)
-  const previewRef = useRef<HTMLDivElement>(null)
 
-  const handleDownloadPNG = async () => {
-    if (!previewRef.current) return
-    
-    setDownloading(true)
-    try {
-      // Capture the preview div as PNG
-      const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: 'white',
-        scale: 3, // High resolution
-        useCORS: true,
-        allowTaint: true
-      })
-      
-      // Create download link
-      const link = document.createElement('a')
-      link.download = `${funnelName}_sticker.png`
-      link.href = canvas.toDataURL('image/png')
-      link.click()
-      
-    } catch (error) {
-      console.error('Failed to generate PNG:', error)
-      alert('Failed to generate PNG')
-    } finally {
-      setDownloading(false)
-    }
-  }
 
   const handleDownloadSVG = async () => {
-    if (!previewRef.current) return
-    
     setDownloading(true)
     try {
       // Create SVG representation of the current layout
@@ -62,12 +31,12 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
           <rect width="296" height="420" fill="white" stroke="#ccc" stroke-width="2"/>
           
           <!-- Top Text -->
-          <text x="148" y="${verticalDistance + 15}" text-anchor="middle" 
+          <text x="148" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle" 
                 font-family="Arial" font-weight="bold" font-size="${textSize}" 
                 fill="black" style="text-transform: uppercase;">${wordTop}</text>
           
           <!-- Bottom Text -->
-          <text x="148" y="${420 - verticalDistance}" text-anchor="middle" 
+          <text x="148" y="${420 - verticalDistance * 0.75}" text-anchor="middle" 
                 font-family="Arial" font-weight="bold" font-size="${textSize}" 
                 fill="black" style="text-transform: uppercase;">${wordBottom}</text>
           
@@ -84,7 +53,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                 transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
           
           <!-- QR Code Image -->
-          ${qrCodeUrl ? `<image x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" xlink:href="${qrCodeUrl}" style="border: 2px solid #ccc;"/>` : `<rect x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" fill="#f0f0f0" stroke="#000" stroke-width="2"/><text x="148" y="210" text-anchor="middle" font-family="Arial" font-size="12" fill="#666">QR CODE</text>`}
+          ${qrCodeUrl ? `<image x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" xlink:href="${qrCodeUrl}" preserveAspectRatio="none"/>` : `<rect x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" fill="#f0f0f0" stroke="#000" stroke-width="2"/><text x="148" y="210" text-anchor="middle" font-family="Arial" font-size="12" fill="#666">QR CODE</text>`}
         </svg>
       `
       
@@ -407,151 +376,8 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
             Preview (A5 Size)
           </h3>
           
-          <Flex gap={4} justifyContent="center">
-            {/* HTML Preview */}
-            <Box>
-              <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2, textAlign: 'center' })}>
-                HTML Preview
-              </h4>
-              <Box
-                ref={previewRef}
-                position="relative"
-                bg="white"
-                borderWidth="2px"
-                borderColor="border.default"
-                borderStyle="solid"
-                width="296px"  // A5 width scaled down (148mm -> ~296px at 2px/mm)
-                height="420px" // A5 height scaled down (210mm -> ~420px at 2px/mm)
-                overflow="visible" // Changed from hidden to visible
-              >
-                {/* Layout Container */}
-                <Box
-                  position="absolute"
-                  inset="0"
-                  p={4}
-                >
-              {/* Top Text */}
-              <Box
-                position="absolute"
-                left="50%"
-                style={{
-                  top: `${verticalDistance}px`, // Uses separate vertical control
-                  transform: 'translateX(-50%)',
-                  fontFamily: 'Arial, sans-serif',
-                  fontWeight: 'bold',
-                  fontSize: `${textSize}px`,
-                  color: 'black',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center'
-                }}
-              >
-                {wordTop}
-              </Box>
-
-              {/* QR Code Center */}
-              <Box 
-                position="absolute"
-                top="50%"
-                left="50%"
-                transform="translate(-50%, -50%)"
-                display="flex" 
-                alignItems="center" 
-                justifyContent="center"
-                minWidth={`${qrWidth}px`}
-                minHeight={`${qrHeight}px`}
-              >
-                {qrCodeUrl && (
-                  <Image
-                    src={qrCodeUrl}
-                    alt={`QR Code for ${funnelName}`}
-                    width={qrWidth}
-                    height={qrHeight}
-                    className={css({
-                      borderWidth: '2px',
-                      borderColor: 'border.default',
-                      borderStyle: 'solid'
-                    })}
-                    style={{
-                      width: `${qrWidth}px`,
-                      height: `${qrHeight}px`,
-                      objectFit: 'stretch', // This allows distortion to make it rectangular
-                      maxWidth: 'none', // Override any max-width constraints
-                      maxHeight: 'none' // Override any max-height constraints
-                    }}
-                  />
-                )}
-              </Box>
-
-              {/* Left Text (Rotated) */}
-              <Box
-                position="absolute"
-                top="50%"
-                style={{
-                  left: `${textDistance}px`, // Same spacing as top/bottom
-                  transform: 'translate(-50%, -50%) rotate(-90deg)',
-                  fontFamily: 'Arial, sans-serif',
-                  fontWeight: 'bold',
-                  fontSize: `${textSize}px`,
-                  color: 'black',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {wordLeft}
-              </Box>
-
-              {/* Right Text (Rotated) */}
-              <Box
-                position="absolute"
-                top="50%"
-                style={{
-                  right: `${textDistance}px`, // Same spacing as top/bottom
-                  transform: 'translate(50%, -50%) rotate(90deg)',
-                  fontFamily: 'Arial, sans-serif',
-                  fontWeight: 'bold',
-                  fontSize: `${textSize}px`,
-                  color: 'black',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {wordRight}
-              </Box>
-
-              {/* Bottom Text */}
-              <Box
-                position="absolute"
-                left="50%"
-                style={{
-                  bottom: `${verticalDistance}px`, // Uses separate vertical control
-                  transform: 'translateX(-50%)',
-                  fontFamily: 'Arial, sans-serif',
-                  fontWeight: 'bold',
-                  fontSize: `${textSize}px`,
-                  color: 'black',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  textAlign: 'center'
-                }}
-              >
-                {wordBottom}
-              </Box>
-                </Box>
-              </Box>
-            </Box>
-            
-            {/* SVG Preview */}
-            <Box>
-              <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2, textAlign: 'center' })}>
-                SVG Preview
-              </h4>
+          {/* SVG Preview */}
+          <Box mx="auto" maxW="296px">
               <Box
                 bg="white"
                 borderWidth="2px"
@@ -574,7 +400,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                   {/* Top Text */}
                   <text 
                     x="148" 
-                    y={verticalDistance + textSize} 
+                    y={verticalDistance * 0.75 + textSize * 0.75} 
                     textAnchor="middle" 
                     fontFamily="Arial" 
                     fontWeight="bold" 
@@ -588,7 +414,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                   {/* Bottom Text */}
                   <text 
                     x="148" 
-                    y={420 - verticalDistance} 
+                    y={420 - verticalDistance * 0.75} 
                     textAnchor="middle" 
                     fontFamily="Arial" 
                     fontWeight="bold" 
@@ -637,6 +463,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                       width={qrWidth} 
                       height={qrHeight} 
                       xlinkHref={qrCodeUrl}
+                      preserveAspectRatio="none"
                       style={{ border: '2px solid #ccc' }}
                     />
                   ) : (
@@ -664,43 +491,17 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                   )}
                 </svg>
               </Box>
-            </Box>
-          </Flex>
+          </Box>
           
-          {/* Download Buttons */}
-          <Flex gap={3} mt={4} justifyContent="center">
-            <button
-              onClick={handleDownloadPNG}
-              disabled={downloading}
-              className={css({
-                colorPalette: 'mint',
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'bold',
-                color: 'colorPalette.fg',
-                bg: 'colorPalette.default',
-                borderRadius: 'md',
-                cursor: 'pointer',
-                _hover: {
-                  bg: 'colorPalette.emphasized',
-                },
-                _disabled: {
-                  opacity: 'disabled',
-                  cursor: 'not-allowed',
-                },
-              })}
-            >
-              {downloading ? 'Generating...' : '🖼️ Download PNG'}
-            </button>
-            
+          {/* Download Button */}
+          <Flex mt={4} justifyContent="center">
             <button
               onClick={handleDownloadSVG}
               disabled={downloading}
               className={css({
-                colorPalette: 'blue',
-                px: 4,
-                py: 2,
+                colorPalette: 'mint',
+                px: 6,
+                py: 3,
                 fontSize: 'sm',
                 fontWeight: 'bold',
                 color: 'colorPalette.fg',
@@ -716,7 +517,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName }: QRLayoutPrevi
                 },
               })}
             >
-              {downloading ? 'Generating...' : '📐 Download SVG'}
+              {downloading ? 'Generating...' : '📐 Download Sticker (SVG)'}
             </button>
           </Flex>
         </Box>
