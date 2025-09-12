@@ -33,6 +33,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
   const [qrWidth, setQrWidth] = useState(initialStickerSettings?.qrWidth ?? 120) // QR code width in pixels
   const [qrHeight, setQrHeight] = useState(initialStickerSettings?.qrHeight ?? 120) // QR code height in pixels
   const [downloading, setDownloading] = useState(false)
+  const [downloadingPDF, setDownloadingPDF] = useState(false)
   const supabase = createClient()
 
   // Save sticker settings to database with debouncing
@@ -125,6 +126,76 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
       alert('Failed to generate SVG')
     } finally {
       setDownloading(false)
+    }
+  }
+
+  const handleDownloadPDF = async () => {
+    setDownloadingPDF(true)
+    try {
+      // Generate the same SVG content as used for SVG download
+      const svgContent = `
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="296" height="420" viewBox="0 0 296 420">
+          <rect width="296" height="420" fill="white" stroke="#ccc" stroke-width="2"/>
+          
+          <!-- Top Text -->
+          <text x="148" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;">${wordTop}</text>
+          
+          <!-- Bottom Text -->
+          <text x="148" y="${420 - verticalDistance * 0.75}" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;">${wordBottom}</text>
+          
+          <!-- Left Text (Rotated) -->
+          <text x="${textDistance}" y="210" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;" 
+                transform="rotate(-90 ${textDistance} 210)">${wordLeft}</text>
+          
+          <!-- Right Text (Rotated) -->
+          <text x="${296 - textDistance}" y="210" text-anchor="middle" 
+                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+                fill="black" style="text-transform: uppercase;" 
+                transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
+          
+          <!-- QR Code Image -->
+          ${qrCodeUrl ? `<image x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" xlink:href="${qrCodeUrl}" preserveAspectRatio="none"/>` : `<rect x="${148 - qrWidth/2}" y="${210 - qrHeight/2}" width="${qrWidth}" height="${qrHeight}" fill="#f0f0f0" stroke="#000" stroke-width="2"/><text x="148" y="210" text-anchor="middle" font-family="Arial" font-size="12" fill="#666">QR CODE</text>`}
+        </svg>
+      `
+
+      // Use svg2pdf.js to properly convert SVG to PDF as vectors
+      const [{ jsPDF }, { svg2pdf }] = await Promise.all([
+        import('jspdf'),
+        import('svg2pdf.js')
+      ])
+      
+      // Create PDF with exact sticker dimensions  
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [296, 420] // Use exact SVG dimensions
+      })
+      
+      // Parse SVG and convert to PDF as vectors
+      const parser = new DOMParser()
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
+      const svgElement = svgDoc.documentElement
+      
+      await svg2pdf(svgElement, pdf, {
+        xOffset: 0,
+        yOffset: 0,
+        scale: 1 // 1:1 scale - no conversion needed
+      })
+      
+      // Download the PDF
+      pdf.save(`${funnelName}_sticker.pdf`)
+      
+    } catch (error) {
+      console.error('Failed to generate PDF:', error)
+      alert('Failed to generate PDF')
+    } finally {
+      setDownloadingPDF(false)
     }
   }
 
@@ -548,8 +619,8 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
               </Box>
           </Box>
           
-          {/* Download Button */}
-          <Flex mt={4} justifyContent="center">
+          {/* Download Buttons */}
+          <Flex mt={4} direction="column" gap={2} align="center">
             <button
               onClick={handleDownloadSVG}
               disabled={downloading}
@@ -561,8 +632,9 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                 fontWeight: 'bold',
                 color: 'colorPalette.fg',
                 bg: 'colorPalette.default',
-                borderRadius: 'md',
+                borderRadius: '0',
                 cursor: 'pointer',
+                w: '200px',
                 _hover: {
                   bg: 'colorPalette.emphasized',
                 },
@@ -572,7 +644,33 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                 },
               })}
             >
-              {downloading ? 'Generating...' : '📐 Download Sticker (SVG)'}
+              {downloading ? 'Generating...' : 'Download Sticker (SVG)'}
+            </button>
+            
+            <button
+              onClick={handleDownloadPDF}
+              disabled={downloadingPDF}
+              className={css({
+                colorPalette: 'blue',
+                px: 6,
+                py: 3,
+                fontSize: 'sm',
+                fontWeight: 'bold',
+                color: 'colorPalette.fg',
+                bg: 'colorPalette.default',
+                borderRadius: '0',
+                cursor: 'pointer',
+                w: '200px',
+                _hover: {
+                  bg: 'colorPalette.emphasized',
+                },
+                _disabled: {
+                  opacity: 'disabled',
+                  cursor: 'not-allowed',
+                },
+              })}
+            >
+              {downloadingPDF ? 'Generating...' : 'Download Sticker (PDF)'}
             </button>
           </Flex>
         </Box>
