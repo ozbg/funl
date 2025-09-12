@@ -2,12 +2,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { generateShortUrl } from '@/lib/qr'
-import FunnelActions from '@/components/FunnelActions'
-import FunnelPrintSection from '@/components/FunnelPrintSection'
 import QRLayoutPreview from '@/components/QRLayoutPreview'
 import { css } from '@/styled-system/css'
-import { Box, Flex, Stack } from '@/styled-system/jsx'
+import { Box, Flex } from '@/styled-system/jsx'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -33,14 +30,6 @@ export default async function FunnelDetailPage({ params }: PageProps) {
     return notFound()
   }
 
-  // Fetch business data
-  const { data: business } = await supabase
-    .from('businesses')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  const publicUrl = generateShortUrl(funnel.short_url)
 
   return (
     <Box maxW="4xl" mx="auto">

@@ -38,7 +38,6 @@ export default function NewFunnelPage() {
     defaultValues: {
       name: '',
       type: 'contact',
-      print_type: 'A4-portrait',
       content: {}
     }
   })

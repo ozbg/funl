@@ -38,7 +38,6 @@ export interface Funnel {
   qr_code_url?: string
   short_url: string
   content: FunnelContent
-  print_size: 'A4' | 'A5'
   print_status?: 'pending' | 'processing' | 'shipped'
   created_at: string
   updated_at: string
@@ -84,7 +83,6 @@ export interface CreateFunnelData {
   name: string
   type: 'contact' | 'property' | 'video'
   content?: Partial<FunnelContent>
-  print_size?: 'A4' | 'A5'
 }
 
 export interface UpdateFunnelData extends Partial<CreateFunnelData> {

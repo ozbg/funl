@@ -70,7 +70,6 @@ export async function PATCH(
         ...(validatedData.name && { name: validatedData.name }),
         ...(validatedData.type && { type: validatedData.type }),
         ...(validatedData.status && { status: validatedData.status }),
-        ...(validatedData.print_size && { print_size: validatedData.print_size }),
         ...(validatedData.content && { 
           content: { ...existingFunnel.content, ...validatedData.content }
         }),
