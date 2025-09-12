@@ -67,8 +67,10 @@ export default async function FunnelDetailPage({ params }: PageProps) {
       {/* QR Layout Preview Section */}
       <QRLayoutPreview 
         qrCodeUrl={funnel.qr_code_url || ''}
+        shortUrl={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${funnel.short_url}`}
         funnelName={funnel.name}
         funnelId={funnel.id}
+        qrStyle="square"
         initialStickerSettings={funnel.content?.sticker_settings}
       />
 
