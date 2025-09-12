@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd funl-app && npm run build",
+  "outputDirectory": "funl-app/.next",
+  "installCommand": "cd funl-app && npm install"
+}
