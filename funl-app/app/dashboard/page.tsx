@@ -61,8 +61,7 @@ export default async function DashboardPage() {
           '&::-webkit-scrollbar': {
             display: 'none'
           },
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          scrollbarWidth: 'none'
         })}
       >
         {funnels && funnels.length > 0 ? (

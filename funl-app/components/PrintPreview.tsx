@@ -68,13 +68,14 @@ export default function PrintPreview({ printType, funnelName }: PrintPreviewProp
       >
         {/* QR Code */}
         {qrCodeUrl && (
-          <Box
-            as="img"
+          <img
             src={qrCodeUrl}
             alt="QR Code Preview"
-            w="60%"
-            h="auto"
-            maxW="120px"
+            className={css({
+              w: "60%",
+              h: "auto",
+              maxW: "120px"
+            })}
           />
         )}
         

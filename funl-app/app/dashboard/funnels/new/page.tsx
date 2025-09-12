@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { CreateFunnelInput } from '@/lib/validations'
+import { Funnel, Business, FunnelContent } from '@/lib/types'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
 import { createClient } from '@/lib/supabase/client'
-import { Business } from '@/lib/types'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
@@ -81,7 +81,7 @@ export default function NewFunnelPage() {
             setValue('type', funnelData.type)
             if (funnelData.content) {
               Object.keys(funnelData.content).forEach(key => {
-                setValue(`content.${key}` as keyof FunnelContent, funnelData.content[key as keyof FunnelContent])
+                setValue(`content.${key}` as "content.state" | "content.price" | "content.property_url" | "content.video_url" | "content.custom_message" | "content.cta_button_text", funnelData.content[key as keyof FunnelContent])
               })
             }
             setDefaultNameSet(true)

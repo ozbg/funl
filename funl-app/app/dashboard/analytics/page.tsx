@@ -22,7 +22,18 @@ export default async function AnalyticsPage() {
 
   // Get analytics data
   const funnelIds = funnels?.map(f => f.id) || []
-  let analyticsData = {
+  let analyticsData: {
+    totalScans: number;
+    uniqueVisitors: number;
+    conversionRate: number;
+    recentActivity: Array<{
+      action: string;
+      timestamp: string;
+      funnelName: string;
+      deviceType: string;
+    }>;
+    deviceBreakdown: Record<string, number>;
+  } = {
     totalScans: 0,
     uniqueVisitors: 0,
     conversionRate: 0,
@@ -91,7 +102,7 @@ export default async function AnalyticsPage() {
         action: activity.action as string,
         timestamp: activity.created_at as string,
         funnelName: (Array.isArray(activity.funnels) ? activity.funnels[0]?.name : (activity.funnels as { name: string } | null)?.name || 'Unknown') as string,
-        deviceType: activity.metadata?.device_type as string
+        deviceType: (activity.metadata as { device_type?: string } | null)?.device_type || 'unknown'
       })),
       deviceBreakdown
     }

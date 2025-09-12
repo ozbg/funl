@@ -182,11 +182,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
       const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
       const svgElement = svgDoc.documentElement
       
-      await svg2pdf(svgElement, pdf, {
-        xOffset: 0,
-        yOffset: 0,
-        scale: 1 // 1:1 scale - no conversion needed
-      })
+      await svg2pdf(svgElement, pdf)
       
       // Download the PDF
       pdf.save(`${funnelName}_sticker.pdf`)
@@ -234,8 +230,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                     outline: 'none',
                     borderColor: 'colorPalette.default',
                     ringWidth: '2px',
-                    ringColor: 'colorPalette.default',
-                    ringOpacity: 0.2
+                    ringColor: 'colorPalette.default'
                   }
                 })}
                 placeholder="Enter top text"
@@ -264,8 +259,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                     outline: 'none',
                     borderColor: 'colorPalette.default',
                     ringWidth: '2px',
-                    ringColor: 'colorPalette.default',
-                    ringOpacity: 0.2
+                    ringColor: 'colorPalette.default'
                   }
                 })}
                 placeholder="Enter bottom text"
@@ -294,8 +288,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                     outline: 'none',
                     borderColor: 'colorPalette.default',
                     ringWidth: '2px',
-                    ringColor: 'colorPalette.default',
-                    ringOpacity: 0.2
+                    ringColor: 'colorPalette.default'
                   }
                 })}
                 placeholder="Enter left text"
@@ -324,8 +317,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                     outline: 'none',
                     borderColor: 'colorPalette.default',
                     ringWidth: '2px',
-                    ringColor: 'colorPalette.default',
-                    ringOpacity: 0.2
+                    ringColor: 'colorPalette.default'
                   }
                 })}
                 placeholder="Enter right text"
@@ -349,15 +341,7 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                   bg: 'gray.200',
                   borderRadius: 'lg',
                   appearance: 'none',
-                  cursor: 'pointer',
-                  _webkitSliderThumb: {
-                    appearance: 'none',
-                    h: 4,
-                    w: 4,
-                    bg: 'blue.500',
-                    borderRadius: 'full',
-                    cursor: 'pointer'
-                  }
+                  cursor: 'pointer'
                 })}
               />
             </Box>
@@ -380,14 +364,6 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                   borderRadius: 'lg',
                   appearance: 'none',
                   cursor: 'pointer',
-                  _webkitSliderThumb: {
-                    appearance: 'none',
-                    h: 4,
-                    w: 4,
-                    bg: 'green.500',
-                    borderRadius: 'full',
-                    cursor: 'pointer'
-                  }
                 })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
@@ -413,14 +389,6 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                   borderRadius: 'lg',
                   appearance: 'none',
                   cursor: 'pointer',
-                  _webkitSliderThumb: {
-                    appearance: 'none',
-                    h: 4,
-                    w: 4,
-                    bg: 'orange.500',
-                    borderRadius: 'full',
-                    cursor: 'pointer'
-                  }
                 })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
@@ -446,14 +414,6 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                   borderRadius: 'lg',
                   appearance: 'none',
                   cursor: 'pointer',
-                  _webkitSliderThumb: {
-                    appearance: 'none',
-                    h: 4,
-                    w: 4,
-                    bg: 'purple.500',
-                    borderRadius: 'full',
-                    cursor: 'pointer'
-                  }
                 })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
@@ -479,14 +439,6 @@ export default function QRLayoutPreview({ qrCodeUrl, funnelName, funnelId, initi
                   borderRadius: 'lg',
                   appearance: 'none',
                   cursor: 'pointer',
-                  _webkitSliderThumb: {
-                    appearance: 'none',
-                    h: 4,
-                    w: 4,
-                    bg: 'pink.500',
-                    borderRadius: 'full',
-                    cursor: 'pointer'
-                  }
                 })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
