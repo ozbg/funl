@@ -96,6 +96,14 @@ export async function PATCH(
   }
 }
 
+// PUT /api/funnels/[id] - Update funnel (alias for PATCH)
+export async function PUT(
+  request: NextRequest,
+  params: { params: Promise<{ id: string }> }
+) {
+  return PATCH(request, params)
+}
+
 // DELETE /api/funnels/[id] - Delete funnel
 export async function DELETE(
   request: NextRequest,

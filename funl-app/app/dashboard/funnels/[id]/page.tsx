@@ -49,7 +49,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
           <Box>
             <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{funnel.name}</h1>
             <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
-              Created {new Date(funnel.created_at).toLocaleDateString()}
+              Created {new Date(funnel.created_at).toISOString().split('T')[0]}
             </p>
           </Box>
           <Flex align="center" gap={3}>

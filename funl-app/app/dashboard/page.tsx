@@ -16,8 +16,8 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false }) as { data: Funnel[] | null }
 
   return (
-    <Box>
-      <Box px={{ base: 4, sm: 0 }}>
+    <Box h="calc(100vh - 112px)" display="flex" flexDirection="column">
+      <Box px={{ base: 4, sm: 0 }} flexShrink={0}>
         <Flex 
           direction={{ base: 'column', sm: 'row' }} 
           align={{ sm: 'center' }} 
@@ -27,9 +27,6 @@ export default async function DashboardPage() {
             <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>
               Your Funnels
             </h1>
-            <p className={css({ mt: 1, fontSize: 'sm', color: 'fg.muted' })}>
-              Create and manage your QR code funnels
-            </p>
           </Box>
           <Box mt={{ base: 4, sm: 0 }}>
             <Link
@@ -56,9 +53,20 @@ export default async function DashboardPage() {
         </Flex>
       </Box>
 
-      <Box mt={8}>
+      <Box 
+        mt={8} 
+        flex="1" 
+        overflow="auto"
+        className={css({
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        })}
+      >
         {funnels && funnels.length > 0 ? (
-          <Box bg="bg.default" boxShadow="sm" overflow="hidden" >
+          <Box bg="bg.default" boxShadow="sm">
             <Stack divideY="1px" divideColor="border.default">
               {funnels.map((funnel) => (
                 <FunnelRow key={funnel.id} funnel={funnel} />

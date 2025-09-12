@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { CreateFunnelInput } from '@/lib/validations'
 import { css } from '@/styled-system/css'
@@ -16,8 +17,13 @@ export default function NewFunnelPage() {
   const [business, setBusiness] = useState<Business | null>(null)
   const [funnelCount, setFunnelCount] = useState<number>(0)
   const [defaultNameSet, setDefaultNameSet] = useState(false)
+  const [existingFunnel, setExistingFunnel] = useState<any>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+  
+  const editId = searchParams.get('edit')
+  const isEditMode = !!editId
 
   // Generate default name with ID and date
   const generateDefaultName = (count: number) => {
@@ -61,43 +67,68 @@ export default function NewFunnelPage() {
           .single()
         if (businessData) setBusiness(businessData)
 
-        // Fetch funnel count to generate default name
-        const { count } = await supabase
-          .from('funnels')
-          .select('*', { count: 'exact', head: true })
-          .eq('business_id', user.id)
-        
-        const funnelNumber = count || 0
-        setFunnelCount(funnelNumber)
-        
-        // Set default name only once
-        if (!defaultNameSet) {
-          setValue('name', generateDefaultName(funnelNumber))
-          setDefaultNameSet(true)
+        // If editing, fetch existing funnel data
+        if (isEditMode && editId) {
+          const { data: funnelData } = await supabase
+            .from('funnels')
+            .select('*')
+            .eq('id', editId)
+            .eq('business_id', user.id)
+            .single()
+          
+          if (funnelData) {
+            setExistingFunnel(funnelData)
+            setValue('name', funnelData.name)
+            setValue('type', funnelData.type)
+            if (funnelData.content) {
+              Object.keys(funnelData.content).forEach(key => {
+                setValue(`content.${key}` as any, funnelData.content[key])
+              })
+            }
+            setDefaultNameSet(true)
+          }
+        } else {
+          // Fetch funnel count to generate default name for new funnels
+          const { count } = await supabase
+            .from('funnels')
+            .select('*', { count: 'exact', head: true })
+            .eq('business_id', user.id)
+          
+          const funnelNumber = count || 0
+          setFunnelCount(funnelNumber)
+          
+          // Set default name only once
+          if (!defaultNameSet) {
+            setValue('name', generateDefaultName(funnelNumber))
+            setDefaultNameSet(true)
+          }
         }
       }
     }
     fetchData()
-  }, [supabase, setValue, defaultNameSet])
+  }, [supabase, setValue, defaultNameSet, isEditMode, editId])
 
   const onSubmit = async (data: CreateFunnelInput) => {
     setLoading(true)
     setError(null)
 
     try {
-      const response = await fetch('/api/funnels', {
-        method: 'POST',
+      const url = isEditMode ? `/api/funnels/${editId}` : '/api/funnels'
+      const method = isEditMode ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create funnel')
+        throw new Error(errorData.error || `Failed to ${isEditMode ? 'update' : 'create'} funnel`)
       }
 
       const { data: funnel } = await response.json()
-      router.push(`/dashboard/funnels/${funnel.id}`)
+      router.push(isEditMode ? '/dashboard' : `/dashboard/funnels/${funnel.id}`)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -171,9 +202,44 @@ export default function NewFunnelPage() {
 
   return (
     <Container maxW="7xl" mx="auto">
-      <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default', mb: 8, textAlign: 'center' })}>
-        Create New Funnel
-      </h1>
+      {isEditMode && existingFunnel ? (
+        <Box mb={8}>
+          <Flex align="center" justify="space-between">
+            <Box>
+              <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>
+                {existingFunnel.name}
+              </h1>
+              <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
+                Created {new Date(existingFunnel.created_at).toISOString().split('T')[0]}
+              </p>
+            </Box>
+            <Link
+              href="/dashboard"
+              className={css({
+                px: 4,
+                py: 2,
+                borderWidth: '1px',
+                borderColor: 'border.default',
+                boxShadow: 'sm',
+                fontSize: 'sm',
+                fontWeight: 'medium',
+                color: 'fg.default',
+                bg: 'bg.default',
+                textDecoration: 'none',
+                _hover: {
+                  bg: 'bg.muted',
+                },
+              })}
+            >
+              ← Back to Dashboard
+            </Link>
+          </Flex>
+        </Box>
+      ) : (
+        <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default', mb: 8, textAlign: 'center' })}>
+          Create New Funnel
+        </h1>
+      )}
       
       <Grid columns={{ base: 1, lg: 2 }} gap={8}>
         {/* Form Column */}
@@ -363,7 +429,7 @@ export default function NewFunnelPage() {
                   disabled={loading}
                   className={buttonPrimaryStyles}
                 >
-                  {loading ? 'Creating...' : 'Create Funnel'}
+                  {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Funnel' : 'Create Funnel')}
                 </button>
               </Flex>
             </Stack>
