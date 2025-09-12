@@ -2,15 +2,6 @@
 
 import { css } from '@/styled-system/css'
 
-interface VCardData {
-  firstName: string
-  lastName: string
-  organization: string
-  phone: string
-  email: string
-  website?: string
-}
-
 interface VCardDownloadProps {
   businessName: string
   vCardData: string

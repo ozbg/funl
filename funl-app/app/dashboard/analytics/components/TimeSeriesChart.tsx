@@ -12,7 +12,7 @@ interface ChartDataPoint {
 
 interface TimeSeriesChartProps {
   title: string
-  period: '24h' | '7d' | '30d'
+  period: '24h' | '7d' | '30d' | 'all'
   metric: 'scans' | 'visitors' | 'conversions'
   funnelId?: string
 }

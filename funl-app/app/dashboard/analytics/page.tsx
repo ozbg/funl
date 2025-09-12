@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { css } from '@/styled-system/css'
-import { Box, Flex, Grid } from '@/styled-system/jsx'
+import { Box, Grid } from '@/styled-system/jsx'
 import { notFound } from 'next/navigation'
 import RecentActivity from './components/RecentActivity'
 import InteractiveAnalytics from './components/InteractiveAnalytics'
@@ -77,7 +77,7 @@ export default async function AnalyticsPage() {
       .in('funnel_id', funnelIds)
       .gte('created_at', thirtyDaysAgo)
 
-    const deviceBreakdown = deviceData?.reduce((acc: any, event) => {
+    const deviceBreakdown = deviceData?.reduce((acc: Record<string, number>, event) => {
       const deviceType = event.metadata?.device_type || 'unknown'
       acc[deviceType] = (acc[deviceType] || 0) + 1
       return acc
@@ -87,12 +87,12 @@ export default async function AnalyticsPage() {
       totalScans: totalScans || 0,
       uniqueVisitors,
       conversionRate: Math.round(conversionRate * 10) / 10,
-      recentActivity: recentActivity?.map(activity => ({
-        action: activity.action,
-        timestamp: activity.created_at,
-        funnelName: (activity.funnels as any)?.name,
-        deviceType: activity.metadata?.device_type
-      })) || [],
+      recentActivity: (recentActivity || []).map((activity: Record<string, unknown>) => ({
+        action: activity.action as string,
+        timestamp: activity.created_at as string,
+        funnelName: (Array.isArray(activity.funnels) ? activity.funnels[0]?.name : (activity.funnels as { name: string } | null)?.name || 'Unknown') as string,
+        deviceType: activity.metadata?.device_type as string
+      })),
       deviceBreakdown
     }
   }

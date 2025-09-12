@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { css } from '@/styled-system/css'
-import { Box, Flex, Stack } from '@/styled-system/jsx'
+import { Box, Stack } from '@/styled-system/jsx'
 
 interface FunnelPreviewProps {
   formData: {
@@ -102,7 +102,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                     textAlign="center"
                     fontSize="xs"
                   >
-                    Save {contactName?.split(' ')[0] || 'Contact'}'s Contact
+                    Save {contactName?.split(' ')[0] || 'Contact'}&apos;s Contact
                   </Box>
                   
                   <Box

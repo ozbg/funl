@@ -18,8 +18,6 @@ export async function POST(request: NextRequest) {
 
     // Get client info
     const userAgent = request.headers.get('user-agent') || 'unknown'
-    const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'
     
     // Simple device detection
     const deviceType = userAgent.toLowerCase().includes('mobile') ? 'mobile' : 'desktop'

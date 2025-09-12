@@ -24,7 +24,7 @@ const shouldForwardProp = (prop: string, variantKeys: string[], options: Options
 export const createStyleContext = <R extends Recipe>(recipe: R) => {
   const StyleContext = createContext<Record<Slot<R>, string> | null>(null)
 
-  const withRootProvider = <P extends {}>(Component: ElementType) => {
+  const withRootProvider = <P extends Record<string, unknown>>(Component: ElementType) => {
     const StyledComponent = (props: P) => {
       const [variantProps, otherProps] = recipe.splitVariantProps(props)
       const slotStyles = recipe(variantProps) as Record<Slot<R>, string>
@@ -64,7 +64,7 @@ export const createStyleContext = <R extends Recipe>(recipe: R) => {
         </StyleContext.Provider>
       )
     })
-    // @ts-expect-error
+    // @ts-expect-error - displayName assignment needs to bypass React type checks
     StyledSlotProvider.displayName = Component.displayName || Component.name
 
     return StyledSlotProvider
@@ -81,7 +81,7 @@ export const createStyleContext = <R extends Recipe>(recipe: R) => {
         <StyledComponent {...props} ref={ref} className={cx(slotStyles?.[slot], props.className)} />
       )
     })
-    // @ts-expect-error
+    // @ts-expect-error - displayName assignment needs to bypass React type checks
     StyledSlotComponent.displayName = Component.displayName || Component.name
 
     return StyledSlotComponent

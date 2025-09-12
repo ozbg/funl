@@ -75,7 +75,7 @@ export default function RecentActivity({ events, loading = false }: RecentActivi
       </h2>
       
       {events.length > 0 ? (
-        <div className={css({ space: '3' })}>
+        <div className={css({ gap: '3' })}>
           {events.map((event, index) => (
             <Flex key={index} align="center" gap={3} py={3} borderBottom={index < events.length - 1 ? '1px solid' : 'none'} borderColor="border.default">
               <span className={css({ fontSize: 'lg' })}>

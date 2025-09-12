@@ -6,7 +6,7 @@ import { useTracking } from '@/hooks/useTracking'
 import VCardDownload from './VCardDownload'
 import { Funnel, Business } from '@/lib/types'
 import { css } from '@/styled-system/css'
-import { Box, Flex, Stack } from '@/styled-system/jsx'
+import { Box, Stack } from '@/styled-system/jsx'
 
 interface PublicFunnelClientProps {
   funnel: Funnel
@@ -46,19 +46,20 @@ export default function PublicFunnelClient({
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     
-    const data = {
+    const formDataObj = {
       name: formData.get('name') as string,
       phone: formData.get('phone') as string,
       preferred_time: formData.get('preferred_time') as string,
       message: formData.get('message') as string,
     }
 
-    // TODO: Submit to API
+    // TODO: Submit to API with formDataObj
+    console.log('Callback request:', formDataObj)
     track('callback_request')
     
     // Reset form
     e.currentTarget.reset()
-    alert('Callback request submitted! We\'ll be in touch soon.')
+    alert('Callback request submitted! We&apos;ll be in touch soon.')
   }
 
   return (
@@ -111,7 +112,7 @@ export default function PublicFunnelClient({
                 })}
                 onClick={handleVCardDownload}
               >
-                Save {business.vcard_data?.firstName}'s Contact
+                Save {business.vcard_data?.firstName}&apos;s Contact
               </VCardDownload>
               
               {business.phone && (

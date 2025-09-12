@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { generateVCard } from '@/lib/qr'
-import { Funnel, Business } from '@/lib/types'
 import PublicFunnelClient from '@/components/PublicFunnelClient'
 
 interface PageProps {

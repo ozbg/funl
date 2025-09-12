@@ -72,7 +72,7 @@ export default function DeviceBreakdown({ data, loading = false }: DeviceBreakdo
           </Box>
 
           {/* Device list */}
-          <div className={css({ space: '3' })}>
+          <div className={css({ gap: '3' })}>
             {devices.map(([device, count], index) => {
               const percentage = Math.round((count / total) * 100)
               return (

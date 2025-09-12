@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build funnel filter
-    let funnelFilter = funnelId ? [funnelId] : funnelIds
+    const funnelFilter = funnelId ? [funnelId] : funnelIds
 
     // Get total scans
     const { count: totalScans } = await supabase
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
       .in('funnel_id', funnelFilter)
       .gte('created_at', dateFilter)
 
-    const deviceBreakdown = deviceData?.reduce((acc: any, event) => {
+    const deviceBreakdown = deviceData?.reduce((acc: Record<string, number>, event) => {
       const deviceType = event.metadata?.device_type || 'unknown'
       acc[deviceType] = (acc[deviceType] || 0) + 1
       return acc
@@ -119,9 +119,9 @@ export async function GET(request: NextRequest) {
       .in('funnel_id', funnelFilter)
       .gte('created_at', dateFilter)
 
-    const funnelStats = topFunnelsData?.reduce((acc: any, event) => {
+    const funnelStats = topFunnelsData?.reduce((acc: Record<string, { name: string; scans: number }>, event) => {
       const funnelId = event.funnel_id
-      const funnelName = (event.funnels as any)?.name
+      const funnelName = Array.isArray(event.funnels) ? event.funnels[0]?.name : (event.funnels as { name: string } | null)?.name || 'Unknown'
       if (!acc[funnelId]) {
         acc[funnelId] = { name: funnelName, scans: 0 }
       }
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
     }, {}) || {}
 
     const topFunnels = Object.entries(funnelStats)
-      .map(([id, stats]: [string, any]) => ({ id, ...stats }))
+      .map(([id, stats]: [string, { name: string; scans: number }]) => ({ id, ...stats }))
       .sort((a, b) => b.scans - a.scans)
       .slice(0, 5)
 
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
       recentActivity: recentActivity?.map(activity => ({
         action: activity.action,
         timestamp: activity.created_at,
-        funnelName: (activity.funnels as any)?.name,
+        funnelName: Array.isArray(activity.funnels) ? activity.funnels[0]?.name : (activity.funnels as { name: string } | null)?.name || 'Unknown',
         deviceType: activity.metadata?.device_type
       })) || [],
       deviceBreakdown,

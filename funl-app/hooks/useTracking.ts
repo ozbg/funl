@@ -16,7 +16,7 @@ export function useTracking(funnelId: string) {
     setSessionId(id)
   }, [])
 
-  const track = useCallback(async (action: string, metadata?: Record<string, any>) => {
+  const track = useCallback(async (action: string, metadata?: Record<string, unknown>) => {
     if (!sessionId) return
     
     try {

@@ -15,9 +15,9 @@ export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [business, setBusiness] = useState<Business | null>(null)
-  const [funnelCount, setFunnelCount] = useState<number>(0)
+  const [, setFunnelCount] = useState<number>(0)
   const [defaultNameSet, setDefaultNameSet] = useState(false)
-  const [existingFunnel, setExistingFunnel] = useState<any>(null)
+  const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -81,7 +81,7 @@ export default function NewFunnelPage() {
             setValue('type', funnelData.type)
             if (funnelData.content) {
               Object.keys(funnelData.content).forEach(key => {
-                setValue(`content.${key}` as any, funnelData.content[key])
+                setValue(`content.${key}` as keyof FunnelContent, funnelData.content[key as keyof FunnelContent])
               })
             }
             setDefaultNameSet(true)
