@@ -1,4 +1,3 @@
-import QRCode from 'qrcode'
 import QRCodeStyling from 'qr-code-styling'
 import { nanoid } from 'nanoid'
 
@@ -11,47 +10,7 @@ export function generateShortUrl(shortId: string): string {
   return `${baseUrl}/f/${shortId}`
 }
 
-export async function generateQRCode(url: string, options?: { 
-  darkColor?: string 
-  lightColor?: string 
-}): Promise<string> {
-  try {
-    return await QRCode.toDataURL(url, {
-      type: 'image/png',
-      width: 400,
-      margin: 2,
-      color: {
-        dark: options?.darkColor || '#000000',
-        light: options?.lightColor || '#FFFFFF'
-      },
-      errorCorrectionLevel: 'M'
-    })
-  } catch (error) {
-    console.error('Error generating QR code:', error)
-    throw new Error('Failed to generate QR code')
-  }
-}
-
-export async function generateQRCodeBuffer(url: string, options?: { 
-  darkColor?: string 
-  lightColor?: string 
-}): Promise<Buffer> {
-  try {
-    return await QRCode.toBuffer(url, {
-      type: 'png',
-      width: 400,
-      margin: 2,
-      color: {
-        dark: options?.darkColor || '#000000',
-        light: options?.lightColor || '#FFFFFF'
-      },
-      errorCorrectionLevel: 'M'
-    })
-  } catch (error) {
-    console.error('Error generating QR code buffer:', error)
-    throw new Error('Failed to generate QR code')
-  }
-}
+// PNG generation functions removed - using SVG-only with qr-code-styling
 
 export async function generateQRCodeSVG(
   url: string, 
@@ -87,7 +46,8 @@ export async function generateQRCodeSVG(
     console.log('🎨 Using dot type:', getDotsType(options?.style))
     
     // Create QR code with qr-code-styling
-    const qrCode = new QRCodeStyling({
+    // Conditionally import JSDOM only on server-side
+    const config: any = {
       width: width,
       height: height,
       type: "svg",
@@ -111,7 +71,19 @@ export async function generateQRCodeSVG(
         type: getDotsType(options?.style),
         color: options?.darkColor || '#000000'
       }
-    })
+    }
+    
+    // Add jsdom only in server environment (Node.js)
+    if (typeof window === 'undefined') {
+      // Server-side: dynamically import JSDOM
+      const { JSDOM } = await import('jsdom')
+      config.jsdom = JSDOM
+      console.log('🖥️ Server-side: Added JSDOM for QR generation')
+    } else {
+      console.log('🌐 Client-side: Using browser DOM for QR generation')
+    }
+    
+    const qrCode = new QRCodeStyling(config)
     
     // Get the SVG as string
     const svgString = await new Promise<string>((resolve, reject) => {

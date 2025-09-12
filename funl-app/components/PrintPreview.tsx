@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box } from '@/styled-system/jsx'
-import { generateQRCode } from '@/lib/qr'
+import { generateQRCodeSVG } from '@/lib/qr'
 
 interface PrintPreviewProps {
   printType: 'A4_portrait' | 'A5_portrait' | 'A5_landscape'
@@ -17,9 +17,14 @@ export default function PrintPreview({ printType, funnelName }: PrintPreviewProp
     // Generate a preview QR code
     const generatePreviewQR = async () => {
       try {
-        // For now, generate QR code with placeholder URL
+        // Generate SVG QR code with placeholder URL
         const placeholderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/preview`
-        const qrDataUrl = await generateQRCode(placeholderUrl)
+        const qrSVG = await generateQRCodeSVG(placeholderUrl, {
+          width: 120,
+          style: 'square'
+        })
+        // Convert SVG to data URL for img src
+        const qrDataUrl = `data:image/svg+xml;base64,${btoa(qrSVG)}`
         setQrCodeUrl(qrDataUrl)
       } catch (error) {
         console.error('Error generating QR code:', error)

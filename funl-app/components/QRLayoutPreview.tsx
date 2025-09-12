@@ -22,6 +22,7 @@ interface QRLayoutPreviewProps {
     verticalDistance?: number
     qrWidth?: number
     qrHeight?: number
+    qrStyle?: 'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'
   }
 }
 
@@ -39,7 +40,9 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
   const [downloadingPDF, setDownloadingPDF] = useState(false)
   const [qrCodeSVG, setQrCodeSVG] = useState<string>('')
   const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('')
-  const [selectedStyle, setSelectedStyle] = useState<'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'>(qrStyle)
+  const [selectedStyle, setSelectedStyle] = useState<'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'>(
+    initialStickerSettings?.qrStyle || qrStyle
+  )
   const supabase = createClient()
 
   // Generate SVG QR code when component mounts or style changes
@@ -68,7 +71,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           console.error('❌ Failed to generate QR code:', error)
         }
       } else {
-        console.log('⚠️ No shortUrl provided, falling back to PNG')
+        console.log('⚠️ No shortUrl provided')
         setQrCodeDataURL('')
       }
     }
@@ -88,7 +91,8 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           textDistance,
           verticalDistance,
           qrWidth,
-          qrHeight
+          qrHeight,
+          qrStyle: selectedStyle
         }
 
         // First get the current content to preserve it
@@ -114,7 +118,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
     }, 500) // Debounce for 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, funnelId, supabase])
+  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, selectedStyle, funnelId, supabase])
 
 
   const handleDownloadSVG = async () => {
@@ -296,11 +300,11 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           py: 1, 
           fontSize: 'xs', 
           borderRadius: 'md',
-          bg: qrCodeDataURL ? 'green.100' : 'yellow.100',
-          color: qrCodeDataURL ? 'green.800' : 'yellow.800',
+          bg: qrCodeDataURL ? 'green.100' : 'gray.100',
+          color: qrCodeDataURL ? 'green.800' : 'gray.800',
           fontWeight: 'medium'
         })}>
-          {qrCodeDataURL ? '✅ Vector SVG Mode' : '⚠️ PNG Mode (provide shortUrl for SVG)'}
+          {qrCodeDataURL ? '✅ Vector SVG Mode' : '⚠️ No URL provided'}
         </Box>
       </Flex>
       
@@ -673,7 +677,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                     {wordRight}
                   </text>
                   
-                  {/* QR Code - Use SVG DataURL first, fallback to PNG */}
+                  {/* QR Code - SVG Only */}
                   {qrCodeDataURL ? (
                     <image 
                       x={148 - qrWidth/2} 
@@ -682,16 +686,6 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                       height={qrHeight} 
                       href={qrCodeDataURL}
                       preserveAspectRatio="xMidYMid meet"
-                    />
-                  ) : qrCodeUrl ? (
-                    <image 
-                      x={148 - qrWidth/2} 
-                      y={210 - qrHeight/2} 
-                      width={qrWidth} 
-                      height={qrHeight} 
-                      xlinkHref={qrCodeUrl}
-                      preserveAspectRatio="none"
-                      style={{ border: '2px solid #ccc' }}
                     />
                   ) : (
                     <>
@@ -712,7 +706,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                         fontSize="12" 
                         fill="#666"
                       >
-                        QR CODE
+                        NO QR URL
                       </text>
                     </>
                   )}

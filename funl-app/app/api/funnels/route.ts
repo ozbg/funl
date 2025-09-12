@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { CreateFunnelSchema } from '@/lib/validations'
-import { generateShortId, generateShortUrl, generateQRCode } from '@/lib/qr'
+import { generateShortId, generateShortUrl, generateQRCodeSVG } from '@/lib/qr'
 
 // GET /api/funnels - List user's funnels
 export async function GET() {
@@ -48,8 +48,12 @@ export async function POST(request: NextRequest) {
     const shortId = generateShortId()
     const shortUrl = generateShortUrl(shortId)
     
-    // Generate QR code
-    const qrCodeDataUrl = await generateQRCode(shortUrl)
+    // Generate QR code SVG and convert to data URL
+    const qrCodeSVG = await generateQRCodeSVG(shortUrl, {
+      width: 400,
+      style: 'square'
+    })
+    const qrCodeDataUrl = `data:image/svg+xml;base64,${Buffer.from(qrCodeSVG).toString('base64')}`
 
     // Create funnel in database
     const { data: funnel, error } = await supabase
@@ -60,7 +64,7 @@ export async function POST(request: NextRequest) {
         type: validatedData.type,
         short_url: shortId, // Store just the short ID
         content: validatedData.content || {},
-        qr_code_url: qrCodeDataUrl, // Store as data URL for now
+        qr_code_url: qrCodeDataUrl, // Store SVG as base64 data URL
         status: 'draft',
       })
       .select()
