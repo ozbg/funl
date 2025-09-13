@@ -16,7 +16,7 @@ export default function SignupPage() {
     phone: '',
     businessCategoryId: '',
   })
-  const [businessCategories, setBusinessCategories] = useState<any[]>([])
+  const [businessCategories, setBusinessCategories] = useState<Array<{id: string, name: string, created_at: string, updated_at: string | null}>>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()

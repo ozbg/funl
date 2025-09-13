@@ -7,7 +7,7 @@ import { Box, Stack } from '@/styled-system/jsx'
 interface FunnelPreviewProps {
   formData: {
     name: string
-    type: 'contact' | 'property' | 'video'
+    type: string
     content: {
       state?: string
       price?: string
@@ -21,6 +21,18 @@ interface FunnelPreviewProps {
 }
 
 export default function FunnelPreview({ formData, businessName = 'Your Business', contactName }: FunnelPreviewProps) {
+  // Helper function to determine if this is a property-related funnel
+  const isPropertyType = formData.type === 'property-listing' || formData.type === 'property'
+
+  // Helper function to determine if this is a video-related funnel
+  const isVideoType = formData.type === 'video-showcase' || formData.type === 'video'
+
+  // Helper function to determine if this is a menu/service type
+  const isMenuType = formData.type === 'menu-display'
+
+  // Helper function to determine if this is an appointment type
+  const isAppointmentType = formData.type === 'appointment-booking'
+
   return (
     <Box>
       <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 4 })}>
@@ -72,7 +84,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                   {contactName || 'Contact Name'}
                 </p>
                 
-                {formData.type === 'property' && formData.content?.state && (
+                {isPropertyType && formData.content?.state && (
                   <Box display="inline-flex" alignItems="center" px={2} py={1} fontSize="xs" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
                     {formData.content.state === 'for_sale' && '🏠 For Sale'}
                     {formData.content.state === 'sold' && '✅ SOLD'}
@@ -130,7 +142,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 )}
 
                 {/* Property Link - Show if property type selected */}
-                {formData.type === 'property' && (
+                {isPropertyType && (
                   <Box mb={4}>
                     <Box
                       w="full"
@@ -148,7 +160,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 )}
 
                 {/* Video Link - Show if video type selected */}
-                {formData.type === 'video' && (
+                {isVideoType && (
                   <Box mb={4}>
                     <Box
                       w="full"
@@ -166,10 +178,52 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                   </Box>
                 )}
 
+                {/* Menu Display - Show if menu type selected */}
+                {isMenuType && (
+                  <Box mb={4}>
+                    <Box
+                      w="full"
+                      colorPalette="blue"
+                      bg="colorPalette.default"
+                      color="colorPalette.fg"
+                      fontWeight="semibold"
+                      py={2}
+                      px={3}
+                      textAlign="center"
+                      fontSize="sm"
+                    >
+                      📋 View Menu
+                    </Box>
+                  </Box>
+                )}
+
+                {/* Appointment Booking - Show if appointment type selected */}
+                {isAppointmentType && (
+                  <Box mb={4}>
+                    <Box
+                      w="full"
+                      colorPalette="purple"
+                      bg="colorPalette.default"
+                      color="colorPalette.fg"
+                      fontWeight="semibold"
+                      py={2}
+                      px={3}
+                      textAlign="center"
+                      fontSize="sm"
+                    >
+                      📅 Book Appointment
+                    </Box>
+                  </Box>
+                )}
+
                 {/* Callback Form Preview */}
                 <Box mt={5} borderTopWidth="1px" borderColor="border.default" pt={4}>
                   <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 3 })}>
-                    Request a Callback
+                    {isAppointmentType ? 'Book an Appointment' :
+                     isVideoType ? 'Contact for More Information' :
+                     isMenuType ? 'Get in Touch' :
+                     isPropertyType ? 'Request Property Information' :
+                     'Request a Callback'}
                   </h3>
                   <Stack gap={3}>
                     <Box
@@ -207,7 +261,11 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                       textAlign="center"
                       fontSize="xs"
                     >
-                      Request Callback
+                      {isAppointmentType ? 'Book Appointment' :
+                       isVideoType ? 'Contact Me' :
+                       isMenuType ? 'Contact Us' :
+                       isPropertyType ? 'Get Property Info' :
+                       'Request Callback'}
                     </Box>
                   </Stack>
                 </Box>

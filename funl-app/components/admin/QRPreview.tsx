@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { generateQRCodeSVG } from '@/lib/qr'
+// Removed unused import
 import { css } from '@/styled-system/css'
 import { Box } from '@/styled-system/jsx'
 
 interface QRPreviewProps {
-  style_config: any
+  style_config: Record<string, unknown>
   size?: number
   url?: string
 }
@@ -37,32 +37,32 @@ export function QRPreview({ style_config, size = 100, url = 'funl.au' }: QRPrevi
           margin: 0,
           qrOptions: {
             typeNumber: 0, // Always use auto for preview to prevent overflow
-            mode: style_config.qrOptions?.mode || 'Byte',
-            errorCorrectionLevel: style_config.qrOptions?.errorCorrectionLevel || 'M' // Use M instead of Q for shorter data
+            mode: (style_config.qrOptions as Record<string, unknown>)?.mode as string || 'Byte',
+            errorCorrectionLevel: (style_config.qrOptions as Record<string, unknown>)?.errorCorrectionLevel as string || 'M' // Use M instead of Q for shorter data
           },
           dotsOptions: {
-            color: style_config.dotsOptions?.color || '#6a1a4c',
-            type: style_config.dotsOptions?.type || 'extra-rounded',
-            gradient: style_config.dotsOptions?.gradient
+            color: (style_config.dotsOptions as Record<string, unknown>)?.color as string || '#6a1a4c',
+            type: (style_config.dotsOptions as Record<string, unknown>)?.type as string || 'extra-rounded',
+            gradient: (style_config.dotsOptions as Record<string, unknown>)?.gradient as Record<string, unknown>
           },
           backgroundOptions: {
-            color: style_config.backgroundOptions?.color || '#ffffff',
-            gradient: style_config.backgroundOptions?.gradient
+            color: (style_config.backgroundOptions as Record<string, unknown>)?.color as string || '#ffffff',
+            gradient: (style_config.backgroundOptions as Record<string, unknown>)?.gradient as Record<string, unknown>
           },
-          cornersSquareOptions: style_config.cornersSquareOptions?.type ? {
-            type: style_config.cornersSquareOptions.type,
-            color: style_config.cornersSquareOptions.color || '#000000',
-            gradient: style_config.cornersSquareOptions?.gradient
+          cornersSquareOptions: (style_config.cornersSquareOptions as Record<string, unknown>)?.type ? {
+            type: (style_config.cornersSquareOptions as Record<string, unknown>).type as string,
+            color: (style_config.cornersSquareOptions as Record<string, unknown>).color as string || '#000000',
+            gradient: (style_config.cornersSquareOptions as Record<string, unknown>)?.gradient as Record<string, unknown>
           } : undefined,
-          cornersDotOptions: style_config.cornersDotOptions?.type ? {
-            type: style_config.cornersDotOptions.type,
-            color: style_config.cornersDotOptions.color || '#000000',
-            gradient: style_config.cornersDotOptions?.gradient
+          cornersDotOptions: (style_config.cornersDotOptions as Record<string, unknown>)?.type ? {
+            type: (style_config.cornersDotOptions as Record<string, unknown>).type as string,
+            color: (style_config.cornersDotOptions as Record<string, unknown>).color as string || '#000000',
+            gradient: (style_config.cornersDotOptions as Record<string, unknown>)?.gradient as Record<string, unknown>
           } : undefined,
           imageOptions: {
-            hideBackgroundDots: style_config.imageOptions?.hideBackgroundDots || true,
-            imageSize: style_config.imageOptions?.imageSize || 0.4,
-            margin: style_config.imageOptions?.margin || 0,
+            hideBackgroundDots: (style_config.imageOptions as Record<string, unknown>)?.hideBackgroundDots as boolean || true,
+            imageSize: (style_config.imageOptions as Record<string, unknown>)?.imageSize as number || 0.4,
+            margin: (style_config.imageOptions as Record<string, unknown>)?.margin as number || 0,
             crossOrigin: 'anonymous'
           }
         }
@@ -73,10 +73,10 @@ export function QRPreview({ style_config, size = 100, url = 'funl.au' }: QRPrevi
         // Add jsdom only in server environment
         if (typeof window === 'undefined') {
           const { JSDOM } = await import('jsdom')
-          ;(qrConfig as any).jsdom = JSDOM
+          ;(qrConfig as Record<string, unknown>).jsdom = JSDOM
         }
         
-        const qrCode = new QRCodeStyling(qrConfig as any)
+        const qrCode = new QRCodeStyling(qrConfig as Record<string, unknown>)
         
         const svgBuffer = await qrCode.getRawData('svg')
         let svgString: string

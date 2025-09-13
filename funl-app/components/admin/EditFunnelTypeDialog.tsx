@@ -17,7 +17,7 @@ interface FunnelType {
   name: string
   slug: string
   description: string | null
-  template_config: any
+  template_config: Record<string, unknown>
   is_active: boolean
   sort_order: number
   created_at: string

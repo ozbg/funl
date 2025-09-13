@@ -62,10 +62,8 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           console.log('🖼️ SVG preview will be scaled to fit', qrWidth, 'x', qrHeight, 'pixels')
           setQrCodeSVG(svg)
           
-          // Convert SVG to data URL for preview display
-          const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
-          const svgDataURL = URL.createObjectURL(svgBlob)
-          setQrCodeDataURL(`data:image/svg+xml;base64,${btoa(svg)}`)
+          // Convert SVG to data URL for preview display (more efficient without base64)
+          setQrCodeDataURL(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`)
           console.log('✅ DataURL created for preview')
         } catch (error) {
           console.error('❌ Failed to generate QR code:', error)
@@ -135,7 +133,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           lightColor: '#FFFFFF'
         })
         // Create data URL exactly like preview does
-        exportQRDataURL = `data:image/svg+xml;base64,${btoa(exportQRSVG)}`
+        exportQRDataURL = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}`
         console.log('📦 Export SVG QR generated with width:', Math.max(qrWidth, qrHeight))
         console.log('📦 Export QR SVG length:', exportQRSVG.length)
         console.log('📦 Export QR DataURL length:', exportQRDataURL.length)
@@ -212,7 +210,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           lightColor: '#FFFFFF'
         })
         // Create data URL exactly like preview does
-        exportQRDataURL = `data:image/svg+xml;base64,${btoa(exportQRSVG)}`
+        exportQRDataURL = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}`
         console.log('📦 Export PDF QR generated with width:', Math.max(qrWidth, qrHeight))
         console.log('📦 Export PDF QR SVG length:', exportQRSVG.length)
         console.log('📦 Export PDF QR DataURL length:', exportQRDataURL.length)

@@ -14,13 +14,11 @@ import { createClient } from '@/lib/supabase/client'
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [business, setBusiness] = useState<Business | null>(null)
+  const [business, setBusiness] = useState<(Business & { business_categories?: { id: string, name: string } }) | null>(null)
   const [, setFunnelCount] = useState<number>(0)
   const [defaultNameSet, setDefaultNameSet] = useState(false)
   const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
-  const [availableFunnelTypes, setAvailableFunnelTypes] = useState<any[]>([])
-  const [availableQRPresets, setAvailableQRPresets] = useState<any[]>([])
-  const [selectedQRPreset, setSelectedQRPreset] = useState<string>('')
+  const [availableFunnelTypes, setAvailableFunnelTypes] = useState<Array<{id: string, name: string, slug: string, description: string | null, is_custom: boolean, created_at: string, updated_at: string | null}>>([])
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -40,7 +38,7 @@ export default function NewFunnelPage() {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<CreateFunnelInput>({
     defaultValues: {
       name: '',
-      type: 'contact',
+      type: 'contact-card',
       content: {}
     }
   })
@@ -92,43 +90,15 @@ export default function NewFunnelPage() {
               setAvailableFunnelTypes(funnelTypes)
             }
             
-            // Fetch available QR presets for the user's business category  
-            const { data: qrPresets } = await supabase
-              .from('qr_code_presets')
-              .select(`
-                *,
-                category_qr_presets!inner(
-                  business_category_id
-                )
-              `)
-              .eq('category_qr_presets.business_category_id', businessData.business_category_id)
-              .eq('is_active', true)
-              .order('sort_order', { ascending: true })
-            
-            if (qrPresets && qrPresets.length > 0) {
-              setAvailableQRPresets(qrPresets)
-              setSelectedQRPreset(qrPresets[0].id) // Default to first preset
-            }
           } else {
             // If no category assigned, show all active options
-            const [{ data: funnelTypes }, { data: qrPresets }] = await Promise.all([
-              supabase
-                .from('funnel_types')
-                .select('*')
-                .eq('is_active', true)
-                .order('sort_order', { ascending: true }),
-              supabase
-                .from('qr_code_presets')
-                .select('*')
-                .eq('is_active', true)
-                .order('sort_order', { ascending: true })
-            ])
-            
+            const { data: funnelTypes } = await supabase
+              .from('funnel_types')
+              .select('*')
+              .eq('is_active', true)
+              .order('sort_order', { ascending: true })
+
             if (funnelTypes) setAvailableFunnelTypes(funnelTypes)
-            if (qrPresets) {
-              setAvailableQRPresets(qrPresets)
-              if (qrPresets.length > 0) setSelectedQRPreset(qrPresets[0].id)
-            }
           }
         }
 
@@ -184,10 +154,7 @@ export default function NewFunnelPage() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          qr_preset_id: selectedQRPreset || null
-        }),
+        body: JSON.stringify(data),
       })
 
       if (!response.ok) {
@@ -344,10 +311,10 @@ export default function NewFunnelPage() {
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
                   Funnel Type
                 </label>
-                {(business as any)?.business_categories && (
+                {business?.business_categories && (
                   <Box mb={2} p={2} bg="bg.subtle" rounded="md">
                     <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>
-                      Available for: {(business as any).business_categories.name}
+                      Available for: {business?.business_categories?.name}
                     </span>
                   </Box>
                 )}
@@ -392,7 +359,7 @@ export default function NewFunnelPage() {
               {/* Content Fields */}
               <Stack gap={4}>
 
-                {selectedType === 'property' && (
+                {(selectedType === 'property' || selectedType === 'property-listing') && (
                   <>
                     <Box>
                       <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
@@ -435,7 +402,7 @@ export default function NewFunnelPage() {
                   </>
                 )}
 
-                {selectedType === 'video' && (
+                {(selectedType === 'video' || selectedType === 'video-showcase') && (
                   <Box>
                     <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
                       Video URL (Optional)
@@ -462,44 +429,6 @@ export default function NewFunnelPage() {
                 </Box>
               </Stack>
 
-              {/* QR Code Style */}
-              {availableQRPresets.length > 0 && (
-                <Box>
-                  <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                    QR Code Style
-                  </label>
-                  <Grid columns={{ base: 2, sm: 3 }} gap={3}>
-                    {availableQRPresets.map((preset) => (
-                      <label key={preset.id} className={css({ cursor: 'pointer' })}>
-                        <input
-                          type="radio"
-                          value={preset.id}
-                          checked={selectedQRPreset === preset.id}
-                          onChange={(e) => setSelectedQRPreset(e.target.value)}
-                          className={css({ position: 'absolute', opacity: 0 })}
-                        />
-                        <Box
-                          p={3}
-                          borderWidth="1px"
-                          textAlign="center"
-                          borderColor={selectedQRPreset === preset.id ? 'colorPalette.default' : 'border.default'}
-                          colorPalette={selectedQRPreset === preset.id ? 'mint' : undefined}
-                          bg={selectedQRPreset === preset.id ? 'colorPalette.subtle' : 'bg.default'}
-                          color={selectedQRPreset === preset.id ? 'colorPalette.text' : 'fg.default'}
-                          _hover={selectedQRPreset !== preset.id ? { borderColor: 'border.default' } : {}}
-                        >
-                          <h4 className={css({ fontWeight: 'medium', fontSize: 'sm' })}>{preset.name}</h4>
-                          {preset.description && (
-                            <p className={css({ fontSize: 'xs', mt: 1, opacity: 0.8 })}>
-                              {preset.description}
-                            </p>
-                          )}
-                        </Box>
-                      </label>
-                    ))}
-                  </Grid>
-                </Box>
-              )}
 
               {/* Actions */}
               <Flex justify="end" gap={3} pt={6} borderTop="1px solid" borderColor="border.default">
@@ -531,7 +460,7 @@ export default function NewFunnelPage() {
               key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedCustomMessage}`}
               formData={{
                 name: watchedName || '',
-                type: watchedType || 'contact',
+                type: watchedType || 'contact-card',
                 content: {
                   state: watchedState || '',
                   price: watchedPrice || '',

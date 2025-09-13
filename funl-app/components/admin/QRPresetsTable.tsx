@@ -19,7 +19,7 @@ interface QRPreset {
   name: string
   slug: string
   description: string | null
-  style_config: any
+  style_config: Record<string, unknown>
   is_active: boolean
   sort_order: number
   created_at: string

@@ -54,7 +54,7 @@ interface QRPreset {
   name: string
   slug: string
   description: string | null
-  style_config: any
+  style_config: Record<string, unknown>
   is_active: boolean
   sort_order: number
   created_at: string
@@ -217,7 +217,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
     }))
   }
 
-  const handleStyleConfigChange = (section: string, key: string, value: any) => {
+  const handleStyleConfigChange = (section: string, key: string, value: string | number | boolean) => {
     setFormData(prev => {
       const newStyleConfig = { ...prev.style_config }
       
@@ -225,30 +225,31 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
         newStyleConfig[key] = value
       } else if (section === 'dotsOptions') {
         if (key.startsWith('gradient')) {
-          const currentGradient = newStyleConfig.dotsOptions?.gradient || { type: 'linear', rotation: 0, colorStops: [{ offset: 0, color: '#6a1a4c' }, { offset: 1, color: '#6a1a4c' }] }
-          
+          const dotsOptions = newStyleConfig.dotsOptions as Record<string, unknown> | undefined
+          const currentGradient = (dotsOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: 'linear', rotation: 0, colorStops: [{ offset: 0, color: '#6a1a4c' }, { offset: 1, color: '#6a1a4c' }] }
+
           if (key === 'gradientColor1') {
-            currentGradient.colorStops[0].color = value
+            currentGradient.colorStops[0].color = value as string
           } else if (key === 'gradientColor2') {
-            currentGradient.colorStops[1].color = value
+            currentGradient.colorStops[1].color = value as string
           } else if (key === 'gradientRotation') {
-            currentGradient.rotation = value
+            currentGradient.rotation = value as number
           }
           
-          newStyleConfig.dotsOptions = { ...newStyleConfig.dotsOptions, gradient: currentGradient }
+          newStyleConfig.dotsOptions = { ...(newStyleConfig.dotsOptions as Record<string, unknown> || {}), gradient: currentGradient }
         } else {
-          newStyleConfig.dotsOptions = { ...newStyleConfig.dotsOptions, [key]: value }
+          newStyleConfig.dotsOptions = { ...(newStyleConfig.dotsOptions as Record<string, unknown> || {}), [key]: value }
         }
       } else if (section === 'backgroundOptions') {
-        newStyleConfig.backgroundOptions = { ...newStyleConfig.backgroundOptions, [key]: value }
+        newStyleConfig.backgroundOptions = { ...(newStyleConfig.backgroundOptions as Record<string, unknown> || {}), [key]: value }
       } else if (section === 'cornersDotOptions') {
-        newStyleConfig.cornersDotOptions = { ...newStyleConfig.cornersDotOptions, [key]: value }
+        newStyleConfig.cornersDotOptions = { ...(newStyleConfig.cornersDotOptions as Record<string, unknown> || {}), [key]: value }
       } else if (section === 'cornersSquareOptions') {
-        newStyleConfig.cornersSquareOptions = { ...newStyleConfig.cornersSquareOptions, [key]: value }
+        newStyleConfig.cornersSquareOptions = { ...(newStyleConfig.cornersSquareOptions as Record<string, unknown> || {}), [key]: value }
       } else if (section === 'imageOptions') {
-        newStyleConfig.imageOptions = { ...newStyleConfig.imageOptions, [key]: value }
+        newStyleConfig.imageOptions = { ...(newStyleConfig.imageOptions as Record<string, unknown> || {}), [key]: value }
       } else if (section === 'qrOptions') {
-        newStyleConfig.qrOptions = { ...newStyleConfig.qrOptions, [key]: value }
+        newStyleConfig.qrOptions = { ...(newStyleConfig.qrOptions as Record<string, unknown> || {}), [key]: value }
       }
       
       return {
@@ -398,7 +399,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                               type="number"
                               min="100"
                               max="10000"
-                              value={formData.style_config.width || 300}
+                              value={(formData.style_config.width as number) || 300}
                               onChange={(e) => handleStyleConfigChange('main', 'width', parseInt(e.target.value))}
                               className={css({
                                 mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -414,7 +415,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                               type="number"
                               min="100"
                               max="10000"
-                              value={formData.style_config.height || 300}
+                              value={(formData.style_config.height as number) || 300}
                               onChange={(e) => handleStyleConfigChange('main', 'height', parseInt(e.target.value))}
                               className={css({
                                 mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -431,7 +432,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             type="number"
                             min="0"
                             max="10000"
-                            value={formData.style_config.margin || 0}
+                            value={(formData.style_config.margin as number) || 0}
                             onChange={(e) => handleStyleConfigChange('main', 'margin', parseInt(e.target.value))}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -454,7 +455,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             Dots Style
                           </label>
                           <select
-                            value={formData.style_config.dotsOptions?.type || 'extra-rounded'}
+                            value={((formData.style_config.dotsOptions as Record<string, unknown>)?.type as string) || 'extra-rounded'}
                             onChange={(e) => handleStyleConfigChange('dotsOptions', 'type', e.target.value)}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -502,7 +503,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             </label>
                             <input
                               type="color"
-                              value={formData.style_config.dotsOptions?.color || '#6a1a4c'}
+                              value={((formData.style_config.dotsOptions as Record<string, unknown>)?.color as string) || '#6a1a4c'}
                               onChange={(e) => handleStyleConfigChange('dotsOptions', 'color', e.target.value)}
                               className={css({
                                 mt: 1, w: 'full', h: 10, borderWidth: '1px',
@@ -546,7 +547,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                               <Flex gap={2} mt={1}>
                                 <input
                                   type="color"
-                                  value={formData.style_config.dotsOptions?.gradient?.colorStops?.[0]?.color || '#6a1a4c'}
+                                  value={(((formData.style_config.dotsOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[0]?.color || '#6a1a4c'}
                                   onChange={(e) => handleStyleConfigChange('dotsOptions', 'gradientColor1', e.target.value)}
                                   className={css({
                                     flex: 1, h: 10, borderWidth: '1px',
@@ -555,7 +556,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                 />
                                 <input
                                   type="color"
-                                  value={formData.style_config.dotsOptions?.gradient?.colorStops?.[1]?.color || '#6a1a4c'}
+                                  value={(((formData.style_config.dotsOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[1]?.color || '#6a1a4c'}
                                   onChange={(e) => handleStyleConfigChange('dotsOptions', 'gradientColor2', e.target.value)}
                                   className={css({
                                     flex: 1, h: 10, borderWidth: '1px',
@@ -572,7 +573,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                 type="number"
                                 min="0"
                                 max="360"
-                                value={formData.style_config.dotsOptions?.gradient?.rotation || 0}
+                                value={(((formData.style_config.dotsOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.rotation as number) || 0}
                                 onChange={(e) => handleStyleConfigChange('dotsOptions', 'gradientRotation', parseInt(e.target.value))}
                                 className={css({
                                   mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -597,7 +598,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             Corners Square Style
                           </label>
                           <select
-                            value={formData.style_config.cornersSquareOptions?.type || 'extra-rounded'}
+                            value={((formData.style_config.cornersSquareOptions as Record<string, unknown>)?.type as string) || 'extra-rounded'}
                             onChange={(e) => handleStyleConfigChange('cornersSquareOptions', 'type', e.target.value)}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -645,7 +646,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             <Flex gap={2} mt={1}>
                               <input
                                 type="color"
-                                value={formData.style_config.cornersSquareOptions?.color || '#000000'}
+                                value={((formData.style_config.cornersSquareOptions as Record<string, unknown>)?.color as string) || '#000000'}
                                 onChange={(e) => handleStyleConfigChange('cornersSquareOptions', 'color', e.target.value)}
                                 className={css({
                                   flex: 1, h: 10, borderWidth: '1px',
@@ -656,7 +657,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                 type="button"
                                 size="xs"
                                 variant="outline"
-                                onClick={() => handleStyleConfigChange('cornersSquareOptions', 'color', null)}
+                                onClick={() => handleStyleConfigChange('cornersSquareOptions', 'color', '')}
                               >
                                 Clear
                               </Button>
@@ -678,7 +679,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             Corners Dot Style
                           </label>
                           <select
-                            value={formData.style_config.cornersDotOptions?.type || ''}
+                            value={((formData.style_config.cornersDotOptions as Record<string, unknown>)?.type as string) || ''}
                             onChange={(e) => handleStyleConfigChange('cornersDotOptions', 'type', e.target.value)}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -725,7 +726,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             <Flex gap={2} mt={1}>
                               <input
                                 type="color"
-                                value={formData.style_config.cornersDotOptions?.color || '#000000'}
+                                value={((formData.style_config.cornersDotOptions as Record<string, unknown>)?.color as string) || '#000000'}
                                 onChange={(e) => handleStyleConfigChange('cornersDotOptions', 'color', e.target.value)}
                                 className={css({
                                   flex: 1, h: 10, borderWidth: '1px',
@@ -736,7 +737,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                 type="button"
                                 size="xs"
                                 variant="outline"
-                                onClick={() => handleStyleConfigChange('cornersDotOptions', 'color', null)}
+                                onClick={() => handleStyleConfigChange('cornersDotOptions', 'color', '')}
                               >
                                 Clear
                               </Button>
@@ -786,7 +787,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             </label>
                             <input
                               type="color"
-                              value={formData.style_config.backgroundOptions?.color || '#ffffff'}
+                              value={((formData.style_config.backgroundOptions as Record<string, unknown>)?.color as string) || '#ffffff'}
                               onChange={(e) => handleStyleConfigChange('backgroundOptions', 'color', e.target.value)}
                               className={css({
                                 mt: 1, w: 'full', h: 10, borderWidth: '1px',
@@ -809,7 +810,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                           <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs' })}>
                             <input
                               type="checkbox"
-                              checked={formData.style_config.imageOptions?.hideBackgroundDots || false}
+                              checked={((formData.style_config.imageOptions as Record<string, unknown>)?.hideBackgroundDots as boolean) || false}
                               onChange={(e) => handleStyleConfigChange('imageOptions', 'hideBackgroundDots', e.target.checked)}
                             />
                             Hide Background Dots
@@ -824,7 +825,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             min="0"
                             max="1"
                             step="0.1"
-                            value={formData.style_config.imageOptions?.imageSize || 0.4}
+                            value={((formData.style_config.imageOptions as Record<string, unknown>)?.imageSize as number) || 0.4}
                             onChange={(e) => handleStyleConfigChange('imageOptions', 'imageSize', parseFloat(e.target.value))}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -840,7 +841,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             type="number"
                             min="0"
                             max="10000"
-                            value={formData.style_config.imageOptions?.margin || 0}
+                            value={((formData.style_config.imageOptions as Record<string, unknown>)?.margin as number) || 0}
                             onChange={(e) => handleStyleConfigChange('imageOptions', 'margin', parseInt(e.target.value))}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -866,7 +867,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             type="number"
                             min="0"
                             max="40"
-                            value={formData.style_config.qrOptions?.typeNumber || 0}
+                            value={((formData.style_config.qrOptions as Record<string, unknown>)?.typeNumber as number) || 0}
                             onChange={(e) => handleStyleConfigChange('qrOptions', 'typeNumber', parseInt(e.target.value))}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -879,7 +880,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             Mode
                           </label>
                           <select
-                            value={formData.style_config.qrOptions?.mode || 'Byte'}
+                            value={((formData.style_config.qrOptions as Record<string, unknown>)?.mode as string) || 'Byte'}
                             onChange={(e) => handleStyleConfigChange('qrOptions', 'mode', e.target.value)}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -897,7 +898,7 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             Error Correction Level
                           </label>
                           <select
-                            value={formData.style_config.qrOptions?.errorCorrectionLevel || 'Q'}
+                            value={((formData.style_config.qrOptions as Record<string, unknown>)?.errorCorrectionLevel as string) || 'Q'}
                             onChange={(e) => handleStyleConfigChange('qrOptions', 'errorCorrectionLevel', e.target.value)}
                             className={css({
                               mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
@@ -1013,9 +1014,9 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                   Style Configuration
                 </h4>
                 <Box fontSize="xs" color="fg.muted">
-                  <div>Style: {formData.style_config.dotsOptions?.type}</div>
-                  <div>Dark Color: {formData.style_config.dotsOptions?.color}</div>
-                  <div>Light Color: {formData.style_config.backgroundOptions?.color}</div>
+                  <div>Style: {(formData.style_config.dotsOptions as Record<string, unknown>)?.type as string}</div>
+                  <div>Dark Color: {(formData.style_config.dotsOptions as Record<string, unknown>)?.color as string}</div>
+                  <div>Light Color: {(formData.style_config.backgroundOptions as Record<string, unknown>)?.color as string}</div>
                 </Box>
               </Box>
             </Box>

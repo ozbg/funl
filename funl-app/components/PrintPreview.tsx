@@ -23,8 +23,8 @@ export default function PrintPreview({ printType, funnelName }: PrintPreviewProp
           width: 120,
           style: 'square'
         })
-        // Convert SVG to data URL for img src
-        const qrDataUrl = `data:image/svg+xml;base64,${btoa(qrSVG)}`
+        // Use SVG directly as data URL (more efficient than base64)
+        const qrDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSVG)}`
         setQrCodeUrl(qrDataUrl)
       } catch (error) {
         console.error('Error generating QR code:', error)

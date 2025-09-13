@@ -21,22 +21,44 @@ const supabase = createSupabaseClient(
 export class MessageRepository {
   
   // Transform database row to domain object
-  private transformMessageFromDb(row: any): Message {
+  private transformMessageFromDb(row: {
+    id: string
+    funnel_id: string
+    funnels?: { name: string }
+    business_id: string
+    type: string
+    contact_name: string | null
+    contact_phone: string | null
+    contact_email: string | null
+    subject: string | null
+    message: string
+    priority: string
+    status: string
+    acknowledged_at: string | null
+    acknowledged_by: string | null
+    email_sent_at: string | null
+    sms_sent_at: string | null
+    email_status: string | null
+    sms_status: string | null
+    metadata: Record<string, unknown> | null
+    created_at: string
+    updated_at: string
+  }): Message {
     return {
       id: row.id,
       funnelId: row.funnel_id,
       funnelName: row.funnels?.name,
       businessId: row.business_id,
       type: row.type as Message['type'],
-      contactName: row.contact_name,
-      contactPhone: row.contact_phone,
-      contactEmail: row.contact_email,
-      subject: row.subject,
-      message: row.message,
+      contactName: row.contact_name || '',
+      contactPhone: row.contact_phone || undefined,
+      contactEmail: row.contact_email || undefined,
+      subject: row.subject || undefined,
+      message: row.message || undefined,
       priority: row.priority as Message['priority'],
       status: row.status as Message['status'],
       acknowledgedAt: row.acknowledged_at ? new Date(row.acknowledged_at) : undefined,
-      acknowledgedBy: row.acknowledged_by,
+      acknowledgedBy: row.acknowledged_by || undefined,
       emailSentAt: row.email_sent_at ? new Date(row.email_sent_at) : undefined,
       smsSentAt: row.sms_sent_at ? new Date(row.sms_sent_at) : undefined,
       emailStatus: row.email_status as Message['emailStatus'],

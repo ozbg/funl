@@ -19,7 +19,7 @@ export async function PUT(
     )
     
     const { id } = await params
-    const updateData: any = { updated_at: new Date().toISOString() }
+    const updateData: Record<string, string | boolean> = { updated_at: new Date().toISOString() }
     
     if (is_admin !== undefined) {
       updateData.is_admin = is_admin

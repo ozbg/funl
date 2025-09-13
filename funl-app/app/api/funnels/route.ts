@@ -43,46 +43,54 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validatedData = CreateFunnelSchema.parse(body)
-    const { qr_preset_id } = body
 
-    // Fetch QR preset if provided
-    let qrOptions: any = { width: 400, style: 'square' as const }
-    if (qr_preset_id) {
-      const { data: qrPreset } = await supabase
-        .from('qr_code_presets')
-        .select('style_config')
-        .eq('id', qr_preset_id)
-        .single()
-      
-      if (qrPreset?.style_config) {
-        qrOptions = {
-          width: 400,
-          style_config: qrPreset.style_config
-        }
-      }
-    }
+    // Use default QR options since QR styling is managed elsewhere
+    const qrOptions: {
+      width: number
+      style: 'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'
+      darkColor?: string
+      lightColor?: string
+    } = { width: 400, style: 'square' as const }
 
     // Find funnel type to get the ID
     let funnel_type_id = null
     if (validatedData.type) {
-      const { data: funnelType } = await supabase
-        .from('funnel_types')
-        .select('id')
-        .eq('slug', validatedData.type)
-        .single()
-      
-      if (funnelType) {
-        funnel_type_id = funnelType.id
+      try {
+        const { data: funnelType, error: typeError } = await supabase
+          .from('funnel_types')
+          .select('id')
+          .eq('slug', validatedData.type)
+          .single()
+
+        if (typeError) {
+          console.error('Error fetching funnel type:', typeError)
+        }
+
+        if (funnelType) {
+          funnel_type_id = funnelType.id
+        } else {
+          console.warn('No funnel type found for slug:', validatedData.type)
+        }
+      } catch (error) {
+        console.error('Error looking up funnel type:', error)
       }
     }
 
     // Generate short ID and URL
     const shortId = generateShortId()
     const shortUrl = generateShortUrl(shortId)
-    
-    // Generate QR code SVG and convert to data URL
-    const qrCodeSVG = await generateQRCodeSVG(shortUrl, qrOptions)
-    const qrCodeDataUrl = `data:image/svg+xml;base64,${Buffer.from(qrCodeSVG).toString('base64')}`
+
+    console.log('Generated short URL:', shortUrl)
+
+    // Generate QR code SVG
+    let qrCodeSVG: string
+    try {
+      qrCodeSVG = await generateQRCodeSVG(shortUrl, qrOptions)
+      console.log('QR code SVG generated successfully, length:', qrCodeSVG.length)
+    } catch (qrError) {
+      console.error('Error generating QR code:', qrError)
+      throw new Error('Failed to generate QR code')
+    }
 
     // Create funnel in database
     const { data: funnel, error } = await supabase
@@ -92,10 +100,10 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         type: validatedData.type,
         funnel_type_id,
-        qr_preset_id: qr_preset_id || null,
+        qr_preset_id: null,
         short_url: shortId, // Store just the short ID
         content: validatedData.content || {},
-        qr_code_url: qrCodeDataUrl, // Store SVG as base64 data URL
+        qr_code_url: qrCodeSVG, // Store SVG directly as text
         status: 'draft',
       })
       .select()
