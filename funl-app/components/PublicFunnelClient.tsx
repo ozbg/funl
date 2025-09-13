@@ -74,7 +74,9 @@ export default function PublicFunnelClient({
       track('callback_request')
       
       // Reset form
-      e.currentTarget.reset()
+      if (e.currentTarget) {
+        e.currentTarget.reset()
+      }
       alert('Callback request submitted! We\'ll be in touch soon.')
       
     } catch (error) {
