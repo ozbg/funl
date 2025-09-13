@@ -8,24 +8,22 @@ interface MessageListProps {
   messages: Message[];
   loading?: boolean;
   onAcknowledge?: (messageId: string) => void;
-  onDelete?: (messageId: string) => void;
-  onClick?: (message: Message) => void;
+  onComplete?: (messageId: string) => void;
 }
 
 export const MessageList = memo<MessageListProps>(({ 
   messages, 
   loading = false,
   onAcknowledge,
-  onDelete,
-  onClick 
+  onComplete
 }) => {
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {[1, 2, 3].map((i) => (
           <div 
             key={i}
-            className="h-32 bg-gray-100 rounded-lg animate-pulse"
+            className="h-16 bg-gray-100 rounded-lg animate-pulse"
           />
         ))}
       </div>
@@ -35,26 +33,25 @@ export const MessageList = memo<MessageListProps>(({
   if (messages.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-400 text-6xl mb-4">📭</div>
+        <div className="text-gray-400 text-4xl mb-3">📭</div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">
-          No messages yet
+          No messages
         </h3>
         <p className="text-gray-600">
-          When customers request callbacks through your funnels, they&apos;ll appear here.
+          Callback requests will appear here
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {messages.map((message) => (
         <MessageCard
           key={message.id}
           message={message}
           onAcknowledge={onAcknowledge}
-          onDelete={onDelete}
-          onClick={onClick}
+          onComplete={onComplete}
         />
       ))}
     </div>

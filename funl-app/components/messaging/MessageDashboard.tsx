@@ -1,279 +1,286 @@
 'use client';
 
 import { memo, useCallback, useState } from 'react';
-import { MessageHeader } from './MessageHeader';
-import { MessageFilters } from './MessageFilters';
-import { MessageList } from './MessageList';
 import { useMessages } from '@/hooks/use-messages';
-import type { Message, MessageFilters as MessageFiltersType } from '@/lib/messaging';
+import { Box, Flex, Stack } from '@/styled-system/jsx';
+import { Button } from '@/components/ui/button';
 
 interface MessageDashboardProps {
   businessId: string;
 }
 
 export const MessageDashboard = memo<MessageDashboardProps>(({ businessId }) => {
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
   
   const {
     messages,
     loading,
     error,
-    unreadCount,
-    totalCount,
-    currentFilters,
-    selectedMessageIds,
-    selectedMessages,
     acknowledgeMessage,
-    bulkAcknowledgeMessages,
     deleteMessage,
-    setFilters,
-    clearFilters,
-    refresh,
-    selectMessage,
-    deselectMessage,
-    clearSelection,
-    toggleMessageSelection
+    refresh
   } = useMessages(businessId);
 
-  const handleFiltersChange = useCallback((newFilters: MessageFiltersType) => {
-    setFilters(newFilters);
-  }, [setFilters]);
-
-  const handleMessageClick = useCallback((message: Message) => {
-    setSelectedMessage(message);
-    // You could open a modal or navigate to a detail page here
-    console.log('Message clicked:', message);
-  }, []);
-
-  const handleBulkAcknowledge = useCallback(async () => {
-    if (selectedMessages.length === 0) return;
-    
-    try {
-      await bulkAcknowledgeMessages();
-      // Success feedback could be added here (toast notification)
-    } catch (error) {
-      console.error('Bulk acknowledge failed:', error);
-      // Error feedback could be added here
-    }
-  }, [selectedMessages, bulkAcknowledgeMessages]);
-
-  const handleMessageAcknowledge = useCallback(async (messageId: string) => {
+  const handleRead = useCallback(async (messageId: string) => {
+    console.log('Mark as read:', messageId);
     try {
       await acknowledgeMessage(messageId);
-      // Success feedback could be added here
     } catch (error) {
-      console.error('Acknowledge failed:', error);
-      // Error feedback could be added here
+      console.error('Failed to mark as read:', error);
     }
   }, [acknowledgeMessage]);
 
-  const handleMessageDelete = useCallback(async (messageId: string) => {
-    if (!confirm('Are you sure you want to delete this message?')) {
-      return;
+  const handleComplete = useCallback(async (messageId: string) => {
+    console.log('Mark as complete:', messageId);
+    try {
+      const response = await fetch(`/api/messages/${messageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-business-id': businessId
+        },
+        body: JSON.stringify({ status: 'archived' })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to archive message');
+      }
+
+      refresh();
+    } catch (error) {
+      console.error('Failed to complete message:', error);
     }
+  }, [businessId, refresh]);
+
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return 'Unknown';
     
     try {
-      await deleteMessage(messageId);
-      // Success feedback could be added here
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) return 'Invalid';
+      
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(dateObj);
     } catch (error) {
-      console.error('Delete failed:', error);
-      // Error feedback could be added here
+      return 'Invalid';
     }
-  }, [deleteMessage]);
+  };
 
-  // Show error state
+  // Filter messages
+  const activeMessages = messages.filter(message => message.status !== 'archived');
+  const archivedMessages = messages.filter(message => message.status === 'archived');
+  const displayMessages = showCompleted ? [...activeMessages, ...archivedMessages] : activeMessages;
+
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <div className="text-red-400 text-6xl mb-4">⚠️</div>
-          <h2 className="text-lg font-semibold text-red-900 mb-2">
-            Error Loading Messages
-          </h2>
-          <p className="text-red-700 mb-4">{error}</p>
-          <button
-            onClick={refresh}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
+      <Box h="calc(100vh - 112px)" display="flex" flexDirection="column">
+        <Box px={{ base: 4, sm: 0 }}>
+          <Box bg="red.50" border="1px solid" borderColor="red.200" p={6} textAlign="center">
+            <Box fontSize="lg" fontWeight="semibold" color="red.900" mb={2}>
+              Error Loading Messages
+            </Box>
+            <Box color="red.700" mb={4}>{error}</Box>
+            <Button
+              onClick={refresh}
+              variant="solid"
+              colorPalette="red"
+            >
+              Try Again
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <MessageHeader
-        unreadCount={unreadCount}
-        totalCount={totalCount}
-        loading={loading}
-        onRefresh={refresh}
-        onBulkAcknowledge={selectedMessages.length > 0 ? handleBulkAcknowledge : undefined}
-        selectedCount={selectedMessages.length}
-      />
-
-      {/* Filter Toggle */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+    <Box h="calc(100vh - 112px)" display="flex" flexDirection="column">
+      <Box px={{ base: 4, sm: 0 }} flexShrink={0}>
+        <Flex 
+          direction={{ base: 'column', sm: 'row' }} 
+          align={{ sm: 'center' }} 
+          justify={{ sm: 'space-between' }}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-          </svg>
-          {showFilters ? 'Hide Filters' : 'Show Filters'}
-        </button>
-
-        {/* Quick Actions */}
-        <div className="flex items-center gap-3">
-          {selectedMessages.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
-                {selectedMessages.length} selected
-              </span>
-              <button
-                onClick={clearSelection}
-                className="text-sm text-blue-600 hover:text-blue-700"
-              >
-                Clear
-              </button>
-            </div>
-          )}
-          
-          <div className="text-sm text-gray-600">
-            Showing {messages.length} of {totalCount} messages
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      {showFilters && (
-        <MessageFilters
-          filters={currentFilters}
-          onFiltersChange={handleFiltersChange}
-          unreadCount={unreadCount}
-        />
-      )}
-
-      {/* Message List */}
-      <MessageList
-        messages={messages}
-        loading={loading}
-        onAcknowledge={handleMessageAcknowledge}
-        onDelete={handleMessageDelete}
-        onClick={handleMessageClick}
-      />
-
-      {/* Pagination */}
-      {totalCount > (currentFilters.limit || 20) && (
-        <div className="flex items-center justify-between bg-white rounded-lg border p-4">
-          <div className="text-sm text-gray-600">
-            Showing {(currentFilters.offset || 0) + 1} to {Math.min((currentFilters.offset || 0) + (currentFilters.limit || 20), totalCount)} of {totalCount} messages
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                const newOffset = Math.max(0, (currentFilters.offset || 0) - (currentFilters.limit || 20));
-                handleFiltersChange({
-                  ...currentFilters,
-                  offset: newOffset
-                });
-              }}
-              disabled={!currentFilters.offset || currentFilters.offset === 0}
-              className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          <Box>
+            <Box fontSize="2xl" fontWeight="bold" color="fg.default">
+              Messages
+            </Box>
+          </Box>
+          <Flex mt={{ base: 4, sm: 0 }} gap={3}>
+            <Button
+              onClick={refresh}
+              disabled={loading}
+              variant="outline"
             >
-              Previous
-            </button>
+              {loading ? 'Loading...' : 'Refresh'}
+            </Button>
             
-            <button
+            <Button
               onClick={() => {
-                const newOffset = (currentFilters.offset || 0) + (currentFilters.limit || 20);
-                if (newOffset < totalCount) {
-                  handleFiltersChange({
-                    ...currentFilters,
-                    offset: newOffset
-                  });
-                }
+                console.log('Toggle show completed:', !showCompleted);
+                console.log('Current messages:', messages);
+                console.log('Active messages:', activeMessages);
+                console.log('Archived messages:', archivedMessages);
+                setShowCompleted(!showCompleted);
               }}
-              disabled={(currentFilters.offset || 0) + (currentFilters.limit || 20) >= totalCount}
-              className="px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              variant={showCompleted ? 'solid' : 'outline'}
+              colorPalette="mint"
             >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
+              {showCompleted ? 'Hide Completed' : 'Show Completed'}
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
 
-      {/* Message Detail Modal/Sidebar could go here */}
-      {selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Message Details</h2>
-                <button
-                  onClick={() => setSelectedMessage(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900">{selectedMessage.contactName}</h3>
-                  <p className="text-gray-600">{selectedMessage.contactPhone} • {selectedMessage.contactEmail}</p>
-                </div>
-                
-                {selectedMessage.subject && (
-                  <div>
-                    <h4 className="font-medium text-gray-700">Subject</h4>
-                    <p className="text-gray-900">{selectedMessage.subject}</p>
-                  </div>
-                )}
-                
-                {selectedMessage.message && (
-                  <div>
-                    <h4 className="font-medium text-gray-700">Message</h4>
-                    <p className="text-gray-900 whitespace-pre-wrap">{selectedMessage.message}</p>
-                  </div>
-                )}
-                
-                <div className="flex gap-4 pt-4 border-t">
-                  {selectedMessage.status === 'unread' && (
-                    <button
-                      onClick={() => {
-                        handleMessageAcknowledge(selectedMessage.id);
-                        setSelectedMessage(null);
-                      }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Acknowledge
-                    </button>
-                  )}
-                  
-                  <button
-                    onClick={() => {
-                      handleMessageDelete(selectedMessage.id);
-                      setSelectedMessage(null);
-                    }}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+      <Box 
+        mt={8} 
+        flex="1" 
+        overflow="auto"
+        css={{
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+          scrollbarWidth: 'none'
+        }}
+      >
+        {displayMessages && displayMessages.length > 0 ? (
+          <Box bg="bg.default" boxShadow="sm">
+            <Stack divideY="1px" divideColor="border.default">
+              {displayMessages.map((message) => {
+                const isUnread = message.status === 'unread';
+                const isArchived = message.status === 'archived';
+                const messageContent = message.message || '';
+                const preferredTimeMatch = messageContent.match(/Preferred time: ([^\n]+)/);
+                const preferredTime = preferredTimeMatch ? preferredTimeMatch[1] : null;
+                const messageMatch = messageContent.match(/Message: (.+)$/);
+                const extractedMessage = messageMatch ? messageMatch[1] : '';
+
+                return (
+                  <Box 
+                    key={message.id} 
+                    px={{ base: 4, sm: 6 }} 
+                    py={6}
+                    bg={isUnread ? 'bg.emphasized' : message.status === 'read' ? 'bg.inverted' : isArchived ? 'bg.emphasized' : 'bg.default'}
+                    borderLeftWidth={isUnread ? '4px' : '0'}
+                    borderLeftColor={isUnread ? 'border.emphasized' : 'transparent'}
+                    opacity={isArchived ? 0.75 : 1}
                   >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+                    <Flex justify="space-between" align="flex-start">
+                      <Flex direction="column" gap={3} flex="1">
+                        {/* Funnel name - top line */}
+                        <Box>
+                          <Box 
+                            fontSize="sm" 
+                            color={isUnread || message.status === 'read' || isArchived ? 'fg.inverted' : 'fg.default'}
+                            fontWeight="bold"
+                          >
+                            {message.funnelName || 'Unknown Funnel'}
+                          </Box>
+                        </Box>
+
+                        {/* Main info line */}
+                        <Box>
+                          <Box 
+                            fontSize="sm" 
+                            color={isUnread || message.status === 'read' || isArchived ? 'fg.inverted' : 'fg.default'}
+                            fontWeight={isUnread ? 'semibold' : 'medium'}
+                          >
+                            {formatDate(message.createdAt)} • {message.contactName} • 📞 {message.contactPhone}
+                            {preferredTime && ` • Preferred time: ${preferredTime}`}
+                          </Box>
+                        </Box>
+
+                        {/* Message content */}
+                        {extractedMessage && (
+                          <Box 
+                            fontSize="sm" 
+                            color={isUnread || message.status === 'read' || isArchived ? 'fg.inverted' : 'fg.default'}
+                            fontWeight={isUnread ? 'medium' : 'normal'}
+                          >
+                            Message: {extractedMessage}
+                          </Box>
+                        )}
+                      </Flex>
+
+                      {/* Actions */}
+                      <Flex gap={3} ml={4}>
+                        {isUnread && !isArchived && (
+                          <Button
+                            onClick={() => handleRead(message.id)}
+                            variant="solid"
+                            colorPalette="blue"
+                            size="sm"
+                          >
+                            Read
+                          </Button>
+                        )}
+                        
+                        {!isArchived && (
+                          <Button
+                            onClick={() => handleComplete(message.id)}
+                            variant="solid"
+                            colorPalette="mint"
+                            size="sm"
+                          >
+                            Complete
+                          </Button>
+                        )}
+
+                        {isArchived && (
+                          <Box 
+                            px={3} 
+                            py={2} 
+                            fontSize="sm" 
+                            color="fg.muted"
+                            fontWeight="medium"
+                          >
+                            Completed
+                          </Box>
+                        )}
+                      </Flex>
+                    </Flex>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Box>
+        ) : (
+          <Flex direction="column" align="center" py={12}>
+            <Box mx="auto" h={12} w={12} color="fg.muted">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
+              </svg>
+            </Box>
+            <Box mt={2} fontSize="sm" fontWeight="medium" color="fg.default">
+              No messages yet
+            </Box>
+            <Box mt={1} fontSize="sm" color="fg.muted">
+              Callback requests will appear here when customers contact you.
+            </Box>
+          </Flex>
+        )}
+      </Box>
+
+      {/* Debug info */}
+      <Box mt={4} px={{ base: 4, sm: 0 }}>
+        <Box fontSize="xs" color="fg.muted">
+          Active: {activeMessages.length} | Archived: {archivedMessages.length} | Showing: {displayMessages.length}
+        </Box>
+      </Box>
+    </Box>
   );
 });
 

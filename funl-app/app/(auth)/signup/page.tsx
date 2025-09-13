@@ -99,7 +99,7 @@ export default function SignupPage() {
     <Box bg="bg.default" py={8} px={4} boxShadow="md">
       <Box mx={{ sm: 'auto' }} w={{ sm: 'full' }} maxW={{ sm: 'md' }}>
         <h2 className={css({ textAlign: 'center', fontSize: '3xl', fontWeight: 'extrabold', color: 'fg.default' })}>
-          Create your FunL account
+          Create your funl account
         </h2>
         <p className={css({ mt: 2, textAlign: 'center', fontSize: 'sm', color: 'fg.muted' })}>
           Or{' '}

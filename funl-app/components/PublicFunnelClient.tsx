@@ -358,7 +358,7 @@ export default function PublicFunnelClient({
                 _hover: { color: 'colorPalette.emphasized' } 
               })}
             >
-              FunL.app
+              funl.au
             </Link>
           </p>
         </Box>

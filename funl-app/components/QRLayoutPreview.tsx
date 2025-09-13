@@ -295,17 +295,6 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
         <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default' })}>
           Create Sticker
         </h2>
-        <Box className={css({ 
-          px: 2, 
-          py: 1, 
-          fontSize: 'xs', 
-          borderRadius: 'md',
-          bg: qrCodeDataURL ? 'green.100' : 'gray.100',
-          color: qrCodeDataURL ? 'green.800' : 'gray.800',
-          fontWeight: 'medium'
-        })}>
-          {qrCodeDataURL ? '✅ Vector SVG Mode' : '⚠️ No URL provided'}
-        </Box>
       </Flex>
       
       <Flex gap={6}>

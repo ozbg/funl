@@ -30,9 +30,6 @@ export default async function DashboardLayout({
         <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }}>
           <Flex justify="space-between" h="16" align="center">
             <Flex align="center" gap="6">
-              <Box>
-                <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default' })}>FunL</h1>
-              </Box>
               <DashboardNav businessId={business?.id || ''} />
             </Flex>
             <Flex align="center" gap="4">

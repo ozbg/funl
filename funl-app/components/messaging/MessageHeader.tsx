@@ -32,29 +32,12 @@ export const MessageHeader = memo<MessageHeaderProps>(({
     <div className="bg-white rounded-lg border p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Messages
-          </h1>
-          <div className="flex items-center gap-4">
+          {selectedCount > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-gray-600">Total:</span>
-              <Badge variant="outline">{totalCount}</Badge>
+              <span className="text-gray-600">Selected:</span>
+              <Badge variant="outline">{selectedCount}</Badge>
             </div>
-            {unreadCount > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Unread:</span>
-                <Badge variant="solid" className="animate-pulse">
-                  {unreadCount}
-                </Badge>
-              </div>
-            )}
-            {selectedCount > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Selected:</span>
-                <Badge variant="outline">{selectedCount}</Badge>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -98,37 +81,6 @@ export const MessageHeader = memo<MessageHeaderProps>(({
         </div>
       </div>
 
-      {/* Quick Stats */}
-      {!loading && totalCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="grid grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-blue-600">
-                {Math.round((unreadCount / totalCount) * 100)}%
-              </div>
-              <div className="text-xs text-gray-500">Unread</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">
-                {Math.round(((totalCount - unreadCount) / totalCount) * 100)}%
-              </div>
-              <div className="text-xs text-gray-500">Processed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-600">
-                {totalCount}
-              </div>
-              <div className="text-xs text-gray-500">Total</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-600">
-                {loading ? '...' : new Date().toLocaleDateString()}
-              </div>
-              <div className="text-xs text-gray-500">Last Updated</div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 });

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       contactName: validated.name,
       contactPhone: validated.phone,
       contactEmail: undefined, // Not collected in current form
-      subject: `Callback Request from ${validated.name}`,
+      subject: undefined,
       message: [
         `Name: ${validated.name}`,
         `Phone: ${validated.phone}`,

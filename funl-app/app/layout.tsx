@@ -11,7 +11,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FunL - QR Code Funnels",
+  title: "funl - QR Code Funnels",
   description: "Create and manage QR code funnels for your business",
 };
 

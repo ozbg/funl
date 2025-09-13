@@ -2,6 +2,7 @@
 export interface Message {
   id: string;
   funnelId: string;
+  funnelName?: string;
   businessId: string;
   type: MessageType;
   

@@ -217,7 +217,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
             {/* Footer */}
             <Box textAlign="center" mt={6}>
               <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
-                Powered by FunL.app
+                Powered by funl.au
               </p>
             </Box>
           </Box>

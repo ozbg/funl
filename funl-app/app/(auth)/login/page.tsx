@@ -41,7 +41,7 @@ export default function LoginPage() {
     <Box bg="bg.default" py={8} px={4} boxShadow="md">
       <Box mx={{ sm: 'auto' }} w={{ sm: 'full' }} maxW={{ sm: 'md' }}>
         <h2 className={css({ textAlign: 'center', fontSize: '3xl', fontWeight: 'extrabold', color: 'fg.default' })}>
-          Sign in to FunL
+          Sign in to funl
         </h2>
         <p className={css({ mt: 2, textAlign: 'center', fontSize: 'sm', color: 'fg.muted' })}>
           Or{' '}

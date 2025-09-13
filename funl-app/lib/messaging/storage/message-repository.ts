@@ -21,10 +21,11 @@ const supabase = createSupabaseClient(
 export class MessageRepository {
   
   // Transform database row to domain object
-  private transformMessageFromDb(row: MessageRow): Message {
+  private transformMessageFromDb(row: any): Message {
     return {
       id: row.id,
       funnelId: row.funnel_id,
+      funnelName: row.funnels?.name,
       businessId: row.business_id,
       type: row.type as Message['type'],
       contactName: row.contact_name,
@@ -108,7 +109,10 @@ export class MessageRepository {
   ): Promise<{ messages: Message[]; total: number }> {
     let query = supabase
       .from('messages')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        funnels!inner(name)
+      `, { count: 'exact' })
       .eq('business_id', businessId);
 
     // Apply filters
