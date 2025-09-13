@@ -18,19 +18,27 @@ export async function POST(req: NextRequest) {
     const validated = CallbackRequestSchema.parse(body);
     
     // Get funnel and business info from database
-    // For now, we'll use a simple query - in a real app you'd use your existing funnel service
-    const { createClient } = await import('@/lib/supabase/server');
-    const supabase = await createClient();
+    // Use service role client to bypass RLS for public callback requests
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_KEY!
+    );
     
     const { data: funnel, error: funnelError } = await supabase
       .from('funnels')
-      .select('id, name, business_id, funnels!inner(businesses!inner(*))')
+      .select('id, name, business_id')
       .eq('id', validated.funnelId)
       .single();
     
     if (funnelError || !funnel) {
+      console.error('Funnel lookup failed:', { 
+        funnelId: validated.funnelId, 
+        error: funnelError,
+        funnel 
+      });
       return NextResponse.json(
-        { error: 'Funnel not found' },
+        { error: 'Funnel not found', funnelId: validated.funnelId },
         { status: 404 }
       );
     }
