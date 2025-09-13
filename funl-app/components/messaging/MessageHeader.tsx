@@ -43,7 +43,7 @@ export const MessageHeader = memo<MessageHeaderProps>(({
             {unreadCount > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-gray-600">Unread:</span>
-                <Badge variant="destructive" className="animate-pulse">
+                <Badge variant="solid" className="animate-pulse">
                   {unreadCount}
                 </Badge>
               </div>
@@ -51,7 +51,7 @@ export const MessageHeader = memo<MessageHeaderProps>(({
             {selectedCount > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-gray-600">Selected:</span>
-                <Badge variant="default">{selectedCount}</Badge>
+                <Badge variant="outline">{selectedCount}</Badge>
               </div>
             )}
           </div>

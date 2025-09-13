@@ -26,20 +26,20 @@ export class MessageRepository {
       id: row.id,
       funnelId: row.funnel_id,
       businessId: row.business_id,
-      type: row.type as any,
+      type: row.type as Message['type'],
       contactName: row.contact_name,
       contactPhone: row.contact_phone,
       contactEmail: row.contact_email,
       subject: row.subject,
       message: row.message,
-      priority: row.priority as any,
-      status: row.status as any,
+      priority: row.priority as Message['priority'],
+      status: row.status as Message['status'],
       acknowledgedAt: row.acknowledged_at ? new Date(row.acknowledged_at) : undefined,
       acknowledgedBy: row.acknowledged_by,
       emailSentAt: row.email_sent_at ? new Date(row.email_sent_at) : undefined,
       smsSentAt: row.sms_sent_at ? new Date(row.sms_sent_at) : undefined,
-      emailStatus: row.email_status as any,
-      smsStatus: row.sms_status as any,
+      emailStatus: row.email_status as Message['emailStatus'],
+      smsStatus: row.sms_status as Message['smsStatus'],
       metadata: row.metadata || {},
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at)
@@ -229,7 +229,7 @@ export class MessageRepository {
     return {
       id: row.id,
       businessId: row.business_id,
-      channelType: row.channel_type as any,
+      channelType: row.channel_type as MessageChannel['channelType'],
       config: row.config || {},
       isEnabled: row.is_enabled,
       createdAt: new Date(row.created_at),
@@ -253,7 +253,7 @@ export class MessageRepository {
   async createOrUpdateChannel(
     businessId: string,
     channelType: string,
-    config: Record<string, any>
+    config: Record<string, unknown>
   ): Promise<MessageChannel> {
     const { data: channel, error } = await supabase
       .from('message_channels')

@@ -11,9 +11,10 @@ async function getBusinessIdFromRequest(req: NextRequest): Promise<string | null
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const businessId = await getBusinessIdFromRequest(req);
     
     if (!businessId) {
@@ -24,7 +25,7 @@ export async function POST(
     }
 
     // First check if message exists and user owns it
-    const existingMessage = await messageManager.getMessageById(params.id);
+    const existingMessage = await messageManager.getMessageById(resolvedParams.id);
     
     if (!existingMessage) {
       return NextResponse.json(
@@ -48,7 +49,7 @@ export async function POST(
       );
     }
 
-    const message = await messageManager.acknowledgeMessage(params.id, businessId);
+    const message = await messageManager.acknowledgeMessage(resolvedParams.id, businessId);
 
     return NextResponse.json({ data: message });
 

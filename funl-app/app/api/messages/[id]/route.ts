@@ -11,9 +11,10 @@ async function getBusinessIdFromRequest(req: NextRequest): Promise<string | null
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const businessId = await getBusinessIdFromRequest(req);
     
     if (!businessId) {
@@ -23,7 +24,7 @@ export async function GET(
       );
     }
 
-    const message = await messageManager.getMessageById(params.id);
+    const message = await messageManager.getMessageById(resolvedParams.id);
 
     if (!message) {
       return NextResponse.json(
@@ -53,9 +54,10 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const businessId = await getBusinessIdFromRequest(req);
     
     if (!businessId) {
@@ -66,7 +68,7 @@ export async function PATCH(
     }
 
     // First check if message exists and user owns it
-    const existingMessage = await messageManager.getMessageById(params.id);
+    const existingMessage = await messageManager.getMessageById(resolvedParams.id);
     
     if (!existingMessage) {
       return NextResponse.json(
@@ -83,7 +85,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const message = await messageManager.updateMessage(params.id, body);
+    const message = await messageManager.updateMessage(resolvedParams.id, body);
 
     return NextResponse.json({ data: message });
 
@@ -107,9 +109,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const businessId = await getBusinessIdFromRequest(req);
     
     if (!businessId) {
@@ -120,7 +123,7 @@ export async function DELETE(
     }
 
     // First check if message exists and user owns it
-    const existingMessage = await messageManager.getMessageById(params.id);
+    const existingMessage = await messageManager.getMessageById(resolvedParams.id);
     
     if (!existingMessage) {
       return NextResponse.json(
@@ -136,7 +139,7 @@ export async function DELETE(
       );
     }
 
-    await messageManager.deleteMessage(params.id);
+    await messageManager.deleteMessage(resolvedParams.id);
 
     return NextResponse.json({ success: true });
 

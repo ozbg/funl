@@ -28,7 +28,7 @@ export const NotificationBadge = memo<NotificationBadgeProps>(({
 
   return (
     <Badge 
-      variant="destructive" 
+      variant="solid" 
       className={`
         ${sizeClasses[size]}
         rounded-full flex items-center justify-center font-semibold

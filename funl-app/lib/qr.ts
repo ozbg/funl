@@ -47,7 +47,7 @@ export async function generateQRCodeSVG(
     
     // Create QR code with qr-code-styling
     // Conditionally import JSDOM only on server-side
-    const config: any = {
+    const config: Record<string, unknown> = {
       width: width,
       height: height,
       type: "svg",

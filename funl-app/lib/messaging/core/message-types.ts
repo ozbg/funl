@@ -27,7 +27,7 @@ export interface Message {
   smsStatus?: DeliveryStatus;
   
   // Metadata
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,7 +47,7 @@ export interface CreateMessageDto {
   subject?: string;
   message?: string;
   priority?: MessagePriority;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface UpdateMessageDto {
@@ -56,7 +56,7 @@ export interface UpdateMessageDto {
   acknowledgedBy?: string;
   emailStatus?: DeliveryStatus;
   smsStatus?: DeliveryStatus;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface MessageFilters {
@@ -74,7 +74,7 @@ export interface MessageChannel {
   id: string;
   businessId: string;
   channelType: ChannelType;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   isEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -154,7 +154,7 @@ export interface MessageRow {
   sms_sent_at?: string;
   email_status?: string;
   sms_status?: string;
-  metadata: any;
+  metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -163,7 +163,7 @@ export interface MessageChannelRow {
   id: string;
   business_id: string;
   channel_type: string;
-  config: any;
+  config: Record<string, unknown>;
   is_enabled: boolean;
   created_at: string;
   updated_at: string;

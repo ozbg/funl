@@ -1,8 +1,8 @@
 'use client';
 
 import { memo, useCallback } from 'react';
-import { Badge } from '@/components/ui/badge';
-import type { MessageFilters as MessageFiltersType } from '@/lib/messaging';
+// import { Badge } from '@/components/ui/badge';
+import type { MessageFilters as MessageFiltersType, MessageStatus, MessagePriority, MessageType } from '@/lib/messaging';
 
 interface MessageFiltersProps {
   filters: MessageFiltersType;
@@ -17,9 +17,9 @@ export const MessageFilters = memo<MessageFiltersProps>(({
 }) => {
   const handleStatusFilter = useCallback((status: string) => {
     const currentStatuses = filters.status || [];
-    const newStatuses = currentStatuses.includes(status as any)
+    const newStatuses = currentStatuses.includes(status as MessageStatus)
       ? currentStatuses.filter(s => s !== status)
-      : [...currentStatuses, status as any];
+      : [...currentStatuses, status as MessageStatus];
     
     onFiltersChange({
       ...filters,
@@ -29,9 +29,9 @@ export const MessageFilters = memo<MessageFiltersProps>(({
 
   const handlePriorityFilter = useCallback((priority: string) => {
     const currentPriorities = filters.priority || [];
-    const newPriorities = currentPriorities.includes(priority as any)
+    const newPriorities = currentPriorities.includes(priority as MessagePriority)
       ? currentPriorities.filter(p => p !== priority)
-      : [...currentPriorities, priority as any];
+      : [...currentPriorities, priority as MessagePriority];
     
     onFiltersChange({
       ...filters,
@@ -41,9 +41,9 @@ export const MessageFilters = memo<MessageFiltersProps>(({
 
   const handleTypeFilter = useCallback((type: string) => {
     const currentTypes = filters.type || [];
-    const newTypes = currentTypes.includes(type as any)
+    const newTypes = currentTypes.includes(type as MessageType)
       ? currentTypes.filter(t => t !== type)
-      : [...currentTypes, type as any];
+      : [...currentTypes, type as MessageType];
     
     onFiltersChange({
       ...filters,
@@ -89,7 +89,7 @@ export const MessageFilters = memo<MessageFiltersProps>(({
             { value: 'responded', label: 'Responded' },
             { value: 'archived', label: 'Archived' }
           ].map(({ value, label, count }) => {
-            const isActive = filters.status?.includes(value as any);
+            const isActive = filters.status?.includes(value as MessageStatus);
             return (
               <button
                 key={value}
@@ -121,8 +121,8 @@ export const MessageFilters = memo<MessageFiltersProps>(({
             { value: 'high', label: 'High', color: 'orange' },
             { value: 'medium', label: 'Medium', color: 'yellow' },
             { value: 'low', label: 'Low', color: 'gray' }
-          ].map(({ value, label, color }) => {
-            const isActive = filters.priority?.includes(value as any);
+          ].map(({ value, label }) => {
+            const isActive = filters.priority?.includes(value as MessagePriority);
             return (
               <button
                 key={value}
@@ -152,7 +152,7 @@ export const MessageFilters = memo<MessageFiltersProps>(({
             { value: 'notification', label: 'Notification' },
             { value: 'reminder', label: 'Reminder' }
           ].map(({ value, label }) => {
-            const isActive = filters.type?.includes(value as any);
+            const isActive = filters.type?.includes(value as MessageType);
             return (
               <button
                 key={value}

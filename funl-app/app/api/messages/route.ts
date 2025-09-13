@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { messageManager } from '@/lib/messaging';
-import type { MessageFilters } from '@/lib/messaging';
+import type { MessageFilters, MessageStatus, MessageType, MessagePriority } from '@/lib/messaging';
 
 // Helper function to get business ID from session/auth
 // This will need to be implemented based on your auth system
@@ -32,19 +32,19 @@ export async function GET(req: NextRequest) {
     // Status filter
     const status = searchParams.getAll('status');
     if (status.length > 0) {
-      filters.status = status as any[];
+      filters.status = status as MessageStatus[];
     }
     
     // Type filter
     const type = searchParams.getAll('type');
     if (type.length > 0) {
-      filters.type = type as any[];
+      filters.type = type as MessageType[];
     }
     
     // Priority filter
     const priority = searchParams.getAll('priority');
     if (priority.length > 0) {
-      filters.priority = priority as any[];
+      filters.priority = priority as MessagePriority[];
     }
     
     // Funnel filter

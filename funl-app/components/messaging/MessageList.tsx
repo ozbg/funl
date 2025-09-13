@@ -40,7 +40,7 @@ export const MessageList = memo<MessageListProps>(({
           No messages yet
         </h3>
         <p className="text-gray-600">
-          When customers request callbacks through your funnels, they'll appear here.
+          When customers request callbacks through your funnels, they&apos;ll appear here.
         </p>
       </div>
     );

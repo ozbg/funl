@@ -52,7 +52,7 @@ export const useMessageStore = create<MessageStore>()(
       selectedMessageIds: new Set(),
       
       // Actions
-      setMessages: (messages, total) => set((state) => ({
+      setMessages: (messages, total) => set(() => ({
         messages,
         totalCount: total,
         unreadCount: messages.filter(m => m.status === 'unread').length,

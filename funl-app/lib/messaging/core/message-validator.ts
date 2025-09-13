@@ -11,7 +11,7 @@ export const CreateMessageSchema = z.object({
   subject: z.string().max(200, 'Subject too long').optional(),
   message: z.string().max(2000, 'Message too long').optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
-  metadata: z.record(z.any()).default({})
+  metadata: z.record(z.string(), z.unknown()).default({})
 });
 
 export const UpdateMessageSchema = z.object({
@@ -20,7 +20,7 @@ export const UpdateMessageSchema = z.object({
   acknowledgedBy: z.string().uuid().optional(),
   emailStatus: z.enum(['pending', 'sent', 'delivered', 'failed']).optional(),
   smsStatus: z.enum(['pending', 'sent', 'delivered', 'failed']).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.unknown()).optional()
 });
 
 export const MessageFiltersSchema = z.object({
@@ -37,7 +37,7 @@ export const MessageFiltersSchema = z.object({
 export const CreateChannelSchema = z.object({
   businessId: z.string().uuid('Invalid business ID'),
   channelType: z.enum(['email', 'sms', 'webhook']),
-  config: z.record(z.any()),
+  config: z.record(z.string(), z.unknown()),
   isEnabled: z.boolean().default(true)
 });
 
@@ -58,7 +58,7 @@ export const SMSConfigSchema = z.object({
 export const WebhookConfigSchema = z.object({
   url: z.string().url('Invalid webhook URL'),
   secret: z.string().optional(),
-  headers: z.record(z.string()).optional()
+  headers: z.record(z.string(), z.string()).optional()
 });
 
 export const NotificationPreferencesSchema = z.object({

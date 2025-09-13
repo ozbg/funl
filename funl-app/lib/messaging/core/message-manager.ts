@@ -3,7 +3,6 @@ import type {
   CreateMessageDto, 
   UpdateMessageDto, 
   MessageFilters,
-  DeliveryResult,
   MessageChannel,
   NotificationPreferences
 } from './message-types';
@@ -155,7 +154,7 @@ export class MessageManager {
   async configureChannel(
     businessId: string,
     channelType: string,
-    config: Record<string, any>
+    config: Record<string, unknown>
   ): Promise<MessageChannel> {
     return this.repository.createOrUpdateChannel(businessId, channelType, config);
   }
@@ -191,7 +190,7 @@ export class MessageManager {
   /**
    * Queue email delivery (placeholder for Phase 2)
    */
-  private async queueEmailDelivery(message: Message, channel: MessageChannel): Promise<void> {
+  private async queueEmailDelivery(message: Message, _channel: MessageChannel): Promise<void> {
     // TODO: Implement in Phase 2 with actual email channel
     console.log(`Queuing email delivery for message ${message.id}`);
     
@@ -204,7 +203,7 @@ export class MessageManager {
   /**
    * Queue SMS delivery (placeholder for Phase 2)
    */
-  private async queueSMSDelivery(message: Message, channel: MessageChannel): Promise<void> {
+  private async queueSMSDelivery(message: Message, _channel: MessageChannel): Promise<void> {
     // TODO: Implement in Phase 2 with actual SMS channel
     console.log(`Queuing SMS delivery for message ${message.id}`);
     

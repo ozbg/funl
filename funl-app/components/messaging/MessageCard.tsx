@@ -33,22 +33,22 @@ export const MessageCard = memo<MessageCardProps>(({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'unread': return 'destructive';
-      case 'read': return 'secondary';
-      case 'acknowledged': return 'default';
-      case 'responded': return 'default';
+      case 'unread': return 'solid';
+      case 'read': return 'subtle';
+      case 'acknowledged': return 'outline';
+      case 'responded': return 'outline';
       case 'archived': return 'outline';
-      default: return 'secondary';
+      default: return 'subtle';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'destructive';
-      case 'high': return 'default';
-      case 'medium': return 'secondary';
+      case 'urgent': return 'solid';
+      case 'high': return 'solid';
+      case 'medium': return 'subtle';
       case 'low': return 'outline';
-      default: return 'secondary';
+      default: return 'subtle';
     }
   };
 
