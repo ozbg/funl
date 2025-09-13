@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Container } from '@/styled-system/jsx'
 import ThemeToggle from '@/components/ThemeToggle'
+import { DashboardNav } from '@/components/dashboard/DashboardNav'
 
 export default async function DashboardLayout({
   children,
@@ -32,64 +33,7 @@ export default async function DashboardLayout({
               <Box>
                 <h1 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default' })}>FunL</h1>
               </Box>
-              <Flex gap="8" display={{ base: 'none', sm: 'flex' }}>
-                <Link
-                  href="/dashboard"
-                  className={css({
-                    borderBottom: '2px solid',
-                    borderColor: 'accent.default',
-                    color: 'fg.default',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    px: '1',
-                    pt: '1',
-                    fontSize: 'sm',
-                    fontWeight: 'medium',
-                  })}
-                >
-                  Funnels
-                </Link>
-                <Link
-                  href="/dashboard/analytics"
-                  className={css({
-                    borderBottom: '2px solid',
-                    borderColor: 'transparent',
-                    color: 'fg.muted',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    px: '1',
-                    pt: '1',
-                    fontSize: 'sm',
-                    fontWeight: 'medium',
-                    _hover: {
-                      borderColor: 'border.default',
-                      color: 'fg.default',
-                    },
-                  })}
-                >
-                  Analytics
-                </Link>
-                <Link
-                  href="/dashboard/settings"
-                  className={css({
-                    borderBottom: '2px solid',
-                    borderColor: 'transparent',
-                    color: 'fg.muted',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    px: '1',
-                    pt: '1',
-                    fontSize: 'sm',
-                    fontWeight: 'medium',
-                    _hover: {
-                      borderColor: 'border.default',
-                      color: 'fg.default',
-                    },
-                  })}
-                >
-                  Settings
-                </Link>
-              </Flex>
+              <DashboardNav businessId={business?.id || ''} />
             </Flex>
             <Flex align="center" gap="4">
               <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>{business?.name}</span>

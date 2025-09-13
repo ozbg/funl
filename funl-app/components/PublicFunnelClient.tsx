@@ -47,19 +47,40 @@ export default function PublicFunnelClient({
     const formData = new FormData(e.currentTarget)
     
     const formDataObj = {
+      funnelId: funnel.id,
       name: formData.get('name') as string,
       phone: formData.get('phone') as string,
       preferred_time: formData.get('preferred_time') as string,
       message: formData.get('message') as string,
     }
 
-    // TODO: Submit to API with formDataObj
-    console.log('Callback request:', formDataObj)
-    track('callback_request')
-    
-    // Reset form
-    e.currentTarget.reset()
-    alert('Callback request submitted! We&apos;ll be in touch soon.')
+    try {
+      const response = await fetch('/api/callback-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formDataObj)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to submit callback request')
+      }
+
+      const result = await response.json()
+      
+      // Track successful submission
+      track('callback_request')
+      
+      // Reset form
+      e.currentTarget.reset()
+      alert('Callback request submitted! We\'ll be in touch soon.')
+      
+    } catch (error) {
+      console.error('Failed to submit callback request:', error)
+      alert('Sorry, there was an error submitting your request. Please try again.')
+    }
   }
 
   return (
