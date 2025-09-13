@@ -18,6 +18,9 @@ export default function NewFunnelPage() {
   const [, setFunnelCount] = useState<number>(0)
   const [defaultNameSet, setDefaultNameSet] = useState(false)
   const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
+  const [availableFunnelTypes, setAvailableFunnelTypes] = useState<any[]>([])
+  const [availableQRPresets, setAvailableQRPresets] = useState<any[]>([])
+  const [selectedQRPreset, setSelectedQRPreset] = useState<string>('')
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -61,10 +64,73 @@ export default function NewFunnelPage() {
         // Fetch business data
         const { data: businessData } = await supabase
           .from('businesses')
-          .select('*')
+          .select(`
+            *,
+            business_categories(*)
+          `)
           .eq('id', user.id)
           .single()
-        if (businessData) setBusiness(businessData)
+        
+        if (businessData) {
+          setBusiness(businessData)
+          
+          // Fetch available funnel types for the user's business category
+          if (businessData.business_category_id) {
+            const { data: funnelTypes } = await supabase
+              .from('funnel_types')
+              .select(`
+                *,
+                category_funnel_types!inner(
+                  business_category_id
+                )
+              `)
+              .eq('category_funnel_types.business_category_id', businessData.business_category_id)
+              .eq('is_active', true)
+              .order('sort_order', { ascending: true })
+            
+            if (funnelTypes) {
+              setAvailableFunnelTypes(funnelTypes)
+            }
+            
+            // Fetch available QR presets for the user's business category  
+            const { data: qrPresets } = await supabase
+              .from('qr_code_presets')
+              .select(`
+                *,
+                category_qr_presets!inner(
+                  business_category_id
+                )
+              `)
+              .eq('category_qr_presets.business_category_id', businessData.business_category_id)
+              .eq('is_active', true)
+              .order('sort_order', { ascending: true })
+            
+            if (qrPresets && qrPresets.length > 0) {
+              setAvailableQRPresets(qrPresets)
+              setSelectedQRPreset(qrPresets[0].id) // Default to first preset
+            }
+          } else {
+            // If no category assigned, show all active options
+            const [{ data: funnelTypes }, { data: qrPresets }] = await Promise.all([
+              supabase
+                .from('funnel_types')
+                .select('*')
+                .eq('is_active', true)
+                .order('sort_order', { ascending: true }),
+              supabase
+                .from('qr_code_presets')
+                .select('*')
+                .eq('is_active', true)
+                .order('sort_order', { ascending: true })
+            ])
+            
+            if (funnelTypes) setAvailableFunnelTypes(funnelTypes)
+            if (qrPresets) {
+              setAvailableQRPresets(qrPresets)
+              if (qrPresets.length > 0) setSelectedQRPreset(qrPresets[0].id)
+            }
+          }
+        }
 
         // If editing, fetch existing funnel data
         if (isEditMode && editId) {
@@ -118,7 +184,10 @@ export default function NewFunnelPage() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          qr_preset_id: selectedQRPreset || null
+        }),
       })
 
       if (!response.ok) {
@@ -273,72 +342,51 @@ export default function NewFunnelPage() {
               {/* Funnel Type */}
               <Box>
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                  Type
+                  Funnel Type
                 </label>
-                <Grid columns={{ base: 1, sm: 3 }} gap={3}>
-                  <label className={css({ cursor: 'pointer' })}>
-                    <input
-                      type="radio"
-                      {...register('type')}
-                      value="contact"
-                      className={css({ position: 'absolute', opacity: 0 })}
-                    />
-                    <Box
-                      p={4}
-                      borderWidth="1px"
-                                           textAlign="center"
-                      borderColor={selectedType === 'contact' ? 'colorPalette.default' : 'border.default'}
-                      colorPalette={selectedType === 'contact' ? 'mint' : undefined}
-                      bg={selectedType === 'contact' ? 'colorPalette.subtle' : 'bg.default'}
-                      color={selectedType === 'contact' ? 'colorPalette.text' : 'fg.default'}
-                      _hover={selectedType !== 'contact' ? { borderColor: 'border.default' } : {}}
-                    >
-                      <h3 className={css({ fontWeight: 'medium' })}>Contact Card</h3>
-                    </Box>
-                  </label>
-
-                  <label className={css({ cursor: 'pointer' })}>
-                    <input
-                      type="radio"
-                      {...register('type')}
-                      value="property"
-                      className={css({ position: 'absolute', opacity: 0 })}
-                    />
-                    <Box
-                      p={4}
-                      borderWidth="1px"
-                                           textAlign="center"
-                      borderColor={selectedType === 'property' ? 'colorPalette.default' : 'border.default'}
-                      colorPalette={selectedType === 'property' ? 'mint' : undefined}
-                      bg={selectedType === 'property' ? 'colorPalette.subtle' : 'bg.default'}
-                      color={selectedType === 'property' ? 'colorPalette.text' : 'fg.default'}
-                      _hover={selectedType !== 'property' ? { borderColor: 'border.default' } : {}}
-                    >
-                      <h3 className={css({ fontWeight: 'medium' })}>+ Details</h3>
-                    </Box>
-                  </label>
-
-                  <label className={css({ cursor: 'pointer' })}>
-                    <input
-                      type="radio"
-                      {...register('type')}
-                      value="video"
-                      className={css({ position: 'absolute', opacity: 0 })}
-                    />
-                    <Box
-                      p={4}
-                      borderWidth="1px"
-                                           textAlign="center"
-                      borderColor={selectedType === 'video' ? 'colorPalette.default' : 'border.default'}
-                      colorPalette={selectedType === 'video' ? 'mint' : undefined}
-                      bg={selectedType === 'video' ? 'colorPalette.subtle' : 'bg.default'}
-                      color={selectedType === 'video' ? 'colorPalette.text' : 'fg.default'}
-                      _hover={selectedType !== 'video' ? { borderColor: 'border.default' } : {}}
-                    >
-                      <h3 className={css({ fontWeight: 'medium' })}>+ Video</h3>
-                    </Box>
-                  </label>
+                {(business as any)?.business_categories && (
+                  <Box mb={2} p={2} bg="bg.subtle" rounded="md">
+                    <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>
+                      Available for: {(business as any).business_categories.name}
+                    </span>
+                  </Box>
+                )}
+                <Grid columns={{ base: 1, sm: availableFunnelTypes.length <= 2 ? availableFunnelTypes.length : 3 }} gap={3}>
+                  {availableFunnelTypes.map((funnelType) => (
+                    <label key={funnelType.id} className={css({ cursor: 'pointer' })}>
+                      <input
+                        type="radio"
+                        {...register('type')}
+                        value={funnelType.slug}
+                        className={css({ position: 'absolute', opacity: 0 })}
+                      />
+                      <Box
+                        p={4}
+                        borderWidth="1px"
+                        textAlign="center"
+                        borderColor={selectedType === funnelType.slug ? 'colorPalette.default' : 'border.default'}
+                        colorPalette={selectedType === funnelType.slug ? 'mint' : undefined}
+                        bg={selectedType === funnelType.slug ? 'colorPalette.subtle' : 'bg.default'}
+                        color={selectedType === funnelType.slug ? 'colorPalette.text' : 'fg.default'}
+                        _hover={selectedType !== funnelType.slug ? { borderColor: 'border.default' } : {}}
+                      >
+                        <h3 className={css({ fontWeight: 'medium' })}>{funnelType.name}</h3>
+                        {funnelType.description && (
+                          <p className={css({ fontSize: 'xs', mt: 1, opacity: 0.8 })}>
+                            {funnelType.description}
+                          </p>
+                        )}
+                      </Box>
+                    </label>
+                  ))}
                 </Grid>
+                {availableFunnelTypes.length === 0 && (
+                  <Box p={4} bg="bg.muted" rounded="md" textAlign="center">
+                    <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>
+                      No funnel types available for your business category.
+                    </p>
+                  </Box>
+                )}
               </Box>
 
               {/* Content Fields */}
@@ -413,6 +461,45 @@ export default function NewFunnelPage() {
                   />
                 </Box>
               </Stack>
+
+              {/* QR Code Style */}
+              {availableQRPresets.length > 0 && (
+                <Box>
+                  <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
+                    QR Code Style
+                  </label>
+                  <Grid columns={{ base: 2, sm: 3 }} gap={3}>
+                    {availableQRPresets.map((preset) => (
+                      <label key={preset.id} className={css({ cursor: 'pointer' })}>
+                        <input
+                          type="radio"
+                          value={preset.id}
+                          checked={selectedQRPreset === preset.id}
+                          onChange={(e) => setSelectedQRPreset(e.target.value)}
+                          className={css({ position: 'absolute', opacity: 0 })}
+                        />
+                        <Box
+                          p={3}
+                          borderWidth="1px"
+                          textAlign="center"
+                          borderColor={selectedQRPreset === preset.id ? 'colorPalette.default' : 'border.default'}
+                          colorPalette={selectedQRPreset === preset.id ? 'mint' : undefined}
+                          bg={selectedQRPreset === preset.id ? 'colorPalette.subtle' : 'bg.default'}
+                          color={selectedQRPreset === preset.id ? 'colorPalette.text' : 'fg.default'}
+                          _hover={selectedQRPreset !== preset.id ? { borderColor: 'border.default' } : {}}
+                        >
+                          <h4 className={css({ fontWeight: 'medium', fontSize: 'sm' })}>{preset.name}</h4>
+                          {preset.description && (
+                            <p className={css({ fontSize: 'xs', mt: 1, opacity: 0.8 })}>
+                              {preset.description}
+                            </p>
+                          )}
+                        </Box>
+                      </label>
+                    ))}
+                  </Grid>
+                </Box>
+              )}
 
               {/* Actions */}
               <Flex justify="end" gap={3} pt={6} borderTop="1px solid" borderColor="border.default">

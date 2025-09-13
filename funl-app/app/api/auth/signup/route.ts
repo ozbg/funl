@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     const body = await request.json()
     
-    const { email, password, businessName, phone } = body
+    const { email, password, businessName, phone, businessCategoryId } = body
 
     // Validate input
     if (!email || !password || !businessName) {
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         email,
         name: businessName,
         phone: phone || null,
+        business_category_id: businessCategoryId || null,
         vcard_data: {
           firstName: businessName.split(' ')[0] || '',
           lastName: businessName.split(' ').slice(1).join(' ') || '',

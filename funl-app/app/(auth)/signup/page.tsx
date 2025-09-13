@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -14,11 +14,29 @@ export default function SignupPage() {
     confirmPassword: '',
     businessName: '',
     phone: '',
+    businessCategoryId: '',
   })
+  const [businessCategories, setBusinessCategories] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data: categories } = await supabase
+        .from('business_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+      
+      if (categories) {
+        setBusinessCategories(categories)
+      }
+    }
+
+    fetchCategories()
+  }, [])
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,6 +66,7 @@ export default function SignupPage() {
           password: formData.password,
           businessName: formData.businessName,
           phone: formData.phone,
+          businessCategoryId: formData.businessCategoryId,
         }),
       })
 
@@ -172,6 +191,49 @@ export default function SignupPage() {
               onChange={handleChange}
               className={inputStyles}
             />
+          </Box>
+
+          <Box>
+            <label 
+              htmlFor="businessCategoryId" 
+              className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}
+            >
+              Business Category
+            </label>
+            <select
+              id="businessCategoryId"
+              name="businessCategoryId"
+              value={formData.businessCategoryId}
+              onChange={(e) => setFormData({ ...formData, businessCategoryId: e.target.value })}
+              className={css({
+                mt: 1,
+                display: 'block',
+                w: 'full',
+                px: 3,
+                py: 2,
+                borderWidth: '1px',
+                borderColor: 'border.default',
+                boxShadow: 'sm',
+                bg: 'bg.default',
+                color: 'fg.default',
+                _focus: {
+                  outline: 'none',
+                  ringWidth: '2',
+                  ringColor: 'colorPalette.default',
+                  borderColor: 'colorPalette.default',
+                },
+              })}
+            >
+              <option value="">Select your business type</option>
+              {businessCategories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <p className={css({ mt: 1, fontSize: 'xs', color: 'fg.muted' })}>
+              This helps us show you relevant funnel types and QR code styles
+            </p>
           </Box>
 
           <Box>
