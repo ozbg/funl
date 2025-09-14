@@ -75,13 +75,13 @@ export async function PUT(
       await supabase
         .from('category_qr_presets')
         .delete()
-        .eq('qr_preset_id', id)
-      
+        .eq('qr_code_preset_id', id)
+
       // Create new associations
       if (category_ids.length > 0) {
         const categoryAssociations = category_ids.map((categoryId: string) => ({
           business_category_id: categoryId,
-          qr_preset_id: id
+          qr_code_preset_id: id
         }))
         
         const { error: associationError } = await supabase
@@ -115,7 +115,7 @@ export async function DELETE(
     await supabase
       .from('category_qr_presets')
       .delete()
-      .eq('qr_preset_id', id)
+      .eq('qr_code_preset_id', id)
     
     // Delete QR preset
     const { error } = await supabase

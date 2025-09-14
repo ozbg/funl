@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { generateVCard } from '@/lib/qr'
-import PublicFunnelClient from '@/components/PublicFunnelClient'
+import PublicFunnelWithTestimonials from '@/components/PublicFunnelWithTestimonials'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -69,7 +69,7 @@ export default async function PublicFunnelPage({ params }: PageProps) {
   console.log('PublicFunnelPage - Returning PublicFunnelClient component')
 
   return (
-    <PublicFunnelClient
+    <PublicFunnelWithTestimonials
       funnel={funnel}
       business={business}
       vCardData={vCardData}

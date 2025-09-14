@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (category_ids && category_ids.length > 0) {
       const categoryAssociations = category_ids.map((categoryId: string) => ({
         business_category_id: categoryId,
-        qr_preset_id: qrPreset.id
+        qr_code_preset_id: qrPreset.id
       }))
       
       const { error: associationError } = await supabase

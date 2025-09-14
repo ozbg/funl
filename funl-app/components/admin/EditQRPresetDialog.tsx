@@ -113,69 +113,89 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
     is_active: qrPreset.is_active,
     sort_order: qrPreset.sort_order,
     category_ids: qrPreset.category_qr_presets.map(cqp => cqp.business_categories.id),
-    style_config: qrPreset.style_config || {
-      width: 300,
-      height: 300,
-      margin: 0,
-      dotsOptions: { 
-        type: 'extra-rounded', 
-        color: '#6a1a4c',
-        gradient: {
-          type: 'linear',
-          rotation: 0,
-          colorStops: [
-            { offset: 0, color: '#6a1a4c' },
-            { offset: 1, color: '#6a1a4c' }
-          ]
-        }
-      },
-      backgroundOptions: { 
-        color: '#ffffff',
-        gradient: {
-          type: 'linear',
-          rotation: 0,
-          colorStops: [
-            { offset: 0, color: '#ffffff' },
-            { offset: 1, color: '#ffffff' }
-          ]
-        }
-      },
-      cornersDotOptions: { 
-        type: '',
-        color: '#000000',
-        gradient: {
-          type: 'linear',
-          rotation: 0,
-          colorStops: [
-            { offset: 0, color: '#000000' },
-            { offset: 1, color: '#000000' }
-          ]
-        }
-      },
-      cornersSquareOptions: { 
-        type: 'extra-rounded',
-        color: '#000000',
-        gradient: {
-          type: 'linear',
-          rotation: 0,
-          colorStops: [
-            { offset: 0, color: '#000000' },
-            { offset: 1, color: '#000000' }
-          ]
-        }
-      },
-      imageOptions: {
-        hideBackgroundDots: true,
-        imageSize: 0.4,
+    style_config: (() => {
+      // Create comprehensive default config
+      const defaultConfig = {
+        width: 300,
+        height: 300,
         margin: 0,
-        crossOrigin: 'anonymous'
-      },
-      qrOptions: {
-        typeNumber: 0,
-        mode: 'Byte',
-        errorCorrectionLevel: 'Q'
+        image: '', // Add image field to default config
+        dotsOptions: {
+          type: 'extra-rounded',
+          color: '#6a1a4c',
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: '#6a1a4c' },
+              { offset: 1, color: '#6a1a4c' }
+            ]
+          }
+        },
+        backgroundOptions: {
+          color: '#ffffff',
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: '#ffffff' },
+              { offset: 1, color: '#ffffff' }
+            ]
+          }
+        },
+        cornersDotOptions: {
+          type: '',
+          color: '#000000',
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: '#000000' },
+              { offset: 1, color: '#000000' }
+            ]
+          }
+        },
+        cornersSquareOptions: {
+          type: 'extra-rounded',
+          color: '#000000',
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: '#000000' },
+              { offset: 1, color: '#000000' }
+            ]
+          }
+        },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 0,
+          crossOrigin: 'anonymous'
+        },
+        qrOptions: {
+          typeNumber: 0,
+          mode: 'Byte',
+          errorCorrectionLevel: 'Q'
+        }
       }
-    }
+
+      // Deep merge function to properly combine configurations
+      const mergeDeep = (target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> => {
+        const result = { ...target }
+        for (const key in source) {
+          if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+            result[key] = mergeDeep(result[key] as Record<string, unknown> || {}, source[key] as Record<string, unknown>)
+          } else {
+            result[key] = source[key]
+          }
+        }
+        return result
+      }
+
+      // Merge existing config with defaults, preserving existing values
+      return mergeDeep(defaultConfig, qrPreset.style_config || {})
+    })()
   })
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -220,38 +240,91 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
   const handleStyleConfigChange = (section: string, key: string, value: string | number | boolean) => {
     setFormData(prev => {
       const newStyleConfig = { ...prev.style_config }
-      
+
       if (section === 'main') {
         newStyleConfig[key] = value
       } else if (section === 'dotsOptions') {
         if (key.startsWith('gradient')) {
           const dotsOptions = newStyleConfig.dotsOptions as Record<string, unknown> | undefined
-          const currentGradient = (dotsOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: 'linear', rotation: 0, colorStops: [{ offset: 0, color: '#6a1a4c' }, { offset: 1, color: '#6a1a4c' }] }
+          const currentGradient = (dotsOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: gradientTypes.dots, rotation: 0, colorStops: [{ offset: 0, color: '#6a1a4c' }, { offset: 1, color: '#6a1a4c' }] }
 
-          if (key === 'gradientColor1') {
+          if (key === 'gradientType') {
+            currentGradient.type = value as string
+          } else if (key === 'gradientColor1') {
             currentGradient.colorStops[0].color = value as string
           } else if (key === 'gradientColor2') {
             currentGradient.colorStops[1].color = value as string
           } else if (key === 'gradientRotation') {
             currentGradient.rotation = value as number
           }
-          
+
           newStyleConfig.dotsOptions = { ...(newStyleConfig.dotsOptions as Record<string, unknown> || {}), gradient: currentGradient }
         } else {
           newStyleConfig.dotsOptions = { ...(newStyleConfig.dotsOptions as Record<string, unknown> || {}), [key]: value }
         }
       } else if (section === 'backgroundOptions') {
-        newStyleConfig.backgroundOptions = { ...(newStyleConfig.backgroundOptions as Record<string, unknown> || {}), [key]: value }
+        if (key.startsWith('gradient')) {
+          const backgroundOptions = newStyleConfig.backgroundOptions as Record<string, unknown> | undefined
+          const currentGradient = (backgroundOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: gradientTypes.background, rotation: 0, colorStops: [{ offset: 0, color: '#ffffff' }, { offset: 1, color: '#ffffff' }] }
+
+          if (key === 'gradientType') {
+            currentGradient.type = value as string
+          } else if (key === 'gradientColor1') {
+            currentGradient.colorStops[0].color = value as string
+          } else if (key === 'gradientColor2') {
+            currentGradient.colorStops[1].color = value as string
+          } else if (key === 'gradientRotation') {
+            currentGradient.rotation = value as number
+          }
+
+          newStyleConfig.backgroundOptions = { ...(newStyleConfig.backgroundOptions as Record<string, unknown> || {}), gradient: currentGradient }
+        } else {
+          newStyleConfig.backgroundOptions = { ...(newStyleConfig.backgroundOptions as Record<string, unknown> || {}), [key]: value }
+        }
       } else if (section === 'cornersDotOptions') {
-        newStyleConfig.cornersDotOptions = { ...(newStyleConfig.cornersDotOptions as Record<string, unknown> || {}), [key]: value }
+        if (key.startsWith('gradient')) {
+          const cornersDotOptions = newStyleConfig.cornersDotOptions as Record<string, unknown> | undefined
+          const currentGradient = (cornersDotOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: gradientTypes.cornersDot, rotation: 0, colorStops: [{ offset: 0, color: '#000000' }, { offset: 1, color: '#000000' }] }
+
+          if (key === 'gradientType') {
+            currentGradient.type = value as string
+          } else if (key === 'gradientColor1') {
+            currentGradient.colorStops[0].color = value as string
+          } else if (key === 'gradientColor2') {
+            currentGradient.colorStops[1].color = value as string
+          } else if (key === 'gradientRotation') {
+            currentGradient.rotation = value as number
+          }
+
+          newStyleConfig.cornersDotOptions = { ...(newStyleConfig.cornersDotOptions as Record<string, unknown> || {}), gradient: currentGradient }
+        } else {
+          newStyleConfig.cornersDotOptions = { ...(newStyleConfig.cornersDotOptions as Record<string, unknown> || {}), [key]: value }
+        }
       } else if (section === 'cornersSquareOptions') {
-        newStyleConfig.cornersSquareOptions = { ...(newStyleConfig.cornersSquareOptions as Record<string, unknown> || {}), [key]: value }
+        if (key.startsWith('gradient')) {
+          const cornersSquareOptions = newStyleConfig.cornersSquareOptions as Record<string, unknown> | undefined
+          const currentGradient = (cornersSquareOptions?.gradient as { type: string, rotation: number, colorStops: Array<{offset: number, color: string}> }) || { type: gradientTypes.cornersSquare, rotation: 0, colorStops: [{ offset: 0, color: '#000000' }, { offset: 1, color: '#000000' }] }
+
+          if (key === 'gradientType') {
+            currentGradient.type = value as string
+          } else if (key === 'gradientColor1') {
+            currentGradient.colorStops[0].color = value as string
+          } else if (key === 'gradientColor2') {
+            currentGradient.colorStops[1].color = value as string
+          } else if (key === 'gradientRotation') {
+            currentGradient.rotation = value as number
+          }
+
+          newStyleConfig.cornersSquareOptions = { ...(newStyleConfig.cornersSquareOptions as Record<string, unknown> || {}), gradient: currentGradient }
+        } else {
+          newStyleConfig.cornersSquareOptions = { ...(newStyleConfig.cornersSquareOptions as Record<string, unknown> || {}), [key]: value }
+        }
       } else if (section === 'imageOptions') {
         newStyleConfig.imageOptions = { ...(newStyleConfig.imageOptions as Record<string, unknown> || {}), [key]: value }
       } else if (section === 'qrOptions') {
         newStyleConfig.qrOptions = { ...(newStyleConfig.qrOptions as Record<string, unknown> || {}), [key]: value }
       }
-      
+
       return {
         ...prev,
         style_config: newStyleConfig
@@ -525,7 +598,10 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                     type="radio"
                                     name="dots-gradient-type"
                                     checked={gradientTypes.dots === 'linear'}
-                                    onChange={() => setGradientTypes(prev => ({ ...prev, dots: 'linear' }))}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, dots: 'linear' }))
+                                      handleStyleConfigChange('dotsOptions', 'gradientType', 'linear')
+                                    }}
                                   />
                                   Linear
                                 </label>
@@ -534,7 +610,10 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                                     type="radio"
                                     name="dots-gradient-type"
                                     checked={gradientTypes.dots === 'radial'}
-                                    onChange={() => setGradientTypes(prev => ({ ...prev, dots: 'radial' }))}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, dots: 'radial' }))
+                                      handleStyleConfigChange('dotsOptions', 'gradientType', 'radial')
+                                    }}
                                   />
                                   Radial
                                 </label>
@@ -664,6 +743,83 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             </Flex>
                           </Box>
                         )}
+
+                        {colorTypes.cornersSquare === 'gradient' && (
+                          <>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default', mb: 2, display: 'block' })}>
+                                Gradient Type
+                              </label>
+                              <Flex gap={4}>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="corners-square-gradient-type"
+                                    checked={gradientTypes.cornersSquare === 'linear'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, cornersSquare: 'linear' }))
+                                      handleStyleConfigChange('cornersSquareOptions', 'gradientType', 'linear')
+                                    }}
+                                  />
+                                  Linear
+                                </label>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="corners-square-gradient-type"
+                                    checked={gradientTypes.cornersSquare === 'radial'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, cornersSquare: 'radial' }))
+                                      handleStyleConfigChange('cornersSquareOptions', 'gradientType', 'radial')
+                                    }}
+                                  />
+                                  Radial
+                                </label>
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Corners Square Gradient
+                              </label>
+                              <Flex gap={2} mt={1}>
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.cornersSquareOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[0]?.color || '#000000'}
+                                  onChange={(e) => handleStyleConfigChange('cornersSquareOptions', 'gradientColor1', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.cornersSquareOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[1]?.color || '#000000'}
+                                  onChange={(e) => handleStyleConfigChange('cornersSquareOptions', 'gradientColor2', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Rotation
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="360"
+                                value={(((formData.style_config.cornersSquareOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.rotation as number) || 0}
+                                onChange={(e) => handleStyleConfigChange('cornersSquareOptions', 'gradientRotation', parseInt(e.target.value))}
+                                className={css({
+                                  mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
+                                  borderColor: 'border.default', rounded: 'md', fontSize: 'sm'
+                                })}
+                              />
+                            </Box>
+                          </>
+                        )}
                       </Grid>
                     </CollapsibleSection>
 
@@ -744,6 +900,83 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             </Flex>
                           </Box>
                         )}
+
+                        {colorTypes.cornersDot === 'gradient' && (
+                          <>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default', mb: 2, display: 'block' })}>
+                                Gradient Type
+                              </label>
+                              <Flex gap={4}>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="corners-dot-gradient-type"
+                                    checked={gradientTypes.cornersDot === 'linear'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, cornersDot: 'linear' }))
+                                      handleStyleConfigChange('cornersDotOptions', 'gradientType', 'linear')
+                                    }}
+                                  />
+                                  Linear
+                                </label>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="corners-dot-gradient-type"
+                                    checked={gradientTypes.cornersDot === 'radial'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, cornersDot: 'radial' }))
+                                      handleStyleConfigChange('cornersDotOptions', 'gradientType', 'radial')
+                                    }}
+                                  />
+                                  Radial
+                                </label>
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Corners Dot Gradient
+                              </label>
+                              <Flex gap={2} mt={1}>
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.cornersDotOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[0]?.color || '#000000'}
+                                  onChange={(e) => handleStyleConfigChange('cornersDotOptions', 'gradientColor1', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.cornersDotOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[1]?.color || '#000000'}
+                                  onChange={(e) => handleStyleConfigChange('cornersDotOptions', 'gradientColor2', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Rotation
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="360"
+                                value={(((formData.style_config.cornersDotOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.rotation as number) || 0}
+                                onChange={(e) => handleStyleConfigChange('cornersDotOptions', 'gradientRotation', parseInt(e.target.value))}
+                                className={css({
+                                  mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
+                                  borderColor: 'border.default', rounded: 'md', fontSize: 'sm'
+                                })}
+                              />
+                            </Box>
+                          </>
+                        )}
                       </Grid>
                     </CollapsibleSection>
 
@@ -796,6 +1029,83 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                             />
                           </Box>
                         )}
+
+                        {colorTypes.background === 'gradient' && (
+                          <>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default', mb: 2, display: 'block' })}>
+                                Gradient Type
+                              </label>
+                              <Flex gap={4}>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="background-gradient-type"
+                                    checked={gradientTypes.background === 'linear'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, background: 'linear' }))
+                                      handleStyleConfigChange('backgroundOptions', 'gradientType', 'linear')
+                                    }}
+                                  />
+                                  Linear
+                                </label>
+                                <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs', flex: 1 })}>
+                                  <input
+                                    type="radio"
+                                    name="background-gradient-type"
+                                    checked={gradientTypes.background === 'radial'}
+                                    onChange={() => {
+                                      setGradientTypes(prev => ({ ...prev, background: 'radial' }))
+                                      handleStyleConfigChange('backgroundOptions', 'gradientType', 'radial')
+                                    }}
+                                  />
+                                  Radial
+                                </label>
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Background Gradient
+                              </label>
+                              <Flex gap={2} mt={1}>
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.backgroundOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[0]?.color || '#ffffff'}
+                                  onChange={(e) => handleStyleConfigChange('backgroundOptions', 'gradientColor1', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                                <input
+                                  type="color"
+                                  value={(((formData.style_config.backgroundOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.colorStops as Array<{color: string}>)?.[1]?.color || '#ffffff'}
+                                  onChange={(e) => handleStyleConfigChange('backgroundOptions', 'gradientColor2', e.target.value)}
+                                  className={css({
+                                    flex: 1, h: 10, borderWidth: '1px',
+                                    borderColor: 'border.default', rounded: 'md', cursor: 'pointer'
+                                  })}
+                                />
+                              </Flex>
+                            </Box>
+                            <Box>
+                              <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                                Rotation
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="360"
+                                value={(((formData.style_config.backgroundOptions as Record<string, unknown>)?.gradient as Record<string, unknown>)?.rotation as number) || 0}
+                                onChange={(e) => handleStyleConfigChange('backgroundOptions', 'gradientRotation', parseInt(e.target.value))}
+                                className={css({
+                                  mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
+                                  borderColor: 'border.default', rounded: 'md', fontSize: 'sm'
+                                })}
+                              />
+                            </Box>
+                          </>
+                        )}
                       </Grid>
                     </CollapsibleSection>
 
@@ -806,6 +1116,22 @@ export function EditQRPresetDialog({ qrPreset, categories, onUpdate }: EditQRPre
                       onToggle={() => toggleSection('image')}
                     >
                       <Grid gap={4}>
+                        <Box>
+                          <label className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+                            Image URL (Optional)
+                          </label>
+                          <input
+                            type="url"
+                            value={(formData.style_config.image as string) || ''}
+                            onChange={(e) => handleStyleConfigChange('main', 'image', e.target.value)}
+                            placeholder="Enter image URL for QR center"
+                            className={css({
+                              mt: 1, w: 'full', px: 3, py: 2, borderWidth: '1px',
+                              borderColor: 'border.default', rounded: 'md', fontSize: 'sm',
+                              _focus: { outline: 'none', borderColor: 'accent.default' }
+                            })}
+                          />
+                        </Box>
                         <Box>
                           <label className={css({ display: 'flex', alignItems: 'center', gap: 2, fontSize: 'xs' })}>
                             <input

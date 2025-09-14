@@ -36,9 +36,9 @@ export function QRPreview({ style_config, size = 100, url = 'funl.au' }: QRPrevi
           data: url,
           margin: 0,
           qrOptions: {
-            typeNumber: 0, // Always use auto for preview to prevent overflow
+            typeNumber: (style_config.qrOptions as Record<string, unknown>)?.typeNumber as number || 0,
             mode: (style_config.qrOptions as Record<string, unknown>)?.mode as string || 'Byte',
-            errorCorrectionLevel: (style_config.qrOptions as Record<string, unknown>)?.errorCorrectionLevel as string || 'M' // Use M instead of Q for shorter data
+            errorCorrectionLevel: (style_config.qrOptions as Record<string, unknown>)?.errorCorrectionLevel as string || 'M'
           },
           dotsOptions: {
             color: (style_config.dotsOptions as Record<string, unknown>)?.color as string || '#6a1a4c',
@@ -59,12 +59,16 @@ export function QRPreview({ style_config, size = 100, url = 'funl.au' }: QRPrevi
             color: (style_config.cornersDotOptions as Record<string, unknown>).color as string || '#000000',
             gradient: (style_config.cornersDotOptions as Record<string, unknown>)?.gradient as Record<string, unknown>
           } : undefined,
-          imageOptions: {
-            hideBackgroundDots: (style_config.imageOptions as Record<string, unknown>)?.hideBackgroundDots as boolean || true,
-            imageSize: (style_config.imageOptions as Record<string, unknown>)?.imageSize as number || 0.4,
-            margin: (style_config.imageOptions as Record<string, unknown>)?.margin as number || 0,
-            crossOrigin: 'anonymous'
-          }
+          // Only include imageOptions if there's an image to display
+          ...(style_config.image ? {
+            image: style_config.image as string,
+            imageOptions: {
+              hideBackgroundDots: (style_config.imageOptions as Record<string, unknown>)?.hideBackgroundDots as boolean || true,
+              imageSize: (style_config.imageOptions as Record<string, unknown>)?.imageSize as number || 0.4,
+              margin: (style_config.imageOptions as Record<string, unknown>)?.margin as number || 0,
+              crossOrigin: 'anonymous'
+            }
+          } : {})
         }
 
         // Generate QR code directly with qr-code-styling

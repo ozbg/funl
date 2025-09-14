@@ -22,7 +22,7 @@ interface QRLayoutPreviewProps {
     verticalDistance?: number
     qrWidth?: number
     qrHeight?: number
-    qrStyle?: 'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'
+    qrPresetId?: string
   }
 }
 
@@ -40,23 +40,70 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
   const [downloadingPDF, setDownloadingPDF] = useState(false)
   const [qrCodeSVG, setQrCodeSVG] = useState<string>('')
   const [qrCodeDataURL, setQrCodeDataURL] = useState<string>('')
-  const [selectedStyle, setSelectedStyle] = useState<'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'>(
-    initialStickerSettings?.qrStyle || qrStyle
-  )
+  const [availableQRPresets, setAvailableQRPresets] = useState<Array<{
+    id: string
+    name: string
+    style_config: Record<string, unknown>
+  }>>([])
+  const [selectedPresetId, setSelectedPresetId] = useState<string>(initialStickerSettings?.qrPresetId || '')
   const supabase = createClient()
 
   // Generate SVG QR code when component mounts or style changes
   useEffect(() => {
     const generateQR = async () => {
-      console.log('🔍 QR Generation Debug:', { shortUrl, selectedStyle, qrWidth, qrHeight })
+      console.log('🔍 QR Generation Debug:', { shortUrl, selectedPresetId, availablePresets: availableQRPresets.length, qrWidth, qrHeight })
       if (shortUrl) {
         try {
-          const svg = await generateQRCodeSVG(shortUrl, {
-            width: Math.max(qrWidth, qrHeight), // Use the larger dimension for generation
-            style: selectedStyle,
-            darkColor: '#000000',
-            lightColor: '#FFFFFF'
-          })
+          // Find the selected preset configuration or use first available
+          const selectedPreset = selectedPresetId
+            ? availableQRPresets.find(p => p.id === selectedPresetId)
+            : availableQRPresets[0]
+
+          if (!selectedPreset) {
+            console.log('⚠️ No preset available yet, waiting...')
+            return
+          }
+
+          console.log('🎨 Using preset:', selectedPreset.name)
+          console.log('📋 Preset style_config:', JSON.stringify(selectedPreset.style_config, null, 2))
+
+          // Use qr-code-styling directly with the preset configuration
+          const { default: QRCodeStyling } = await import('qr-code-styling')
+
+          const config = {
+            width: Math.max(qrWidth, qrHeight),
+            height: Math.max(qrWidth, qrHeight),
+            type: "svg" as const,
+            data: shortUrl,
+            margin: 0,
+            // Apply the preset's style configuration first
+            ...selectedPreset.style_config,
+            // Then merge qrOptions properly
+            qrOptions: {
+              errorCorrectionLevel: 'M' as const,
+              ...((selectedPreset.style_config as Record<string, unknown>)?.qrOptions as Record<string, unknown> || {})
+            }
+          }
+
+          console.log('🔧 Final QR config being used:', JSON.stringify(config, null, 2))
+
+          // Add jsdom only in server environment
+          if (typeof window === 'undefined') {
+            const { JSDOM } = await import('jsdom')
+            ;(config as Record<string, unknown>).jsdom = JSDOM
+          }
+
+          const qrCode = new QRCodeStyling(config)
+          const svgBuffer = await qrCode.getRawData('svg')
+
+          let svg: string
+          if (svgBuffer instanceof Blob) {
+            svg = await svgBuffer.text()
+          } else if (svgBuffer) {
+            svg = new TextDecoder().decode(svgBuffer)
+          } else {
+            throw new Error('Failed to generate QR code')
+          }
           console.log('✅ SVG Generated, length:', svg.length)
           console.log('📐 Preview dimensions - qrWidth:', qrWidth, 'qrHeight:', qrHeight)
           console.log('🖼️ SVG preview will be scaled to fit', qrWidth, 'x', qrHeight, 'pixels')
@@ -74,7 +121,58 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
       }
     }
     generateQR()
-  }, [shortUrl, selectedStyle, qrWidth, qrHeight])
+  }, [shortUrl, selectedPresetId, availableQRPresets, qrWidth, qrHeight])
+
+  // Load available QR presets for the user's business category
+  useEffect(() => {
+    const loadQRPresets = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Get user's business category
+        const { data: business } = await supabase
+          .from('businesses')
+          .select('business_category_id')
+          .eq('id', user.id)
+          .single()
+
+        if (!business?.business_category_id) {
+          console.log('⚠️ No business category found for user')
+          return
+        }
+
+        // Get QR presets for this business category
+        const { data: presets } = await supabase
+          .from('qr_code_presets')
+          .select(`
+            id,
+            name,
+            style_config,
+            category_qr_presets!inner(
+              business_category_id
+            )
+          `)
+          .eq('category_qr_presets.business_category_id', business.business_category_id)
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+
+        if (presets) {
+          console.log('✅ Loaded QR presets for business:', presets.length)
+          setAvailableQRPresets(presets)
+
+          // Set default to first preset if none selected
+          if (presets.length > 0 && !selectedPresetId) {
+            setSelectedPresetId(presets[0].id)
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error loading QR presets:', error)
+      }
+    }
+
+    loadQRPresets()
+  }, [supabase, selectedPresetId])
 
   // Save sticker settings to database with debouncing
   useEffect(() => {
@@ -90,7 +188,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           verticalDistance,
           qrWidth,
           qrHeight,
-          qrStyle: selectedStyle
+          qrPresetId: selectedPresetId
         }
 
         // First get the current content to preserve it
@@ -116,28 +214,25 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
     }, 500) // Debounce for 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, selectedStyle, funnelId, supabase])
+  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, selectedPresetId, funnelId, supabase])
 
 
   const handleDownloadSVG = async () => {
     setDownloading(true)
     try {
-      // Generate fresh QR code with current style for export
-      let exportQRSVG = qrCodeSVG
-      let exportQRDataURL = ''
-      if (shortUrl) {
-        exportQRSVG = await generateQRCodeSVG(shortUrl, {
-          width: Math.max(qrWidth, qrHeight), // Same as preview generation
-          style: selectedStyle,
-          darkColor: '#000000',
-          lightColor: '#FFFFFF'
-        })
-        // Create data URL exactly like preview does
-        exportQRDataURL = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}`
-        console.log('📦 Export SVG QR generated with width:', Math.max(qrWidth, qrHeight))
-        console.log('📦 Export QR SVG length:', exportQRSVG.length)
-        console.log('📦 Export QR DataURL length:', exportQRDataURL.length)
-      }
+      // Use the current QR code SVG for export (already generated with correct preset)
+      const exportQRSVG = qrCodeSVG
+      console.log('📦 Using current QR SVG for export, length:', exportQRSVG.length)
+
+      // Parse the SVG to extract just the inner content (remove the outer <svg> wrapper)
+      const svgParser = new DOMParser()
+      const svgDoc = svgParser.parseFromString(exportQRSVG, 'image/svg+xml')
+      const svgElement = svgDoc.documentElement
+
+      // Get the inner content of the QR SVG (everything inside the <svg> tags)
+      const qrInnerContent = Array.from(svgElement.children)
+        .map(child => child.outerHTML)
+        .join('\n')
       
       // Position and size calculations - EXACTLY same as preview
       const qrX = 148 - qrWidth/2
@@ -172,12 +267,14 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 fill="black" style="text-transform: uppercase;" 
                 transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
           
-          <!-- QR Code - USE SAME METHOD AS PREVIEW -->
-          ${exportQRDataURL ? `<image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}" href="${exportQRDataURL}" preserveAspectRatio="xMidYMid meet"/>` : ''}
+          <!-- QR Code - Embed actual SVG content with proper transformation -->
+          <g transform="translate(${qrX}, ${qrY}) scale(${qrWidth/300}, ${qrHeight/300})">
+            ${qrInnerContent}
+          </g>
         </svg>
       `
       
-      console.log('📦 Export SVG using <image> method like preview')
+      console.log('📦 Export SVG using embedded SVG content with gradients')
       console.log('📦 Export SVG content length:', svgContent.length)
       
       // Create download link
@@ -199,22 +296,19 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
   const handleDownloadPDF = async () => {
     setDownloadingPDF(true)
     try {
-      // Generate fresh QR code with current style for export
-      let exportQRSVG = qrCodeSVG
-      let exportQRDataURL = ''
-      if (shortUrl) {
-        exportQRSVG = await generateQRCodeSVG(shortUrl, {
-          width: Math.max(qrWidth, qrHeight), // Same as preview generation
-          style: selectedStyle,
-          darkColor: '#000000',
-          lightColor: '#FFFFFF'
-        })
-        // Create data URL exactly like preview does
-        exportQRDataURL = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}`
-        console.log('📦 Export PDF QR generated with width:', Math.max(qrWidth, qrHeight))
-        console.log('📦 Export PDF QR SVG length:', exportQRSVG.length)
-        console.log('📦 Export PDF QR DataURL length:', exportQRDataURL.length)
-      }
+      // Use the current QR code SVG for export (already generated with correct preset)
+      const exportQRSVG = qrCodeSVG
+      console.log('📦 Using current QR SVG for PDF export, length:', exportQRSVG.length)
+
+      // Parse the SVG to extract just the inner content (remove the outer <svg> wrapper)
+      const pdfParser = new DOMParser()
+      const pdfSvgDoc = pdfParser.parseFromString(exportQRSVG, 'image/svg+xml')
+      const pdfSvgElement = pdfSvgDoc.documentElement
+
+      // Get the inner content of the QR SVG (everything inside the <svg> tags)
+      const qrInnerContent = Array.from(pdfSvgElement.children)
+        .map(child => child.outerHTML)
+        .join('\n')
       
       // Position and size calculations - EXACTLY same as preview
       const qrX = 148 - qrWidth/2
@@ -248,8 +342,10 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 fill="black" style="text-transform: uppercase;" 
                 transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
           
-          <!-- QR Code - USE SAME METHOD AS PREVIEW -->
-          ${exportQRDataURL ? `<image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}" href="${exportQRDataURL}" preserveAspectRatio="xMidYMid meet"/>` : ''}
+          <!-- QR Code - Embed actual SVG content with proper transformation -->
+          <g transform="translate(${qrX}, ${qrY}) scale(${qrWidth/300}, ${qrHeight/300})">
+            ${qrInnerContent}
+          </g>
         </svg>
       `
       
@@ -424,8 +520,8 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 QR Code Style
               </label>
               <select
-                value={selectedStyle}
-                onChange={(e) => setSelectedStyle(e.target.value as 'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded')}
+                value={selectedPresetId}
+                onChange={(e) => setSelectedPresetId(e.target.value)}
                 className={css({
                   w: 'full',
                   px: 3,
@@ -445,13 +541,14 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                   }
                 })}
               >
-                <option value="square">Square (Classic)</option>
-                <option value="rounded">Rounded Corners</option>
-                <option value="dots">Small Dots</option>
-                <option value="dots-rounded">Large Dots</option>
-                <option value="extra-rounded">Extra Rounded</option>
-                <option value="classy">Classy</option>
-                <option value="classy-rounded">Classy Rounded</option>
+                {availableQRPresets.length === 0 && (
+                  <option value="">Loading styles...</option>
+                )}
+                {availableQRPresets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.name}
+                  </option>
+                ))}
               </select>
             </Box>
             

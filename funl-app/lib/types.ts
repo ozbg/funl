@@ -32,7 +32,7 @@ export interface Funnel {
   id: string
   business_id: string
   name: string
-  type: 'contact' | 'property' | 'video'
+  type: 'contact' | 'property' | 'video' | 'testimonial'
   status: 'draft' | 'active' | 'paused' | 'archived'
   template_id?: string
   qr_code_url?: string
@@ -81,7 +81,7 @@ export interface CallbackRequest {
 // Form types
 export interface CreateFunnelData {
   name: string
-  type: 'contact' | 'property' | 'video'
+  type: 'contact' | 'property' | 'video' | 'testimonial'
   content?: Partial<FunnelContent>
 }
 
