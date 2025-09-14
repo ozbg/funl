@@ -3,8 +3,9 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import QRLayoutPreview from '@/components/QRLayoutPreview'
+import FunnelTestimonialSettings from '@/components/testimonials/FunnelTestimonialSettings'
 import { css } from '@/styled-system/css'
-import { Box, Flex } from '@/styled-system/jsx'
+import { Box, Flex, Stack } from '@/styled-system/jsx'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -64,17 +65,21 @@ export default async function FunnelDetailPage({ params }: PageProps) {
         </Flex>
       </Box>
 
-      {/* QR Layout Preview Section */}
-      <QRLayoutPreview 
-        qrCodeUrl={funnel.qr_code_url || ''}
-        shortUrl={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${funnel.short_url}`}
-        funnelName={funnel.name}
-        funnelId={funnel.id}
-        qrStyle="square"
-        initialStickerSettings={funnel.content?.sticker_settings}
-      />
+      <Stack gap={8}>
+        {/* QR Layout Preview Section */}
+        <QRLayoutPreview
+          qrCodeUrl={funnel.qr_code_url || ''}
+          shortUrl={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${funnel.short_url}`}
+          funnelName={funnel.name}
+          funnelId={funnel.id}
+          initialStickerSettings={funnel.content?.sticker_settings}
+        />
 
-
+        {/* Testimonial Settings Section */}
+        {funnel.type !== 'testimonial' && (
+          <FunnelTestimonialSettings funnelId={funnel.id} />
+        )}
+      </Stack>
     </Box>
   )
 }

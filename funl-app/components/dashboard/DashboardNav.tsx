@@ -27,6 +27,10 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
       badge: unreadCount
     },
     {
+      href: '/dashboard/testimonials',
+      label: 'Testimonials'
+    },
+    {
       href: '/dashboard/analytics',
       label: 'Analytics'
     },

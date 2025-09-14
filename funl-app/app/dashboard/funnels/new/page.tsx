@@ -9,6 +9,7 @@ import { Funnel, Business, FunnelContent } from '@/lib/types'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
+import FunnelTestimonialSettings from '@/components/testimonials/FunnelTestimonialSettings'
 import { createClient } from '@/lib/supabase/client'
 
 export default function NewFunnelPage() {
@@ -19,6 +20,7 @@ export default function NewFunnelPage() {
   const [defaultNameSet, setDefaultNameSet] = useState(false)
   const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
   const [availableFunnelTypes, setAvailableFunnelTypes] = useState<Array<{id: string, name: string, slug: string, description: string | null, is_custom: boolean, created_at: string, updated_at: string | null}>>([])
+  const [testimonialConfig, setTestimonialConfig] = useState<{enabled: boolean, display_count: number, display_style: 'carousel'|'grid'|'list', position: 'top'|'bottom'|'sidebar', minimum_rating: number, show_featured_only: boolean} | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -121,6 +123,17 @@ export default function NewFunnelPage() {
               })
             }
             setDefaultNameSet(true)
+
+            // Fetch testimonial config for existing funnel
+            try {
+              const configResponse = await fetch(`/api/funnels/${editId}/testimonials`)
+              if (configResponse.ok) {
+                const configData = await configResponse.json()
+                setTestimonialConfig(configData.data)
+              }
+            } catch (error) {
+              console.error('Error fetching testimonial config:', error)
+            }
           }
         } else {
           // Fetch funnel count to generate default name for new funnels
@@ -451,13 +464,23 @@ export default function NewFunnelPage() {
           </form>
             </Box>
           </Box>
+
+          {/* Testimonial Settings - Only show in edit mode for non-testimonial funnels */}
+          {isEditMode && existingFunnel && selectedType !== 'testimonial' && (
+            <Box mt={8}>
+              <FunnelTestimonialSettings
+                funnelId={existingFunnel.id}
+                onConfigChange={setTestimonialConfig}
+              />
+            </Box>
+          )}
         </Box>
-        
+
         {/* Preview Column */}
         <Box>
           <Box bg="bg.default" boxShadow="md" p={6} position="sticky" top={6}>
-            <FunnelPreview 
-              key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedCustomMessage}`}
+            <FunnelPreview
+              key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedCustomMessage}-${JSON.stringify(testimonialConfig)}`}
               formData={{
                 name: watchedName || '',
                 type: watchedType || 'contact-card',
@@ -471,6 +494,7 @@ export default function NewFunnelPage() {
               }}
               businessName={business?.name || 'Your Business'}
               contactName={business?.vcard_data ? `${business.vcard_data.firstName} ${business.vcard_data.lastName}` : undefined}
+              testimonialConfig={testimonialConfig}
             />
           </Box>
         </Box>

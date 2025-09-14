@@ -4,6 +4,15 @@ import React from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Stack } from '@/styled-system/jsx'
 
+interface TestimonialConfig {
+  enabled: boolean
+  display_count: number
+  display_style: 'carousel' | 'grid' | 'list'
+  position: 'top' | 'bottom' | 'sidebar'
+  minimum_rating: number
+  show_featured_only: boolean
+}
+
 interface FunnelPreviewProps {
   formData: {
     name: string
@@ -18,9 +27,10 @@ interface FunnelPreviewProps {
   }
   businessName?: string
   contactName?: string
+  testimonialConfig?: TestimonialConfig | null
 }
 
-export default function FunnelPreview({ formData, businessName = 'Your Business', contactName }: FunnelPreviewProps) {
+export default function FunnelPreview({ formData, businessName = 'Your Business', contactName, testimonialConfig }: FunnelPreviewProps) {
   // Helper function to determine if this is a property-related funnel
   const isPropertyType = formData.type === 'property-listing' || formData.type === 'property'
 
@@ -32,6 +42,110 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
 
   // Helper function to determine if this is an appointment type
   const isAppointmentType = formData.type === 'appointment-booking'
+
+  // Helper function to determine if this is a testimonial type
+  const isTestimonialType = formData.type === 'testimonial'
+
+  // Sample testimonials for preview
+  const sampleTestimonials = [
+    {
+      name: "Sarah M",
+      suburb: "Bondi Beach",
+      comment: "Amazing service! Really professional and went above and beyond my expectations.",
+      rating: 5
+    },
+    {
+      name: "Mike T",
+      suburb: "Surry Hills",
+      comment: "Quick response and great quality work. Highly recommend!",
+      rating: 5
+    },
+    {
+      name: "Lisa K",
+      suburb: "Manly",
+      comment: "Very satisfied with the service. Will definitely use again.",
+      rating: 4
+    }
+  ]
+
+  // Testimonial Preview Component
+  const TestimonialPreview = ({ position }: { position: 'top' | 'bottom' | 'sidebar' }) => {
+    if (!testimonialConfig?.enabled) return null
+
+    const testimonialsToShow = sampleTestimonials.slice(0, Math.min(testimonialConfig.display_count, 3))
+
+    return (
+      <Box mb={4} p={3} bg="bg.subtle">
+        <Box mb={2} textAlign="center">
+          <span className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'fg.default' })}>
+            Customer Reviews
+          </span>
+        </Box>
+
+        {testimonialConfig.display_style === 'carousel' && (
+          <Box>
+            <Box p={3} bg="bg.default" mb={2}>
+              <Box mb={1}>
+                <span className={css({ fontSize: '2xs', color: 'yellow.default' })}>
+                  {'★'.repeat(testimonialsToShow[0]?.rating || 5)}
+                </span>
+              </Box>
+              <p className={css({ fontSize: '2xs', color: 'fg.default', mb: 1 })}>
+                "{testimonialsToShow[0]?.comment}"
+              </p>
+              <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
+                - {testimonialsToShow[0]?.name}, {testimonialsToShow[0]?.suburb}
+              </p>
+            </Box>
+            {testimonialsToShow.length > 1 && (
+              <Box textAlign="center">
+                <span className={css({ fontSize: '2xs', color: 'fg.muted' })}>
+                  • • • (showing 1 of {testimonialsToShow.length})
+                </span>
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {testimonialConfig.display_style === 'grid' && (
+          <Stack gap={2}>
+            {testimonialsToShow.map((testimonial, index) => (
+              <Box key={index} p={2} bg="bg.default">
+                <Box mb={1}>
+                  <span className={css({ fontSize: '2xs', color: 'yellow.default' })}>
+                    {'★'.repeat(testimonial.rating)}
+                  </span>
+                </Box>
+                <p className={css({ fontSize: '2xs', color: 'fg.default', mb: 1 })}>
+                  "{testimonial.comment.length > 50 ? testimonial.comment.substring(0, 50) + '...' : testimonial.comment}"
+                </p>
+                <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
+                  - {testimonial.name}, {testimonial.suburb}
+                </p>
+              </Box>
+            ))}
+          </Stack>
+        )}
+
+        {testimonialConfig.display_style === 'list' && (
+          <Stack gap={1}>
+            {testimonialsToShow.map((testimonial, index) => (
+              <Box key={index} p={2} bg="bg.default" display="flex" gap={2}>
+                <span className={css({ fontSize: '2xs', color: 'yellow.default', flexShrink: 0 })}>
+                  {'★'.repeat(testimonial.rating)}
+                </span>
+                <Box flex={1}>
+                  <p className={css({ fontSize: '2xs', color: 'fg.default' })}>
+                    "{testimonial.comment.length > 40 ? testimonial.comment.substring(0, 40) + '...' : testimonial.comment}" - {testimonial.name}
+                  </p>
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+        )}
+      </Box>
+    )
+  }
 
   return (
     <Box>
@@ -75,6 +189,13 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
           {/* Funnel Content */}
           <Box p={4}>
             <Box bg="bg.default" boxShadow="lg" overflow="hidden">
+              {/* Top Testimonials */}
+              {testimonialConfig?.enabled && testimonialConfig.position === 'top' && (
+                <Box px={3} pt={4}>
+                  <TestimonialPreview position="top" />
+                </Box>
+              )}
+
               {/* Header */}
               <Box px={3} py={6} textAlign="center">
                 <h1 className={css({ fontSize: 'md', fontWeight: 'medium', color: 'fg.default', mb: 2 })}>
@@ -99,46 +220,90 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 )}
               </Box>
 
-              {/* Contact Section */}
+              {/* Content Section */}
               <Box px={3} pb={4}>
-                {/* Primary CTAs */}
-                <Stack gap={4} mb={4}>
-                  <Box
-                    w="full"
-                    colorPalette="mint"
-                    bg="colorPalette.default"
-                    color="colorPalette.fg"
-                    fontWeight="semibold"
-                    py={2}
-                    px={3}
-                    textAlign="center"
-                    fontSize="xs"
-                  >
-                    Save {contactName?.split(' ')[0] || 'Contact'}&apos;s Contact
-                  </Box>
-                  
-                  <Box
-                    w="full"
-                    colorPalette="mint"
-                    bg="colorPalette.default"
-                    color="colorPalette.fg"
-                    fontWeight="semibold"
-                    py={2}
-                    px={3}
-                    textAlign="center"
-                    fontSize="xs"
-                  >
-                    Call {contactName?.split(' ')[0] || 'Contact'}
-                  </Box>
-                </Stack>
+                {!isTestimonialType ? (
+                  <>
+                    {/* Primary CTAs for non-testimonial types */}
+                    <Stack gap={4} mb={4}>
+                      <Box
+                        w="full"
+                        colorPalette="mint"
+                        bg="colorPalette.default"
+                        color="colorPalette.fg"
+                        fontWeight="semibold"
+                        py={2}
+                        px={3}
+                        textAlign="center"
+                        fontSize="xs"
+                      >
+                        Save {contactName?.split(' ')[0] || 'Contact'}&apos;s Contact
+                      </Box>
 
-                {/* Custom Message */}
-                {formData.content?.custom_message && (
-                  <Box mb={5} p={3} bg="bg.subtle">
-                    <p className={css({ color: 'fg.muted', fontSize: 'xs' })}>
-                      {formData.content.custom_message}
-                    </p>
-                  </Box>
+                      <Box
+                        w="full"
+                        colorPalette="mint"
+                        bg="colorPalette.default"
+                        color="colorPalette.fg"
+                        fontWeight="semibold"
+                        py={2}
+                        px={3}
+                        textAlign="center"
+                        fontSize="xs"
+                      >
+                        Call {contactName?.split(' ')[0] || 'Contact'}
+                      </Box>
+                    </Stack>
+
+                    {/* Testimonial Button for non-testimonial funnels */}
+                    {testimonialConfig?.enabled && (
+                      <Box mb={4}>
+                        <Box
+                          w="full"
+                          colorPalette="blue"
+                          bg="colorPalette.default"
+                          color="colorPalette.fg"
+                          fontWeight="semibold"
+                          py={2}
+                          px={3}
+                          textAlign="center"
+                          fontSize="xs"
+                        >
+                          💬 Share Your Experience
+                        </Box>
+                      </Box>
+                    )}
+
+                    {/* Custom Message */}
+                    {formData.content?.custom_message && (
+                      <Box mb={5} p={3} bg="bg.subtle">
+                        <p className={css({ color: 'fg.muted', fontSize: 'xs' })}>
+                          {formData.content.custom_message}
+                        </p>
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* Testimonial Form Preview */}
+                    <Box mb={5}>
+                      <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 3, textAlign: 'center' })}>
+                        Share Your Experience
+                      </h3>
+                      <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 4, textAlign: 'center' })}>
+                        We'd love to hear about your experience with {businessName}
+                      </p>
+
+                      {/* Custom Message for testimonials */}
+                      {formData.content?.custom_message && (
+                        <Box mb={4} p={3} bg="bg.subtle">
+                          <p className={css({ color: 'fg.muted', fontSize: 'xs', textAlign: 'center' })}>
+                            {formData.content.custom_message}
+                          </p>
+                        </Box>
+                      )}
+                    </Box>
+                  </>
                 )}
 
                 {/* Property Link - Show if property type selected */}
@@ -216,10 +381,11 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                   </Box>
                 )}
 
-                {/* Callback Form Preview */}
+                {/* Form Preview */}
                 <Box mt={5} borderTopWidth="1px" borderColor="border.default" pt={4}>
                   <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 3 })}>
-                    {isAppointmentType ? 'Book an Appointment' :
+                    {isTestimonialType ? 'Testimonial Form' :
+                     isAppointmentType ? 'Book an Appointment' :
                      isVideoType ? 'Contact for More Information' :
                      isMenuType ? 'Get in Touch' :
                      isPropertyType ? 'Request Property Information' :
@@ -236,20 +402,70 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                       color="fg.muted"
                       fontSize="xs"
                     >
-                      Your name
+                      {isTestimonialType ? 'Your name *' : 'Your name'}
                     </Box>
-                    <Box
-                      w="full"
-                      px={2}
-                      py={1}
-                      borderWidth="1px"
-                      borderColor="border.default"
-                      bg="bg.default"
-                      color="fg.muted"
-                      fontSize="xs"
-                    >
-                      Your phone number
-                    </Box>
+                    {isTestimonialType ? (
+                      <>
+                        <Box
+                          w="full"
+                          px={2}
+                          py={1}
+                          borderWidth="1px"
+                          borderColor="border.default"
+                          bg="bg.default"
+                          color="fg.muted"
+                          fontSize="xs"
+                        >
+                          Suburb/Location *
+                        </Box>
+                        <Box
+                          w="full"
+                          px={2}
+                          py={6}
+                          borderWidth="1px"
+                          borderColor="border.default"
+                          bg="bg.default"
+                          color="fg.muted"
+                          fontSize="xs"
+                        >
+                          Tell us about your experience... *
+                        </Box>
+                        {/* Star Rating Preview */}
+                        <Box textAlign="center">
+                          <Box mb={2}>
+                            <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>Rating (optional)</span>
+                          </Box>
+                          <Box>
+                            <span className={css({ fontSize: 'sm', color: 'yellow.default' })}>★★★★★</span>
+                          </Box>
+                        </Box>
+                        <Box
+                          w="full"
+                          px={2}
+                          py={1}
+                          borderWidth="1px"
+                          borderColor="border.default"
+                          bg="bg.default"
+                          color="fg.muted"
+                          fontSize="xs"
+                        >
+                          Email (optional)
+                        </Box>
+                      </>
+                    ) : (
+                      <Box
+                        w="full"
+                        px={2}
+                        py={1}
+                        borderWidth="1px"
+                        borderColor="border.default"
+                        bg="bg.default"
+                        color="fg.muted"
+                        fontSize="xs"
+                      >
+                        Your phone number
+                      </Box>
+                    )}
                     <Box
                       w="full"
                       colorPalette="mint"
@@ -261,7 +477,8 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                       textAlign="center"
                       fontSize="xs"
                     >
-                      {isAppointmentType ? 'Book Appointment' :
+                      {isTestimonialType ? 'Submit Testimonial' :
+                       isAppointmentType ? 'Book Appointment' :
                        isVideoType ? 'Contact Me' :
                        isMenuType ? 'Contact Us' :
                        isPropertyType ? 'Get Property Info' :
@@ -269,8 +486,20 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                     </Box>
                   </Stack>
                 </Box>
+
+                {/* Bottom Testimonials */}
+                {testimonialConfig?.enabled && testimonialConfig.position === 'bottom' && (
+                  <TestimonialPreview position="bottom" />
+                )}
               </Box>
             </Box>
+
+            {/* Sidebar Testimonials */}
+            {testimonialConfig?.enabled && testimonialConfig.position === 'sidebar' && (
+              <Box px={4} pb={4}>
+                <TestimonialPreview position="sidebar" />
+              </Box>
+            )}
 
             {/* Footer */}
             <Box textAlign="center" mt={6}>
