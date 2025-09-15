@@ -23,6 +23,10 @@ interface QRLayoutPreviewProps {
     qrWidth?: number
     qrHeight?: number
     qrPresetId?: string
+    outputSize?: string
+    customWidth?: string
+    customHeight?: string
+    useCustomSize?: boolean
   }
 }
 
@@ -32,10 +36,10 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
   const [wordLeft, setWordLeft] = useState(initialStickerSettings?.wordLeft ?? 'LEFT')
   const [wordRight, setWordRight] = useState(initialStickerSettings?.wordRight ?? 'RIGHT')
   const [textSize, setTextSize] = useState(initialStickerSettings?.textSize ?? 18) // Font size in pixels
-  const [textDistance, setTextDistance] = useState(initialStickerSettings?.textDistance ?? 30) // Distance from edges for left/right in pixels
-  const [verticalDistance, setVerticalDistance] = useState(initialStickerSettings?.verticalDistance ?? 20) // Distance from edges for top/bottom in pixels
+  const [textDistance, setTextDistance] = useState(initialStickerSettings?.textDistance ?? 40) // Distance from edges for left/right in pixels
+  const [verticalDistance, setVerticalDistance] = useState(initialStickerSettings?.verticalDistance ?? 40) // Distance from edges for top/bottom in pixels
   const [qrWidth, setQrWidth] = useState(initialStickerSettings?.qrWidth ?? 120) // QR code width in pixels
-  const [qrHeight, setQrHeight] = useState(initialStickerSettings?.qrHeight ?? 120) // QR code height in pixels
+  const [qrHeight, setQrHeight] = useState(initialStickerSettings?.qrHeight ?? initialStickerSettings?.qrWidth ?? 120) // QR code height in pixels (should match width for square)
   const [downloading, setDownloading] = useState(false)
   const [downloadingPDF, setDownloadingPDF] = useState(false)
   const [qrCodeSVG, setQrCodeSVG] = useState<string>('')
@@ -46,6 +50,10 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
     style_config: Record<string, unknown>
   }>>([])
   const [selectedPresetId, setSelectedPresetId] = useState<string>(initialStickerSettings?.qrPresetId || '')
+  const [outputSize, setOutputSize] = useState<string>(initialStickerSettings?.outputSize || '50') // Default 50mm
+  const [customWidth, setCustomWidth] = useState<string>(initialStickerSettings?.customWidth || '50')
+  const [customHeight, setCustomHeight] = useState<string>(initialStickerSettings?.customHeight || '50')
+  const [useCustomSize, setUseCustomSize] = useState<boolean>(initialStickerSettings?.useCustomSize || false)
   const supabase = createClient()
 
   // Generate SVG QR code when component mounts or style changes
@@ -188,7 +196,11 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           verticalDistance,
           qrWidth,
           qrHeight,
-          qrPresetId: selectedPresetId
+          qrPresetId: selectedPresetId,
+          outputSize,
+          customWidth,
+          customHeight,
+          useCustomSize
         }
 
         // First get the current content to preserve it
@@ -214,8 +226,20 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
     }, 500) // Debounce for 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, selectedPresetId, funnelId, supabase])
+  }, [wordTop, wordBottom, wordLeft, wordRight, textSize, textDistance, verticalDistance, qrWidth, qrHeight, selectedPresetId, outputSize, customWidth, customHeight, useCustomSize, funnelId, supabase])
 
+
+  // Helper function to get final output dimensions in mm
+  const getOutputDimensions = () => {
+    if (useCustomSize) {
+      return {
+        width: parseFloat(customWidth) || 50,
+        height: parseFloat(customHeight) || 50
+      }
+    }
+    const size = parseFloat(outputSize) || 50
+    return { width: size, height: size }
+  }
 
   const handleDownloadSVG = async () => {
     setDownloading(true)
@@ -224,53 +248,46 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
       const exportQRSVG = qrCodeSVG
       console.log('📦 Using current QR SVG for export, length:', exportQRSVG.length)
 
-      // Parse the SVG to extract just the inner content (remove the outer <svg> wrapper)
-      const svgParser = new DOMParser()
-      const svgDoc = svgParser.parseFromString(exportQRSVG, 'image/svg+xml')
-      const svgElement = svgDoc.documentElement
-
-      // Get the inner content of the QR SVG (everything inside the <svg> tags)
-      const qrInnerContent = Array.from(svgElement.children)
-        .map(child => child.outerHTML)
-        .join('\n')
-      
       // Position and size calculations - EXACTLY same as preview
-      const qrX = 148 - qrWidth/2
+      const qrX = 210 - qrWidth/2
       const qrY = 210 - qrHeight/2
       console.log('📦 Export QR positioning - x:', qrX, 'y:', qrY, 'width:', qrWidth, 'height:', qrHeight)
-      console.log('🖼️ Preview QR positioning - x:', 148 - qrWidth/2, 'y:', 210 - qrHeight/2, 'width:', qrWidth, 'height:', qrHeight)
-      
-      // Create SVG representation of the current layout - MATCH PREVIEW EXACTLY
+
+      // Get final output dimensions
+      const outputDims = getOutputDimensions()
+      console.log('📐 Output dimensions:', outputDims.width, 'mm x', outputDims.height, 'mm')
+
+      // Create SVG representation with proper scaling for output size
       const svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="296" height="420" viewBox="0 0 296 420">
-          <rect width="296" height="420" fill="white" stroke="#ccc" stroke-width="2"/>
-          
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${outputDims.width}mm" height="${outputDims.height}mm" viewBox="0 0 420 420">
+          <rect width="420" height="420" fill="white"/>
+
           <!-- Top Text -->
-          <text x="148" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+          <text x="210" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
                 fill="black" style="text-transform: uppercase;">${wordTop}</text>
-          
+
           <!-- Bottom Text -->
-          <text x="148" y="${420 - verticalDistance * 0.75}" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+          <text x="210" y="${420 - verticalDistance * 0.75}" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
                 fill="black" style="text-transform: uppercase;">${wordBottom}</text>
-          
+
           <!-- Left Text (Rotated) -->
-          <text x="${textDistance}" y="210" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
-                fill="black" style="text-transform: uppercase;" 
+          <text x="${textDistance}" y="210" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
+                fill="black" style="text-transform: uppercase;"
                 transform="rotate(-90 ${textDistance} 210)">${wordLeft}</text>
-          
+
           <!-- Right Text (Rotated) -->
-          <text x="${296 - textDistance}" y="210" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
-                fill="black" style="text-transform: uppercase;" 
-                transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
-          
-          <!-- QR Code - Embed actual SVG content with proper transformation -->
-          <g transform="translate(${qrX}, ${qrY}) scale(${qrWidth/300}, ${qrHeight/300})">
-            ${qrInnerContent}
-          </g>
+          <text x="${420 - textDistance}" y="210" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
+                fill="black" style="text-transform: uppercase;"
+                transform="rotate(90 ${420 - textDistance} 210)">${wordRight}</text>
+
+          <!-- QR Code - Use image approach like preview -->
+          <image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}"
+                 href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}"
+                 preserveAspectRatio="xMidYMid meet" />
         </svg>
       `
       
@@ -300,52 +317,46 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
       const exportQRSVG = qrCodeSVG
       console.log('📦 Using current QR SVG for PDF export, length:', exportQRSVG.length)
 
-      // Parse the SVG to extract just the inner content (remove the outer <svg> wrapper)
-      const pdfParser = new DOMParser()
-      const pdfSvgDoc = pdfParser.parseFromString(exportQRSVG, 'image/svg+xml')
-      const pdfSvgElement = pdfSvgDoc.documentElement
-
-      // Get the inner content of the QR SVG (everything inside the <svg> tags)
-      const qrInnerContent = Array.from(pdfSvgElement.children)
-        .map(child => child.outerHTML)
-        .join('\n')
-      
       // Position and size calculations - EXACTLY same as preview
-      const qrX = 148 - qrWidth/2
+      const qrX = 210 - qrWidth/2
       const qrY = 210 - qrHeight/2
       console.log('📦 Export PDF QR positioning - x:', qrX, 'y:', qrY, 'width:', qrWidth, 'height:', qrHeight)
-      
-      // Generate the same SVG content as used for SVG download - MATCH PREVIEW EXACTLY
+
+      // Get final output dimensions
+      const outputDims = getOutputDimensions()
+      console.log('📐 PDF Output dimensions:', outputDims.width, 'mm x', outputDims.height, 'mm')
+
+      // Generate the same SVG content as used for SVG download with proper scaling
       const svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="296" height="420" viewBox="0 0 296 420">
-          <rect width="296" height="420" fill="white" stroke="#ccc" stroke-width="2"/>
-          
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${outputDims.width}mm" height="${outputDims.height}mm" viewBox="0 0 420 420">
+          <rect width="420" height="420" fill="white"/>
+
           <!-- Top Text -->
-          <text x="148" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+          <text x="210" y="${verticalDistance * 0.75 + textSize * 0.75}" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
                 fill="black" style="text-transform: uppercase;">${wordTop}</text>
-          
+
           <!-- Bottom Text -->
-          <text x="148" y="${420 - verticalDistance * 0.75}" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
+          <text x="210" y="${420 - verticalDistance * 0.75}" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
                 fill="black" style="text-transform: uppercase;">${wordBottom}</text>
-          
+
           <!-- Left Text (Rotated) -->
-          <text x="${textDistance}" y="210" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
-                fill="black" style="text-transform: uppercase;" 
+          <text x="${textDistance}" y="210" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
+                fill="black" style="text-transform: uppercase;"
                 transform="rotate(-90 ${textDistance} 210)">${wordLeft}</text>
-          
+
           <!-- Right Text (Rotated) -->
-          <text x="${296 - textDistance}" y="210" text-anchor="middle" 
-                font-family="Arial" font-weight="bold" font-size="${textSize}" 
-                fill="black" style="text-transform: uppercase;" 
-                transform="rotate(90 ${296 - textDistance} 210)">${wordRight}</text>
-          
-          <!-- QR Code - Embed actual SVG content with proper transformation -->
-          <g transform="translate(${qrX}, ${qrY}) scale(${qrWidth/300}, ${qrHeight/300})">
-            ${qrInnerContent}
-          </g>
+          <text x="${420 - textDistance}" y="210" text-anchor="middle"
+                font-family="Arial" font-weight="bold" font-size="${textSize}"
+                fill="black" style="text-transform: uppercase;"
+                transform="rotate(90 ${420 - textDistance} 210)">${wordRight}</text>
+
+          <!-- QR Code - Use image approach like preview -->
+          <image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}"
+                 href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}"
+                 preserveAspectRatio="xMidYMid meet" />
         </svg>
       `
       
@@ -358,11 +369,11 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
         import('svg2pdf.js')
       ])
       
-      // Create PDF with exact sticker dimensions  
+      // Create PDF with final output dimensions in mm
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'px',
-        format: [296, 420] // Use exact SVG dimensions
+        unit: 'mm',
+        format: [outputDims.width, outputDims.height] // Use final dimensions
       })
       
       // Parse SVG and convert to PDF as vectors
@@ -551,6 +562,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 ))}
               </select>
             </Box>
+
             
             {/* Text Size Control */}
             <Box>
@@ -624,17 +636,21 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
               </p>
             </Box>
             
-            {/* QR Code Width Control */}
+            {/* QR Code Size Control */}
             <Box>
               <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                QR Code Width: {qrWidth}px
+                QR Code Size: {qrWidth}px
               </label>
               <input
                 type="range"
                 min="40"
                 max="400"
                 value={qrWidth}
-                onChange={(e) => setQrWidth(Number(e.target.value))}
+                onChange={(e) => {
+                  const size = Number(e.target.value)
+                  setQrWidth(size)
+                  setQrHeight(size)
+                }}
                 className={css({
                   w: 'full',
                   h: 2,
@@ -645,32 +661,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
-                Makes QR code wider or narrower
-              </p>
-            </Box>
-            
-            {/* QR Code Height Control */}
-            <Box>
-              <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                QR Code Height: {qrHeight}px
-              </label>
-              <input
-                type="range"
-                min="40"
-                max="400"
-                value={qrHeight}
-                onChange={(e) => setQrHeight(Number(e.target.value))}
-                className={css({
-                  w: 'full',
-                  h: 2,
-                  bg: 'gray.200',
-                  borderRadius: 'lg',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                })}
-              />
-              <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
-                Makes QR code taller or shorter
+                Adjusts QR code size (square)
               </p>
             </Box>
           </Stack>
@@ -680,7 +671,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
         <Box flex="1">
           
           {/* SVG Preview */}
-          <Box mx="auto" maxW="296px">
+          <Box mx="auto" maxW="420px">
             <p className={css({ fontSize: 'sm', color: 'fg.muted', textAlign: 'center', mb: 2 })}>
               Preview
             </p>
@@ -689,105 +680,105 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 borderWidth="2px"
                 borderColor="border.default"
                 borderStyle="solid"
-                width="296px"
+                width="420px"
                 height="420px"
                 overflow="visible"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   xmlnsXlink="http://www.w3.org/1999/xlink"
-                  width="296"
+                  width="420"
                   height="420"
-                  viewBox="0 0 296 420"
+                  viewBox="0 0 420 420"
                   style={{ width: '100%', height: '100%' }}
                 >
-                  <rect width="296" height="420" fill="white" stroke="#ccc" strokeWidth="2"/>
-                  
+                  <rect width="420" height="420" fill="white"/>
+
                   {/* Top Text */}
-                  <text 
-                    x="148" 
-                    y={verticalDistance * 0.75 + textSize * 0.75} 
-                    textAnchor="middle" 
-                    fontFamily="Arial" 
-                    fontWeight="bold" 
-                    fontSize={textSize} 
-                    fill="black" 
+                  <text
+                    x="210"
+                    y={verticalDistance * 0.75 + textSize * 0.75}
+                    textAnchor="middle"
+                    fontFamily="Arial"
+                    fontWeight="bold"
+                    fontSize={textSize}
+                    fill="black"
                     style={{ textTransform: 'uppercase' }}
                   >
                     {wordTop}
                   </text>
-                  
+
                   {/* Bottom Text */}
-                  <text 
-                    x="148" 
-                    y={420 - verticalDistance * 0.75} 
-                    textAnchor="middle" 
-                    fontFamily="Arial" 
-                    fontWeight="bold" 
-                    fontSize={textSize} 
-                    fill="black" 
+                  <text
+                    x="210"
+                    y={420 - verticalDistance * 0.75}
+                    textAnchor="middle"
+                    fontFamily="Arial"
+                    fontWeight="bold"
+                    fontSize={textSize}
+                    fill="black"
                     style={{ textTransform: 'uppercase' }}
                   >
                     {wordBottom}
                   </text>
-                  
+
                   {/* Left Text (Rotated) */}
-                  <text 
-                    x={textDistance} 
-                    y="210" 
-                    textAnchor="middle" 
-                    fontFamily="Arial" 
-                    fontWeight="bold" 
-                    fontSize={textSize} 
-                    fill="black" 
+                  <text
+                    x={textDistance}
+                    y="210"
+                    textAnchor="middle"
+                    fontFamily="Arial"
+                    fontWeight="bold"
+                    fontSize={textSize}
+                    fill="black"
                     style={{ textTransform: 'uppercase' }}
                     transform={`rotate(-90 ${textDistance} 210)`}
                   >
                     {wordLeft}
                   </text>
-                  
+
                   {/* Right Text (Rotated) */}
-                  <text 
-                    x={296 - textDistance} 
-                    y="210" 
-                    textAnchor="middle" 
-                    fontFamily="Arial" 
-                    fontWeight="bold" 
-                    fontSize={textSize} 
-                    fill="black" 
+                  <text
+                    x={420 - textDistance}
+                    y="210"
+                    textAnchor="middle"
+                    fontFamily="Arial"
+                    fontWeight="bold"
+                    fontSize={textSize}
+                    fill="black"
                     style={{ textTransform: 'uppercase' }}
-                    transform={`rotate(90 ${296 - textDistance} 210)`}
+                    transform={`rotate(90 ${420 - textDistance} 210)`}
                   >
                     {wordRight}
                   </text>
-                  
+
                   {/* QR Code - SVG Only */}
                   {qrCodeDataURL ? (
-                    <image 
-                      x={148 - qrWidth/2} 
-                      y={210 - qrHeight/2} 
-                      width={qrWidth} 
-                      height={qrHeight} 
+                    <image
+                      x={210 - qrWidth/2}
+                      y={210 - qrHeight/2}
+                      width={qrWidth}
+                      height={qrHeight}
                       href={qrCodeDataURL}
                       preserveAspectRatio="xMidYMid meet"
                     />
                   ) : (
                     <>
-                      <rect 
-                        x={148 - qrWidth/2} 
-                        y={210 - qrHeight/2} 
-                        width={qrWidth} 
-                        height={qrHeight} 
-                        fill="#f0f0f0" 
-                        stroke="#000" 
+                      <rect
+                        x={210 - qrWidth/2}
+                        y={210 - qrHeight/2}
+                        width={qrWidth}
+                        height={qrHeight}
+                        fill="#f0f0f0"
+                        stroke="#000"
                         strokeWidth="2"
                       />
-                      <text 
-                        x="148" 
-                        y="210" 
-                        textAnchor="middle" 
-                        fontFamily="Arial" 
-                        fontSize="12" 
+                      <text
+                        x="210"
+                        y="210"
+                        textAnchor="middle"
+                        fontFamily="Arial"
+                        fontSize="12"
                         fill="#666"
                       >
                         NO QR URL
@@ -798,6 +789,118 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
               </Box>
           </Box>
           
+          {/* Output Size Selector */}
+          <Box mt={4} maxW="300px" mx="auto">
+            <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 2, textAlign: 'center' })}>
+              Output Size
+            </label>
+            <Box mb={3}>
+              <input
+                type="checkbox"
+                id="customSizeToggle"
+                checked={useCustomSize}
+                onChange={(e) => setUseCustomSize(e.target.checked)}
+                className={css({ mr: 2 })}
+              />
+              <label htmlFor="customSizeToggle" className={css({ fontSize: 'sm', color: 'fg.default' })}>
+                Custom size
+              </label>
+            </Box>
+
+            {!useCustomSize ? (
+              <select
+                value={outputSize}
+                onChange={(e) => setOutputSize(e.target.value)}
+                className={css({
+                  w: 'full',
+                  px: 3,
+                  py: 2,
+                  borderWidth: '1px',
+                  borderColor: 'border.default',
+                  borderRadius: 'md',
+                  bg: 'bg.default',
+                  color: 'fg.default',
+                  fontSize: 'sm',
+                  cursor: 'pointer',
+                  _focus: {
+                    outline: 'none',
+                    borderColor: 'colorPalette.default',
+                    ringWidth: '2px',
+                    ringColor: 'colorPalette.default'
+                  }
+                })}
+              >
+                <option value="25">25mm × 25mm (Small)</option>
+                <option value="50">50mm × 50mm (Medium)</option>
+                <option value="75">75mm × 75mm (Large)</option>
+                <option value="100">100mm × 100mm (Extra Large)</option>
+              </select>
+            ) : (
+              <Flex gap={2}>
+                <Box flex="1">
+                  <input
+                    type="number"
+                    value={customWidth}
+                    onChange={(e) => setCustomWidth(e.target.value)}
+                    placeholder="Width"
+                    min="10"
+                    max="300"
+                    className={css({
+                      w: 'full',
+                      px: 3,
+                      py: 2,
+                      borderWidth: '1px',
+                      borderColor: 'border.default',
+                      borderRadius: 'md',
+                      bg: 'bg.default',
+                      color: 'fg.default',
+                      fontSize: 'sm',
+                      _focus: {
+                        outline: 'none',
+                        borderColor: 'colorPalette.default',
+                        ringWidth: '2px',
+                        ringColor: 'colorPalette.default'
+                      }
+                    })}
+                  />
+                </Box>
+                <span className={css({ alignSelf: 'center', fontSize: 'sm', color: 'fg.muted' })}>×</span>
+                <Box flex="1">
+                  <input
+                    type="number"
+                    value={customHeight}
+                    onChange={(e) => setCustomHeight(e.target.value)}
+                    placeholder="Height"
+                    min="10"
+                    max="300"
+                    className={css({
+                      w: 'full',
+                      px: 3,
+                      py: 2,
+                      borderWidth: '1px',
+                      borderColor: 'border.default',
+                      borderRadius: 'md',
+                      bg: 'bg.default',
+                      color: 'fg.default',
+                      fontSize: 'sm',
+                      _focus: {
+                        outline: 'none',
+                        borderColor: 'colorPalette.default',
+                        ringWidth: '2px',
+                        ringColor: 'colorPalette.default'
+                      }
+                    })}
+                  />
+                </Box>
+                <span className={css({ alignSelf: 'center', fontSize: 'sm', color: 'fg.muted' })}>mm</span>
+              </Flex>
+            )}
+
+            <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 2, textAlign: 'center' })}>
+              Final output size: {getOutputDimensions().width}mm × {getOutputDimensions().height}mm
+            </p>
+          </Box>
+
           {/* Download Buttons */}
           <Flex mt={4} direction="column" gap={2} align="center">
             <button
