@@ -229,7 +229,7 @@ export default function TestimonialSubmissionForm({
               Share Your Experience
             </h1>
             <p className={css({ color: 'fg.muted', fontSize: 'sm' })}>
-              We'd love to hear about your experience with us
+              We&apos;d love to hear about your experience with us
             </p>
           </Box>
 

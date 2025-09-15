@@ -39,7 +39,7 @@ async function verifyTestimonialsBelongToBusiness(
 
   if (error || !testimonials) return false
 
-  return testimonials.every((t: any) => t.business_id === businessId) &&
+  return testimonials.every((t: { business_id: string }) => t.business_id === businessId) &&
          testimonials.length === testimonialIds.length
 }
 
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       reviewed_by: user?.id || null,
     }
 
-    let updateData: Record<string, any> = {}
+    let updateData: Record<string, unknown> = {}
     let successMessage = ''
 
     switch (action) {

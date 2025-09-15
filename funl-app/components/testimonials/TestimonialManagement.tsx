@@ -295,7 +295,7 @@ export default function TestimonialManagement({ businessId }: TestimonialManagem
             color: 'fg.default',
             mb: 2
           })}>
-            "{testimonial.comment}"
+            &ldquo;{testimonial.comment}&rdquo;
           </p>
           {testimonial.edited_comment && (
             <p className={css({
@@ -303,7 +303,7 @@ export default function TestimonialManagement({ businessId }: TestimonialManagem
               color: 'fg.muted',
               fontStyle: 'italic'
             })}>
-              Edited: "{testimonial.edited_comment}"
+              Edited: &ldquo;{testimonial.edited_comment}&rdquo;
             </p>
           )}
         </Box>

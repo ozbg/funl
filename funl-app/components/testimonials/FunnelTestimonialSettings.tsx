@@ -67,7 +67,7 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
 
     try {
       // Ensure data types are correct for API validation
-      const configToSave: any = {
+      const configToSave: Record<string, unknown> = {
         ...config,
         display_count: parseInt(config.display_count.toString()) || 3,
         minimum_rating: parseInt(config.minimum_rating.toString()) || 3
@@ -99,7 +99,7 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
 
         if (errorData.details) {
           console.error('Validation details:', errorData.details)
-          const detailsMessage = errorData.details.map((d: any) => `${d.path?.join('.')}: ${d.message}`).join(', ')
+          const detailsMessage = errorData.details.map((d: { path?: string[]; message: string }) => `${d.path?.join('.')}: ${d.message}`).join(', ')
           throw new Error(`Validation failed: ${detailsMessage}`)
         }
 
@@ -116,12 +116,12 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
     }
   }
 
-  const handleChange = (key: keyof TestimonialConfig, value: any) => {
+  const handleChange = (key: keyof TestimonialConfig, value: string | number | boolean) => {
     let processedValue = value
 
     // Handle number inputs - convert to number and validate
     if (key === 'display_count' || key === 'minimum_rating') {
-      const numValue = parseInt(value)
+      const numValue = parseInt(String(value))
       processedValue = isNaN(numValue) ? (key === 'display_count' ? 3 : 3) : numValue
     }
 

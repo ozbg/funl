@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack } from '@/styled-system/jsx'
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
-import type { Tables, DisplayStyle, DisplayPosition } from '@/lib/database.types'
+import type { DisplayStyle, DisplayPosition } from '@/lib/database.types'
 
 interface TestimonialData {
   id: string
@@ -177,7 +177,7 @@ export default function TestimonialDisplay({
               color: 'fg.default',
               fontStyle: 'italic'
             })}>
-              "{testimonial.comment}"
+              &ldquo;{testimonial.comment}&rdquo;
             </p>
           </Box>
 

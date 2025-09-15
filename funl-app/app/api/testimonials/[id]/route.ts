@@ -116,8 +116,8 @@ export async function PATCH(
     // Add review metadata if status is being changed
     if (updateData.status) {
       const { data: { user } } = await supabase.auth.getUser()
-      ;(updateData as any).reviewed_at = new Date().toISOString()
-      ;(updateData as any).reviewed_by = user?.id || null
+      ;(updateData as Record<string, unknown>).reviewed_at = new Date().toISOString()
+      ;(updateData as Record<string, unknown>).reviewed_by = user?.id || null
     }
 
     // Handle featured status - ensure only one featured per business at display_order level

@@ -157,7 +157,7 @@ export default function PublicFunnelWithTestimonials({
   }
 
   // If this is a testimonial funnel, show only the testimonial form
-  if ((funnel as any).type === 'testimonial') {
+  if (funnel.type === 'testimonial') {
     return (
       <Box minH="100vh" bg="bg.subtle">
         <Box maxW="md" mx="auto" pt={8} pb={16} px={4}>
@@ -433,8 +433,8 @@ export default function PublicFunnelWithTestimonials({
             )}
 
             {/* Callback Request Form */}
-            {(funnel as any).type !== 'testimonial' && (
-              <Box mt={6} borderTopWidth="1px" borderColor="border.default" pt={6}>
+            {/* Callback Request Form - always shown for non-testimonial funnels */}
+            <Box mt={6} borderTopWidth="1px" borderColor="border.default" pt={6}>
                 <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default', mb: 4 })}>Request a Callback</h3>
                 <form onSubmit={handleCallbackSubmit}>
                   <Stack gap={4}>
@@ -548,7 +548,6 @@ export default function PublicFunnelWithTestimonials({
                   </Stack>
                 </form>
               </Box>
-            )}
           </Box>
 
           {/* Sidebar Testimonials */}

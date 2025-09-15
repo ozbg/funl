@@ -91,7 +91,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 </span>
               </Box>
               <p className={css({ fontSize: '2xs', color: 'fg.default', mb: 1 })}>
-                "{testimonialsToShow[0]?.comment}"
+                &ldquo;{testimonialsToShow[0]?.comment}&rdquo;
               </p>
               <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
                 - {testimonialsToShow[0]?.name}, {testimonialsToShow[0]?.suburb}
@@ -117,7 +117,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                   </span>
                 </Box>
                 <p className={css({ fontSize: '2xs', color: 'fg.default', mb: 1 })}>
-                  "{testimonial.comment.length > 50 ? testimonial.comment.substring(0, 50) + '...' : testimonial.comment}"
+                  &ldquo;{testimonial.comment.length > 50 ? testimonial.comment.substring(0, 50) + '...' : testimonial.comment}&rdquo;
                 </p>
                 <p className={css({ fontSize: '2xs', color: 'fg.muted' })}>
                   - {testimonial.name}, {testimonial.suburb}
@@ -136,7 +136,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                 </span>
                 <Box flex={1}>
                   <p className={css({ fontSize: '2xs', color: 'fg.default' })}>
-                    "{testimonial.comment.length > 40 ? testimonial.comment.substring(0, 40) + '...' : testimonial.comment}" - {testimonial.name}
+                    &ldquo;{testimonial.comment.length > 40 ? testimonial.comment.substring(0, 40) + '...' : testimonial.comment}&rdquo; - {testimonial.name}
                   </p>
                 </Box>
               </Box>
@@ -291,7 +291,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
                         Share Your Experience
                       </h3>
                       <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 4, textAlign: 'center' })}>
-                        We'd love to hear about your experience with {businessName}
+                        We&apos;d love to hear about your experience with {businessName}
                       </p>
 
                       {/* Custom Message for testimonials */}
