@@ -27,6 +27,10 @@ export function AdminNav() {
       label: 'QR Presets'
     },
     {
+      href: '/admin/qr-batches',
+      label: 'QR Batches'
+    },
+    {
       href: '/admin/users',
       label: 'Users'
     }

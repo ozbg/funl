@@ -3,6 +3,8 @@ import { z } from 'zod'
 export const CreateFunnelSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   type: z.string().min(1, 'Funnel type is required'),
+  code_source: z.enum(['generated', 'reserved']).optional().default('generated'),
+  reserved_code_id: z.string().uuid().optional(),
   content: z.object({
     state: z.enum(['for_sale', 'sold', 'coming_soon']).optional(),
     price: z.string().max(50, 'Price too long').optional(),

@@ -27,6 +27,9 @@ interface QRLayoutPreviewProps {
     customWidth?: string
     customHeight?: string
     useCustomSize?: boolean
+    includeIdText?: boolean
+    idTextSize?: number
+    idTextPosition?: 'bottom' | 'top'
   }
 }
 
@@ -38,6 +41,19 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
   const [textSize, setTextSize] = useState(initialStickerSettings?.textSize ?? 18) // Font size in pixels
   const [textDistance, setTextDistance] = useState(initialStickerSettings?.textDistance ?? 40) // Distance from edges for left/right in pixels
   const [verticalDistance, setVerticalDistance] = useState(initialStickerSettings?.verticalDistance ?? 40) // Distance from edges for top/bottom in pixels
+
+  // ID text settings
+  const [includeIdText, setIncludeIdText] = useState(initialStickerSettings?.includeIdText ?? false)
+  const [idTextSize, setIdTextSize] = useState(initialStickerSettings?.idTextSize ?? 12) // Font size in pixels
+  const [idTextPosition, setIdTextPosition] = useState<'bottom' | 'top'>(initialStickerSettings?.idTextPosition ?? 'bottom')
+
+  // Generate sample ID text for preview (format: 1_1_09_25_SAMPLE)
+  const generateSampleIdText = () => {
+    const now = new Date()
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const year = now.getFullYear().toString().slice(-2)
+    return `1_1_${month}_${year}_SAMPLE`
+  }
   const [qrWidth, setQrWidth] = useState(initialStickerSettings?.qrWidth ?? 120) // QR code width in pixels
   const [qrHeight, setQrHeight] = useState(initialStickerSettings?.qrHeight ?? initialStickerSettings?.qrWidth ?? 120) // QR code height in pixels (should match width for square)
   const [downloading, setDownloading] = useState(false)
@@ -288,6 +304,13 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           <image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}"
                  href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}"
                  preserveAspectRatio="xMidYMid meet" />
+
+          ${includeIdText ? `
+            <!-- ID Text -->
+            <text x="${qrX + qrWidth / 2}" y="${idTextPosition === 'bottom' ? qrY + qrHeight + idTextSize + 4 : qrY - 4}"
+                  text-anchor="middle" font-family="Courier, monospace" font-size="${idTextSize}"
+                  fill="black">${generateSampleIdText()}</text>
+          ` : ''}
         </svg>
       `
       
@@ -357,6 +380,13 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           <image x="${qrX}" y="${qrY}" width="${qrWidth}" height="${qrHeight}"
                  href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportQRSVG)}"
                  preserveAspectRatio="xMidYMid meet" />
+
+          ${includeIdText ? `
+            <!-- ID Text -->
+            <text x="${qrX + qrWidth / 2}" y="${idTextPosition === 'bottom' ? qrY + qrHeight + idTextSize + 4 : qrY - 4}"
+                  text-anchor="middle" font-family="Courier, monospace" font-size="${idTextSize}"
+                  fill="black">${generateSampleIdText()}</text>
+          ` : ''}
         </svg>
       `
       
@@ -664,6 +694,82 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                 Adjusts QR code size (square)
               </p>
             </Box>
+
+            {/* ID Text Controls */}
+            <Box>
+              <label className={css({ display: 'flex', alignItems: 'center', gap: 2, mb: 2 })}>
+                <input
+                  type="checkbox"
+                  checked={includeIdText}
+                  onChange={(e) => setIncludeIdText(e.target.checked)}
+                  className={css({ cursor: 'pointer' })}
+                />
+                <span className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}>
+                  Include ID Text
+                </span>
+              </label>
+              <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 3 })}>
+                Add small identification text for team tracking
+              </p>
+
+              {includeIdText && (
+                <Stack gap={3}>
+                  {/* ID Text Size Control */}
+                  <Box>
+                    <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                      ID Text Size: {idTextSize}px
+                    </label>
+                    <input
+                      type="range"
+                      min="8"
+                      max="24"
+                      value={idTextSize}
+                      onChange={(e) => setIdTextSize(Number(e.target.value))}
+                      className={css({
+                        w: 'full',
+                        h: 2,
+                        bg: 'gray.200',
+                        borderRadius: 'lg',
+                        appearance: 'none',
+                        cursor: 'pointer'
+                      })}
+                    />
+                    <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                      Keep small to avoid interfering with QR scanning
+                    </p>
+                  </Box>
+
+                  {/* ID Text Position Control */}
+                  <Box>
+                    <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 2 })}>
+                      ID Text Position
+                    </label>
+                    <div className={css({ display: 'flex', gap: 3 })}>
+                      <label className={css({ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' })}>
+                        <input
+                          type="radio"
+                          name="idTextPosition"
+                          value="bottom"
+                          checked={idTextPosition === 'bottom'}
+                          onChange={(e) => setIdTextPosition(e.target.value as 'bottom' | 'top')}
+                        />
+                        <span className={css({ fontSize: 'sm' })}>Bottom</span>
+                      </label>
+                      <label className={css({ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' })}>
+                        <input
+                          type="radio"
+                          name="idTextPosition"
+                          value="top"
+                          checked={idTextPosition === 'top'}
+                          onChange={(e) => setIdTextPosition(e.target.value as 'bottom' | 'top')}
+                        />
+                        <span className={css({ fontSize: 'sm' })}>Top</span>
+                      </label>
+                    </div>
+                  </Box>
+                </Stack>
+              )}
+            </Box>
           </Stack>
         </Box>
         
@@ -784,6 +890,20 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
                         NO QR URL
                       </text>
                     </>
+                  )}
+
+                  {/* ID Text */}
+                  {includeIdText && qrCodeDataURL && (
+                    <text
+                      x={210}
+                      y={idTextPosition === 'bottom' ? 210 + qrHeight/2 + idTextSize + 4 : 210 - qrHeight/2 - 4}
+                      textAnchor="middle"
+                      fontFamily="Courier, monospace"
+                      fontSize={idTextSize}
+                      fill="black"
+                    >
+                      {generateSampleIdText()}
+                    </text>
                   )}
                 </svg>
               </Box>

@@ -76,20 +76,55 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate short ID and URL
-    const shortId = generateShortId()
-    const shortUrl = generateShortUrl(shortId)
-
-    console.log('Generated short URL:', shortUrl)
-
-    // Generate QR code SVG
+    let shortId: string
+    let shortUrl: string
     let qrCodeSVG: string
-    try {
-      qrCodeSVG = await generateQRCodeSVG(shortUrl, qrOptions)
-      console.log('QR code SVG generated successfully, length:', qrCodeSVG.length)
-    } catch (qrError) {
-      console.error('Error generating QR code:', qrError)
-      throw new Error('Failed to generate QR code')
+    let reservedCodeId: string | null = null
+
+    // Handle reserved codes vs generated codes
+    if (validatedData.code_source === 'reserved' && validatedData.reserved_code_id) {
+      try {
+        // Allocate the reserved code to this funnel (we'll create funnel first, then update)
+        const { data: reservedCode } = await supabase
+          .from('reserved_codes')
+          .select('code, base_qr_svg, status, business_id')
+          .eq('id', validatedData.reserved_code_id)
+          .single()
+
+        if (!reservedCode) {
+          return NextResponse.json({ error: 'Reserved code not found' }, { status: 404 })
+        }
+
+        // Verify the code is available or belongs to the user
+        if (reservedCode.status !== 'available' && reservedCode.business_id !== user.id) {
+          return NextResponse.json({ error: 'Reserved code not available' }, { status: 409 })
+        }
+
+        shortId = reservedCode.code
+        shortUrl = generateShortUrl(shortId)
+        qrCodeSVG = reservedCode.base_qr_svg || ''
+        reservedCodeId = validatedData.reserved_code_id
+
+        console.log('Using reserved code:', shortId)
+      } catch (error) {
+        console.error('Error handling reserved code:', error)
+        return NextResponse.json({ error: 'Failed to allocate reserved code' }, { status: 500 })
+      }
+    } else {
+      // Generate new code (existing behavior)
+      shortId = generateShortId()
+      shortUrl = generateShortUrl(shortId)
+
+      console.log('Generated short URL:', shortUrl)
+
+      // Generate QR code SVG
+      try {
+        qrCodeSVG = await generateQRCodeSVG(shortUrl, qrOptions)
+        console.log('QR code SVG generated successfully, length:', qrCodeSVG.length)
+      } catch (qrError) {
+        console.error('Error generating QR code:', qrError)
+        throw new Error('Failed to generate QR code')
+      }
     }
 
     // Create funnel in database
@@ -105,9 +140,38 @@ export async function POST(request: NextRequest) {
         content: validatedData.content || {},
         qr_code_url: qrCodeSVG, // Store SVG directly as text
         status: 'draft',
+        code_source: validatedData.code_source || 'generated',
+        reserved_code_id: reservedCodeId,
       })
       .select()
       .single()
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({ error: 'Failed to create funnel' }, { status: 500 })
+    }
+
+    // If using reserved code, update the code status to assigned
+    if (validatedData.code_source === 'reserved' && reservedCodeId) {
+      try {
+        // Update reserved code to assigned status
+        await supabase
+          .from('reserved_codes')
+          .update({
+            status: 'assigned',
+            funnel_id: funnel.id,
+            business_id: user.id,
+            assigned_at: new Date()
+          })
+          .eq('id', reservedCodeId)
+          .eq('status', 'available') // Only update if still available
+
+        console.log('Reserved code assigned to funnel:', funnel.id)
+      } catch (error) {
+        console.error('Error assigning reserved code:', error)
+        // Don't fail the funnel creation, but log the issue
+      }
+    }
 
     if (error) {
       console.error('Database error:', error)
