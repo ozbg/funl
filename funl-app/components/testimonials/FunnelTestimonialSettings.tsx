@@ -326,7 +326,7 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
                 })}
               />
               <span className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}>
-                Show "Share Your Experience" button
+                Show &quot;Share Your Experience&quot; button
               </span>
             </label>
             <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>

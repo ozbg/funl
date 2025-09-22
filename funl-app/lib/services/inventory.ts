@@ -1,14 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
 import type {
   InventoryOverview,
   CodeInventory,
   QRCodeBatch
 } from '@/lib/types/qr-reservation'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export class InventoryService {
-  private supabase: any
+  private supabase: SupabaseClient
 
-  constructor(supabase: any) {
+  constructor(supabase: SupabaseClient) {
     this.supabase = supabase
   }
 
@@ -20,7 +20,7 @@ export class InventoryService {
     const { data: statusCounts } = await this.supabase
       .from('reserved_codes')
       .select('status')
-      .then((result: any) => {
+      .then((result: unknown) => {
         const counts = {
           available: 0,
           reserved: 0,
@@ -29,7 +29,7 @@ export class InventoryService {
           expired: 0,
           lost: 0
         }
-        result.data?.forEach((row: any) => {
+        result.data?.forEach((row: unknown) => {
           counts[row.status as keyof typeof counts]++
         })
         return { data: counts }
@@ -43,10 +43,10 @@ export class InventoryService {
         qr_code_batches!inner(name, batch_number)
       `)
       .eq('status', 'available')
-      .then((result: any) => {
+      .then((result: unknown) => {
         const counts: Record<string, number> = {}
-        result.data?.forEach((row: any) => {
-          const batchName = (row as any).qr_code_batches.name
+        result.data?.forEach((row: unknown) => {
+          const batchName = (row as Record<string, unknown>).qr_code_batches.name
           counts[batchName] = (counts[batchName] || 0) + 1
         })
         return { data: counts }
@@ -62,9 +62,9 @@ export class InventoryService {
         )
       `)
       .eq('status', 'available')
-      .then((result: any) => {
+      .then((result: unknown) => {
         const counts: Record<string, number> = {}
-        result.data?.forEach((row: any) => {
+        result.data?.forEach((row: unknown) => {
           const style = (row as any).qr_code_batches.qr_code_presets.name
           counts[style] = (counts[style] || 0) + 1
         })
@@ -84,7 +84,7 @@ export class InventoryService {
       .lt('quantity_available', 100) // Alert when less than 100 available
       .order('quantity_available', { ascending: true })
 
-    const lowStockAlerts = lowStockBatches?.map((batch: any) => ({
+    const lowStockAlerts = lowStockBatches?.map((batch: unknown) => ({
       batchId: batch.id,
       batchNumber: batch.batch_number,
       size: 'All Sizes', // Physical size chosen at print time
@@ -161,7 +161,7 @@ export class InventoryService {
     location: {
       type: CodeInventory['location_type']
       name: string
-      details?: any
+      details?: unknown
     },
     quantity: number
   ): Promise<CodeInventory | null> {

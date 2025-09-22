@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { generateQRCodeWithPreset } from '@/lib/qr-generation'
 import { mkdir, writeFile } from 'fs/promises'
 import { join } from 'path'
@@ -9,6 +8,7 @@ import type {
   PDFExportResponse,
   ExportProgress
 } from '@/lib/types/qr-reservation'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 /**
  * Size configurations for different QR code sizes
@@ -32,9 +32,9 @@ const TEXT_SIZE_CONFIGS = {
 } as const
 
 export class PDFExportService {
-  private supabase: any
+  private supabase: SupabaseClient
 
-  constructor(supabase: any) {
+  constructor(supabase: SupabaseClient) {
     this.supabase = supabase
   }
 
@@ -157,7 +157,7 @@ export class PDFExportService {
       idText: string
       textSize: number
       qrUrl: string
-      stylePreset: any
+      stylePreset: unknown
     }
   ): Promise<Buffer> {
     try {
@@ -426,7 +426,7 @@ export class PDFExportService {
     // Ensure exports directory exists
     try {
       await mkdir(exportsDir, { recursive: true })
-    } catch (error) {
+    } catch {
       // Directory might already exist, that's fine
     }
 
