@@ -125,8 +125,8 @@ export class BatchGenerationService {
       .select('short_url')
 
     const existingCodeSet = new Set([
-      ...(existingCodes?.map((c: unknown) => c.code) || []),
-      ...(existingFunnels?.map((f: unknown) => f.short_url) || [])
+      ...(existingCodes?.map((c: unknown) => (c as Record<string, unknown>).code) || []),
+      ...(existingFunnels?.map((f: unknown) => (f as Record<string, unknown>).short_url) || [])
     ])
 
     let attempts = 0
@@ -278,7 +278,7 @@ export class BatchGenerationService {
   }
 
   async updateBatchStatus(batchId: string, status: QRCodeBatch['status']): Promise<boolean> {
-    const updateData: unknown = { status }
+    const updateData: Record<string, unknown> = { status }
 
     // Add timestamp fields based on status
     if (status === 'printed') updateData.printed_at = new Date()
