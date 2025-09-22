@@ -13,12 +13,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Skip database insertion for preview funnels
+    if (funnel_id === 'preview-funnel') {
+      return NextResponse.json({
+        success: true,
+        session_id: session_id || nanoid(12),
+        preview: true
+      })
+    }
+
     // Generate session ID if not provided
     const sessionId = session_id || nanoid(12)
 
     // Get client info
     const userAgent = request.headers.get('user-agent') || 'unknown'
-    
+
     // Simple device detection
     const deviceType = userAgent.toLowerCase().includes('mobile') ? 'mobile' : 'desktop'
 

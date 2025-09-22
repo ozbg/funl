@@ -170,7 +170,7 @@ export default function PublicFunnelWithTestimonials({
     return (
       <Box minH="100vh" bg="bg.default">
         <Box maxW="md" mx="auto" pt={8} pb={16} px={4}>
-          <Box bg="bg.default" borderRadius="lg" boxShadow="lg" overflow="hidden" p={6}>
+          <Box bg="bg.default" overflow="hidden" p={6}>
             <TestimonialSubmissionForm
               businessId={business.id}
               funnelId={funnel.id}
@@ -208,7 +208,7 @@ export default function PublicFunnelWithTestimonials({
   return (
     <Box minH="100vh" bg="bg.default">
       <Box maxW="md" mx="auto" pt={8} pb={16}>
-        <Box bg="bg.default" boxShadow="lg" overflow="hidden">
+        <Box bg="bg.default" overflow="hidden">
           {/* Top Testimonials */}
           {testimonialConfig?.enabled && testimonialConfig.position === 'top' && (
             <TestimonialDisplay
@@ -345,7 +345,6 @@ export default function PublicFunnelWithTestimonials({
               >
                 <Box
                   bg="bg.default"
-                  borderRadius="lg"
                   maxW="md"
                   w="full"
                   maxH="90vh"
