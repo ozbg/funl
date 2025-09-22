@@ -437,6 +437,36 @@ export default function NewFunnelPage() {
                         placeholder="https://realestate.com.au/property/123"
                       />
                     </Box>
+
+                    <Box>
+                      <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                        Video URL (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        {...register('content.video_url')}
+                        className={inputStyles}
+                        placeholder="https://youtube.com/watch?v=..."
+                      />
+                      <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                        Add a video tour, walkthrough, or promotional video for your property
+                      </p>
+                    </Box>
+                    {watchedVideoUrl && (
+                      <Box>
+                        <label className={css({ display: 'flex', alignItems: 'center', fontSize: 'sm', color: 'fg.default', cursor: 'pointer' })}>
+                          <input
+                            type="checkbox"
+                            {...register('content.video_autoplay')}
+                            className={css({ mr: 2 })}
+                          />
+                          Auto-play video when opened
+                        </label>
+                        <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1, ml: 6 })}>
+                          Video will automatically start playing when the user clicks to watch
+                        </p>
+                      </Box>
+                    )}
                   </>
                 )}
 

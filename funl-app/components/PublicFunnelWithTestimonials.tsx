@@ -309,7 +309,7 @@ export default function PublicFunnelWithTestimonials({
               )}
 
               {/* Video Player */}
-              {(funnel.type === 'video' || funnel.type === 'video-showcase') && funnel.content?.video_url && (
+              {(funnel.type === 'video' || funnel.type === 'video-showcase' || funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.video_url && (
                 <VideoPlayer
                   videoUrl={funnel.content.video_url}
                   autoPlay={funnel.content.video_autoplay}
