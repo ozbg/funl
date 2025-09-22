@@ -27,9 +27,32 @@ export default async function FunnelDetailPage({ params }: PageProps) {
     .eq('business_id', user.id)
     .single()
 
+  // If funnel has a reserved_code_id, fetch the code separately
+  let funnelWithCode = funnel
+  if (funnel?.reserved_code_id) {
+    const { data: code } = await supabase
+      .from('reserved_codes')
+      .select('code')
+      .eq('id', funnel.reserved_code_id)
+      .single()
+
+    funnelWithCode = {
+      ...funnel,
+      reserved_codes: code ? { code: code.code } : null
+    }
+  }
+
   if (error || !funnel) {
     return notFound()
   }
+
+  // Determine the correct URL to display
+  const assignedCode = Array.isArray(funnelWithCode.reserved_codes) ? funnelWithCode.reserved_codes[0]?.code : funnelWithCode.reserved_codes?.code
+  const displayUrl = assignedCode
+    ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${assignedCode}`
+    : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${funnelWithCode.short_url}`
+
+  const isAssignedCode = Boolean(assignedCode)
 
 
   return (
@@ -37,9 +60,9 @@ export default async function FunnelDetailPage({ params }: PageProps) {
       <Box mb={8}>
         <Flex align="center" justify="space-between">
           <Box>
-            <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{funnel.name}</h1>
+            <h1 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{funnelWithCode.name}</h1>
             <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
-              Created {new Date(funnel.created_at).toISOString().split('T')[0]}
+              Created {new Date(funnelWithCode.created_at).toISOString().split('T')[0]}
             </p>
           </Box>
           <Flex align="center" gap={3}>
@@ -68,16 +91,18 @@ export default async function FunnelDetailPage({ params }: PageProps) {
       <Stack gap={8}>
         {/* QR Layout Preview Section */}
         <QRLayoutPreview
-          qrCodeUrl={funnel.qr_code_url || ''}
-          shortUrl={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/f/${funnel.short_url}`}
-          funnelName={funnel.name}
-          funnelId={funnel.id}
-          initialStickerSettings={funnel.content?.sticker_settings}
+          qrCodeUrl={funnelWithCode.qr_code_url || ''}
+          shortUrl={displayUrl}
+          funnelName={funnelWithCode.name}
+          funnelId={funnelWithCode.id}
+          initialStickerSettings={funnelWithCode.content?.sticker_settings}
+          isAssignedCode={isAssignedCode}
+          assignedCode={assignedCode}
         />
 
         {/* Testimonial Settings Section */}
-        {funnel.type !== 'testimonial' && (
-          <FunnelTestimonialSettings funnelId={funnel.id} />
+        {funnelWithCode.type !== 'testimonial' && (
+          <FunnelTestimonialSettings funnelId={funnelWithCode.id} />
         )}
       </Stack>
     </Box>

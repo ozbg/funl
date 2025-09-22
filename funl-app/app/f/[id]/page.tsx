@@ -16,15 +16,46 @@ export default async function PublicFunnelPage({ params }: PageProps) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  console.log('PublicFunnelPage - Looking for funnel with short_url:', id)
+  console.log('PublicFunnelPage - Looking for funnel with id:', id)
 
-  // Fetch funnel by short_url (id parameter)
-  const { data: funnel, error: funnelError } = await supabase
-    .from('funnels')
-    .select('*')
-    .eq('short_url', id)
-    .eq('status', 'active')
+  // First check if this is a reserved code assigned to a funnel
+  const { data: reservedCode } = await supabase
+    .from('reserved_codes')
+    .select('funnel_id, status')
+    .eq('code', id)
+    .eq('status', 'assigned')
     .single()
+
+  let funnel = null
+  let funnelError = null
+
+  if (reservedCode?.funnel_id) {
+    console.log('PublicFunnelPage - Found reserved code, looking for funnel:', reservedCode.funnel_id)
+
+    // Get the funnel that this reserved code is assigned to
+    const result = await supabase
+      .from('funnels')
+      .select('*')
+      .eq('id', reservedCode.funnel_id)
+      .eq('status', 'active')
+      .single()
+
+    funnel = result.data
+    funnelError = result.error
+  } else {
+    console.log('PublicFunnelPage - No reserved code found, looking for funnel with short_url:', id)
+
+    // Fall back to original short_url lookup
+    const result = await supabase
+      .from('funnels')
+      .select('*')
+      .eq('short_url', id)
+      .eq('status', 'active')
+      .single()
+
+    funnel = result.data
+    funnelError = result.error
+  }
 
   console.log('PublicFunnelPage - Funnel query result:', { funnel, funnelError })
 

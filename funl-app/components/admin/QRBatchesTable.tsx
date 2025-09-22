@@ -116,7 +116,16 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
             <tr key={batch.id} className={css({ borderBottom: '1px solid', borderColor: 'border.default' })}>
               <td className={css({ p: 3 })}>
                 <Box>
-                  <p className={css({ fontWeight: 'medium' })}>{batch.name}</p>
+                  <button
+                    onClick={() => router.push(`/admin/qr-batches/${batch.id}`)}
+                    className={css({
+                      fontWeight: 'medium',
+                      color: 'accent.default',
+                      _hover: { textDecoration: 'underline' }
+                    })}
+                  >
+                    {batch.name}
+                  </button>
                   <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>{batch.batch_number}</p>
                 </Box>
               </td>
@@ -146,7 +155,22 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
               <td className={css({ p: 3 })}>{batch.quantity_assigned.toLocaleString()}</td>
               <td className={css({ p: 3 })}>{formatDate(batch.created_at)}</td>
               <td className={css({ p: 3 })}>
-                <Box className={css({ display: 'flex', gap: '2' })}>
+                <Box className={css({ display: 'flex', gap: '2', flexWrap: 'wrap' })}>
+                  <button
+                    className={css({
+                      px: 2,
+                      py: 1,
+                      bg: 'green.600',
+                      color: 'white',
+                      rounded: 'sm',
+                      fontSize: 'xs',
+                      fontWeight: 'medium'
+                    })}
+                    onClick={() => router.push(`/admin/qr-batches/${batch.id}`)}
+                  >
+                    View Details
+                  </button>
+
                   <button
                     className={css({
                       px: 2,

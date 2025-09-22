@@ -12,6 +12,8 @@ interface QRLayoutPreviewProps {
   funnelName: string
   funnelId: string
   qrStyle?: 'square' | 'rounded' | 'dots' | 'dots-rounded' | 'classy' | 'classy-rounded' | 'extra-rounded'
+  isAssignedCode?: boolean // Whether this funnel uses an assigned code
+  assignedCode?: string // The assigned code value
   initialStickerSettings?: {
     wordTop?: string
     wordBottom?: string
@@ -33,7 +35,7 @@ interface QRLayoutPreviewProps {
   }
 }
 
-export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funnelId, qrStyle = 'square', initialStickerSettings }: QRLayoutPreviewProps) {
+export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funnelId, qrStyle = 'square', isAssignedCode = false, assignedCode, initialStickerSettings }: QRLayoutPreviewProps) {
   const [wordTop, setWordTop] = useState(initialStickerSettings?.wordTop ?? 'TOP TEXT')
   const [wordBottom, setWordBottom] = useState(initialStickerSettings?.wordBottom ?? 'BOTTOM TEXT')
   const [wordLeft, setWordLeft] = useState(initialStickerSettings?.wordLeft ?? 'LEFT')
@@ -428,9 +430,33 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
     <Box bg="bg.default" boxShadow="sm" p={6}>
       <Flex align="center" justify="space-between" mb={4}>
         <h2 className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default' })}>
-          Create Sticker
+          {isAssignedCode ? 'QR Code Sticker (Admin Assigned)' : 'Create Sticker'}
         </h2>
       </Flex>
+
+      {/* Assigned Code Notice */}
+      {isAssignedCode && (
+        <Box
+          bg="blue.50"
+          borderWidth="1px"
+          borderColor="blue.200"
+          rounded="md"
+          p={4}
+          mb={4}
+        >
+          <Flex align="center" gap={2}>
+            <Box w={4} h={4} bg="blue.500" rounded="full" />
+            <Box>
+              <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'blue.800' })}>
+                QR Code: {assignedCode}
+              </p>
+              <p className={css({ fontSize: 'xs', color: 'blue.600', mt: 1 })}>
+                This QR code was assigned by an administrator. The code cannot be changed, but you can customize the sticker design for viewing purposes. Contact an administrator to make changes or request printing.
+              </p>
+            </Box>
+          </Flex>
+        </Box>
+      )}
       
       <Flex gap={6}>
         {/* Input Fields */}
@@ -1023,57 +1049,70 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
 
           {/* Download Buttons */}
           <Flex mt={4} direction="column" gap={2} align="center">
-            <button
-              onClick={handleDownloadSVG}
-              disabled={downloading}
-              className={css({
-                colorPalette: 'mint',
-                px: 6,
-                py: 3,
-                fontSize: 'sm',
-                fontWeight: 'bold',
-                color: 'colorPalette.fg',
-                bg: 'colorPalette.default',
-                borderRadius: '0',
-                cursor: 'pointer',
-                w: '200px',
-                _hover: {
-                  bg: 'colorPalette.emphasized',
-                },
-                _disabled: {
-                  opacity: 'disabled',
-                  cursor: 'not-allowed',
-                },
-              })}
-            >
-              {downloading ? 'Generating...' : 'Download Sticker (SVG)'}
-            </button>
-            
-            <button
-              onClick={handleDownloadPDF}
-              disabled={downloadingPDF}
-              className={css({
-                colorPalette: 'blue',
-                px: 6,
-                py: 3,
-                fontSize: 'sm',
-                fontWeight: 'bold',
-                color: 'colorPalette.fg',
-                bg: 'colorPalette.default',
-                borderRadius: '0',
-                cursor: 'pointer',
-                w: '200px',
-                _hover: {
-                  bg: 'colorPalette.emphasized',
-                },
-                _disabled: {
-                  opacity: 'disabled',
-                  cursor: 'not-allowed',
-                },
-              })}
-            >
-              {downloadingPDF ? 'Generating...' : 'Download Sticker (PDF)'}
-            </button>
+            {isAssignedCode ? (
+              <Box bg="gray.50" px={6} py={3} rounded="md" w="200px" textAlign="center">
+                <p className={css({ fontSize: 'sm', color: 'gray.600', fontWeight: 'medium' })}>
+                  Download Disabled
+                </p>
+                <p className={css({ fontSize: 'xs', color: 'gray.500', mt: 1 })}>
+                  Contact admin for printing
+                </p>
+              </Box>
+            ) : (
+              <>
+                <button
+                  onClick={handleDownloadSVG}
+                  disabled={downloading}
+                  className={css({
+                    colorPalette: 'mint',
+                    px: 6,
+                    py: 3,
+                    fontSize: 'sm',
+                    fontWeight: 'bold',
+                    color: 'colorPalette.fg',
+                    bg: 'colorPalette.default',
+                    borderRadius: '0',
+                    cursor: 'pointer',
+                    w: '200px',
+                    _hover: {
+                      bg: 'colorPalette.emphasized',
+                    },
+                    _disabled: {
+                      opacity: 'disabled',
+                      cursor: 'not-allowed',
+                    },
+                  })}
+                >
+                  {downloading ? 'Generating...' : 'Download Sticker (SVG)'}
+                </button>
+
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={downloadingPDF}
+                  className={css({
+                    colorPalette: 'blue',
+                    px: 6,
+                    py: 3,
+                    fontSize: 'sm',
+                    fontWeight: 'bold',
+                    color: 'colorPalette.fg',
+                    bg: 'colorPalette.default',
+                    borderRadius: '0',
+                    cursor: 'pointer',
+                    w: '200px',
+                    _hover: {
+                      bg: 'colorPalette.emphasized',
+                    },
+                    _disabled: {
+                      opacity: 'disabled',
+                      cursor: 'not-allowed',
+                    },
+                  })}
+                >
+                  {downloadingPDF ? 'Generating...' : 'Download Sticker (PDF)'}
+                </button>
+              </>
+            )}
           </Flex>
         </Box>
       </Flex>

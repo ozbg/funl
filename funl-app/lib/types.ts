@@ -39,6 +39,8 @@ export interface Funnel {
   short_url: string
   content: FunnelContent
   print_status?: 'pending' | 'processing' | 'shipped'
+  reserved_code_id?: string
+  code_source?: 'generated' | 'reserved'
   created_at: string
   updated_at: string
   expires_at?: string

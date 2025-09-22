@@ -9,11 +9,44 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   
-  const { data: funnels } = await supabase
+  // First, get funnels without the join to see if that works
+  const { data: funnels, error: funnelsError } = await supabase
     .from('funnels')
     .select('*')
     .eq('business_id', user?.id)
-    .order('created_at', { ascending: false }) as { data: Funnel[] | null }
+    .order('created_at', { ascending: false }) as { data: Funnel[] | null, error: any }
+
+  // If we have funnels with reserved_code_id, fetch the codes separately
+  let funnelsWithCodes = funnels || []
+  if (funnels?.length) {
+    const funnelIdsWithCodes = funnels
+      .filter(f => f.reserved_code_id)
+      .map(f => f.reserved_code_id)
+
+    if (funnelIdsWithCodes.length > 0) {
+      const { data: codes } = await supabase
+        .from('reserved_codes')
+        .select('id, code')
+        .in('id', funnelIdsWithCodes)
+
+      // Merge the codes into the funnels
+      funnelsWithCodes = funnels.map(funnel => {
+        if (funnel.reserved_code_id) {
+          const code = codes?.find(c => c.id === funnel.reserved_code_id)
+          return {
+            ...funnel,
+            reserved_codes: code ? { code: code.code } : null
+          }
+        }
+        return funnel
+      })
+    }
+  }
+
+  // Debug: log any query errors
+  if (funnelsError) {
+    console.error('Dashboard funnels query error:', funnelsError)
+  }
 
   return (
     <Box h="calc(100vh - 112px)" display="flex" flexDirection="column">
@@ -64,10 +97,10 @@ export default async function DashboardPage() {
           scrollbarWidth: 'none'
         })}
       >
-        {funnels && funnels.length > 0 ? (
+        {funnelsWithCodes && funnelsWithCodes.length > 0 ? (
           <Box bg="bg.default" boxShadow="sm">
             <Stack divideY="1px" divideColor="border.default">
-              {funnels.map((funnel) => (
+              {funnelsWithCodes.map((funnel) => (
                 <FunnelRow key={funnel.id} funnel={funnel} />
               ))}
             </Stack>

@@ -11,6 +11,7 @@ import { Box, Flex, Stack, Grid, Container } from '@/styled-system/jsx'
 import FunnelPreview from '@/components/FunnelPreview'
 import FunnelTestimonialSettings from '@/components/testimonials/FunnelTestimonialSettings'
 import { createClient } from '@/lib/supabase/client'
+import CodeSelectionModal from '@/components/CodeSelectionModal'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
@@ -21,6 +22,8 @@ export default function NewFunnelPage() {
   const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
   const [availableFunnelTypes, setAvailableFunnelTypes] = useState<Array<{id: string, name: string, slug: string, description: string | null, is_custom: boolean, created_at: string, updated_at: string | null}>>([])
   const [testimonialConfig, setTestimonialConfig] = useState<{enabled: boolean, display_count: number, display_style: 'carousel'|'grid'|'list', position: 'top'|'bottom'|'sidebar', minimum_rating: number, show_featured_only: boolean} | null>(null)
+  const [showCodeSelection, setShowCodeSelection] = useState(false)
+  const [createdFunnelId, setCreatedFunnelId] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -176,7 +179,14 @@ export default function NewFunnelPage() {
       }
 
       const { data: funnel } = await response.json()
-      router.push(isEditMode ? '/dashboard' : `/dashboard/funnels/${funnel.id}`)
+
+      if (isEditMode) {
+        router.push('/dashboard')
+      } else {
+        // Show code selection modal for new funnels
+        setCreatedFunnelId(funnel.id)
+        setShowCodeSelection(true)
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -248,8 +258,22 @@ export default function NewFunnelPage() {
     },
   })
 
+  const handleCodeSelectionComplete = () => {
+    setShowCodeSelection(false)
+    router.push('/dashboard')
+  }
+
   return (
     <Container maxW="7xl" mx="auto">
+      {/* Code Selection Modal */}
+      {createdFunnelId && (
+        <CodeSelectionModal
+          funnelId={createdFunnelId}
+          isOpen={showCodeSelection}
+          onClose={handleCodeSelectionComplete}
+        />
+      )}
+
       {isEditMode && existingFunnel ? (
         <Box mb={8}>
           <Flex align="center" justify="space-between">

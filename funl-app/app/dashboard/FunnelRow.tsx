@@ -18,6 +18,11 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
   const [status, setStatus] = useState(funnel.status)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Check if this funnel has an assigned code
+  const assignedCode = (funnel as any).reserved_codes
+  const hasAssignedCode = Array.isArray(assignedCode) ? assignedCode.length > 0 : Boolean(assignedCode)
+  const codeValue = Array.isArray(assignedCode) ? assignedCode[0]?.code : assignedCode?.code
   
   const handleStatusChange = (newStatus: string) => {
     setStatus(newStatus as typeof funnel.status)
@@ -91,6 +96,11 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             <Box fontSize="sm" color="fg.muted">
               Type: {funnel.type}
             </Box>
+            {hasAssignedCode && (
+              <Box fontSize="xs" color="blue.600" mt={1} fontWeight="medium">
+                🏷️ Admin Assigned Code: {codeValue}
+              </Box>
+            )}
             <Box fontSize="xs" color="fg.muted" mt={1}>
               Created {new Date(funnel.created_at).toISOString().split('T')[0]}
             </Box>
