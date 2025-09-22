@@ -65,7 +65,7 @@ export class InventoryService {
       .then((result: unknown) => {
         const counts: Record<string, number> = {}
         result.data?.forEach((row: unknown) => {
-          const style = (row as any).qr_code_batches.qr_code_presets.name
+          const style = (row as Record<string, unknown>).qr_code_batches.qr_code_presets.name
           counts[style] = (counts[style] || 0) + 1
         })
         return { data: counts }
@@ -125,7 +125,7 @@ export class InventoryService {
       return []
     }
 
-    return data as any[]
+    return data as unknown[]
   }
 
   /**
@@ -298,7 +298,7 @@ export class InventoryService {
       return []
     }
 
-    return data as any[]
+    return data as unknown[]
   }
 
   /**

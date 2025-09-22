@@ -171,7 +171,7 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
         ].map(tab => (
           <button
             key={tab.key}
-            onClick={() => setFilter(tab.key as any)}
+            onClick={() => setFilter(tab.key as 'all' | 'active' | 'paused' | 'draft')}
             className={css({
               px: 3,
               py: 1,

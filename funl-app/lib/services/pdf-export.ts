@@ -264,7 +264,7 @@ export class PDFExportService {
       // Set up global environment to match browser
       const window = dom.window
       global.document = window.document
-      global.window = window as any
+      global.window = window as typeof window
       global.DOMParser = window.DOMParser
 
       console.log('🔧 Parsing SVG with DOMParser (like working client-side code)...')
@@ -296,9 +296,9 @@ export class PDFExportService {
       await svg2pdf(svgElement, pdf)
 
       // Clean up globals
-      delete (global as any).document
-      delete (global as any).window
-      delete (global as any).DOMParser
+      delete (global as Record<string, unknown>).document
+      delete (global as Record<string, unknown>).window
+      delete (global as Record<string, unknown>).DOMParser
 
       console.log('🔧 Successfully converted SVG to PDF vectors')
 
