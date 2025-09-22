@@ -229,25 +229,6 @@ export default function PublicFunnelWithTestimonials({
               {business.vcard_data?.firstName} {business.vcard_data?.lastName}
             </p>
 
-            {funnel.type === 'property' && funnel.content?.state && (
-              <Box
-                display="inline-flex"
-                alignItems="center"
-                px={3}
-                py={1}
-                borderRadius="full"
-                fontSize="sm"
-                fontWeight="medium"
-                style={{
-                  backgroundColor: `${accentColor}20`,
-                  color: accentColor
-                }}
-              >
-                {funnel.content.state === 'for_sale' && '🏠 For Sale'}
-                {funnel.content.state === 'sold' && '✅ SOLD'}
-                {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
-              </Box>
-            )}
 
             {funnel.content?.price && (
               <p className={css({ fontSize: 'lg', fontWeight: 'semibold', mt: 2 })}>{funnel.content.price}</p>
@@ -298,6 +279,32 @@ export default function PublicFunnelWithTestimonials({
                   }}
                 >
                   Call {business.vcard_data?.firstName}
+                </a>
+              )}
+
+              {/* Property Link */}
+              {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.property_url && (
+                <a
+                  href={funnel.content.property_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handlePropertyClick}
+                  className={css({
+                    w: 'full',
+                    display: 'block',
+                    fontWeight: 'semibold',
+                    py: 4,
+                    px: 6,
+                    fontSize: 'lg',
+                    textAlign: 'center',
+                    transition: 'colors',
+                    color: 'white'
+                  })}
+                  style={{
+                    backgroundColor: accentColor,
+                  }}
+                >
+                  View Property Details
                 </a>
               )}
 
@@ -392,33 +399,6 @@ export default function PublicFunnelWithTestimonials({
               </Box>
             )}
 
-            {/* Property Link */}
-            {funnel.type === 'property' && funnel.content?.property_url && (
-              <Box mb={6}>
-                <a
-                  href={funnel.content.property_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handlePropertyClick}
-                  className={css({
-                    w: 'full',
-                    display: 'block',
-                    bg: 'bg.muted',
-                    color: 'fg.default',
-                    fontWeight: 'medium',
-                    py: 3,
-                    px: 4,
-                    textAlign: 'center',
-                    transition: 'colors',
-                    _hover: {
-                      bg: 'bg.emphasized'
-                    }
-                  })}
-                >
-                  🏠 View Property Details
-                </a>
-              </Box>
-            )}
 
 
             {/* Middle Testimonials */}
