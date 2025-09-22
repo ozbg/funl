@@ -21,7 +21,7 @@ export default function NewFunnelPage() {
   const [defaultNameSet, setDefaultNameSet] = useState(false)
   const [existingFunnel, setExistingFunnel] = useState<Funnel | null>(null)
   const [availableFunnelTypes, setAvailableFunnelTypes] = useState<Array<{id: string, name: string, slug: string, description: string | null, is_custom: boolean, created_at: string, updated_at: string | null}>>([])
-  const [testimonialConfig, setTestimonialConfig] = useState<{enabled: boolean, display_count: number, display_style: 'carousel'|'grid'|'list', position: 'top'|'bottom'|'sidebar', minimum_rating: number, show_featured_only: boolean} | null>(null)
+  const [testimonialConfig, setTestimonialConfig] = useState<{enabled: boolean, display_count: number, display_style: 'carousel'|'grid'|'list', position: 'top'|'bottom'|'sidebar', minimum_rating: number, show_featured_only: boolean, show_share_button: boolean} | null>(null)
   const [showCodeSelection, setShowCodeSelection] = useState(false)
   const [createdFunnelId, setCreatedFunnelId] = useState<string | null>(null)
   const router = useRouter()

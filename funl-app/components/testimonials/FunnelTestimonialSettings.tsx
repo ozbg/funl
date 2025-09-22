@@ -12,6 +12,7 @@ interface TestimonialConfig {
   position: DisplayPosition
   minimum_rating: number
   show_featured_only: boolean
+  show_share_button: boolean
 }
 
 interface FunnelTestimonialSettingsProps {
@@ -27,6 +28,7 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
     position: 'bottom',
     minimum_rating: 3,
     show_featured_only: false,
+    show_share_button: true,
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -309,6 +311,28 @@ export default function FunnelTestimonialSettings({ funnelId, onConfigChange }: 
               </p>
             </Box>
           </Flex>
+
+          <Box>
+            <label className={css({ display: 'flex', alignItems: 'center', gap: 2 })}>
+              <input
+                type="checkbox"
+                checked={config.show_share_button}
+                onChange={(e) => handleChange('show_share_button', e.target.checked)}
+                className={css({
+                  w: 4,
+                  h: 4,
+                  colorPalette: 'mint',
+                  color: 'colorPalette.default',
+                })}
+              />
+              <span className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}>
+                Show "Share Your Experience" button
+              </span>
+            </label>
+            <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+              Allow customers to share their experience even when testimonials are displayed
+            </p>
+          </Box>
         </Stack>
       )}
 

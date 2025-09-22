@@ -2,6 +2,8 @@
  * Reusable QR code generation utilities shared between sticker builder and batch creation
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js'
+
 export interface QRPreset {
   id: string
   name: string
@@ -67,7 +69,7 @@ export async function generateQRCodeWithPreset(options: QRGenerationOptions): Pr
 /**
  * Load available QR presets for a business category or all presets for admin
  */
-export async function loadQRPresetsForBusiness(supabase: any, businessId?: string): Promise<QRPreset[]> {
+export async function loadQRPresetsForBusiness(supabase: SupabaseClient, businessId?: string): Promise<QRPreset[]> {
   try {
     // Get current user to check admin status
     const { data: { user } } = await supabase.auth.getUser()

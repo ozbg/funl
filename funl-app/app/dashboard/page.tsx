@@ -4,6 +4,7 @@ import { Funnel } from '@/lib/types'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Stack } from '@/styled-system/jsx'
 import FunnelRow from './FunnelRow'
+import type { PostgrestError } from '@supabase/supabase-js'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -14,7 +15,7 @@ export default async function DashboardPage() {
     .from('funnels')
     .select('*')
     .eq('business_id', user?.id)
-    .order('created_at', { ascending: false }) as { data: Funnel[] | null, error: any }
+    .order('created_at', { ascending: false }) as { data: Funnel[] | null, error: PostgrestError | null }
 
   // If we have funnels with reserved_code_id, fetch the codes separately
   let funnelsWithCodes = funnels || []

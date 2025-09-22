@@ -1,19 +1,19 @@
-import { createClient } from '@/lib/supabase/server'
 import type {
   CreatePrintRunRequest,
   PrintRunResponse,
   CodePrintRun
 } from '@/lib/types/qr-reservation'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export class PrintRunService {
-  private supabase: any
+  private supabase: SupabaseClient
 
-  constructor(supabase: any) {
+  constructor(supabase: SupabaseClient) {
     this.supabase = supabase
   }
 
   async createPrintRuns(request: CreatePrintRunRequest): Promise<PrintRunResponse> {
-    const printRuns: any[] = []
+    const printRuns: CodePrintRun[] = []
     let totalCost = 0
 
     // Get the reserved code
@@ -197,7 +197,7 @@ export class PrintRunService {
     printRunId: string,
     status: CodePrintRun['status']
   ): Promise<boolean> {
-    const updateData: any = { status }
+    const updateData: Partial<CodePrintRun> = { status }
 
     // Add timestamp fields based on status
     if (status === 'printed') updateData.printed_at = new Date()
@@ -237,7 +237,7 @@ export class PrintRunService {
       return []
     }
 
-    return data as any[]
+    return data as CodePrintRun[]
   }
 
   /**

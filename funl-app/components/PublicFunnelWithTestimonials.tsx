@@ -18,6 +18,7 @@ interface FunnelTestimonialConfig {
   position: DisplayPosition
   minimum_rating: number
   show_featured_only: boolean
+  show_share_button: boolean
   theme_override?: {
     background_color?: string
     text_color?: string
@@ -38,15 +39,17 @@ interface PublicFunnelWithTestimonialsProps {
   funnel: Funnel
   business: Business
   vCardData: string
+  previewTestimonialConfig?: FunnelTestimonialConfig | null
 }
 
 export default function PublicFunnelWithTestimonials({
   funnel,
   business,
-  vCardData
+  vCardData,
+  previewTestimonialConfig
 }: PublicFunnelWithTestimonialsProps) {
   const { track } = useTracking(funnel.id)
-  const [testimonialConfig, setTestimonialConfig] = useState<FunnelTestimonialConfig | null>(null)
+  const [testimonialConfig, setTestimonialConfig] = useState<FunnelTestimonialConfig | null>(previewTestimonialConfig !== undefined ? previewTestimonialConfig : null)
   const [testimonialSettings, setTestimonialSettings] = useState<TestimonialSettings | null>(null)
   const [showTestimonialForm, setShowTestimonialForm] = useState(false)
 
@@ -55,8 +58,13 @@ export default function PublicFunnelWithTestimonials({
     track('view')
   }, [track])
 
-  // Fetch testimonial configuration
+  // Fetch testimonial configuration (skip if preview config provided)
   useEffect(() => {
+    // Skip fetching if we have preview config
+    if (previewTestimonialConfig !== undefined) {
+      return
+    }
+
     const fetchTestimonialConfig = async () => {
       try {
         console.log('Fetching testimonial config for funnel:', funnel.id)
@@ -87,7 +95,7 @@ export default function PublicFunnelWithTestimonials({
 
     // Always fetch testimonial config for all funnels to check if testimonials are enabled
     fetchTestimonialConfig()
-  }, [funnel.id, business.id])
+  }, [funnel.id, business.id, previewTestimonialConfig])
 
   const handleVCardDownload = () => {
     track('vcard_download')
@@ -159,7 +167,7 @@ export default function PublicFunnelWithTestimonials({
   // If this is a testimonial funnel, show only the testimonial form
   if (funnel.type === 'testimonial') {
     return (
-      <Box minH="100vh" bg="bg.subtle">
+      <Box minH="100vh" bg="bg.default">
         <Box maxW="md" mx="auto" pt={8} pb={16} px={4}>
           <Box bg="bg.default" borderRadius="lg" boxShadow="lg" overflow="hidden" p={6}>
             <TestimonialSubmissionForm
@@ -197,7 +205,7 @@ export default function PublicFunnelWithTestimonials({
   console.log('PublicFunnel render - testimonialSettings:', testimonialSettings)
 
   return (
-    <Box minH="100vh" bg="bg.subtle">
+    <Box minH="100vh" bg="bg.default">
       <Box maxW="md" mx="auto" pt={8} pb={16}>
         <Box bg="bg.default" boxShadow="lg" overflow="hidden">
           {/* Top Testimonials */}
@@ -281,8 +289,8 @@ export default function PublicFunnelWithTestimonials({
                 </a>
               )}
 
-              {/* Testimonial Button (for non-testimonial funnels) */}
-              {testimonialSettings && (
+              {/* Testimonial Button (only show if testimonials are available and share button is enabled) */}
+              {testimonialSettings && testimonialConfig?.show_share_button && (
                 <button
                   onClick={handleTestimonialClick}
                   className={css({
@@ -394,7 +402,7 @@ export default function PublicFunnelWithTestimonials({
             )}
 
             {/* Video Link */}
-            {funnel.type === 'video' && funnel.content?.video_url && (
+            {(funnel.type === 'video' || funnel.type === 'video-showcase') && funnel.content?.video_url && (
               <Box mb={6}>
                 <a
                   href={funnel.content.video_url}

@@ -20,7 +20,7 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Check if this funnel has an assigned code
-  const assignedCode = (funnel as any).reserved_codes
+  const assignedCode = (funnel as Funnel & { reserved_codes?: { code: string } | null }).reserved_codes
   const hasAssignedCode = Array.isArray(assignedCode) ? assignedCode.length > 0 : Boolean(assignedCode)
   const codeValue = Array.isArray(assignedCode) ? assignedCode[0]?.code : assignedCode?.code
   

@@ -1,5 +1,34 @@
 import { z } from 'zod'
 
+// Type definitions for settings and metadata
+export interface QRGenerationSettings {
+  size?: number
+  colorDark?: string
+  colorLight?: string
+  logoEnabled?: boolean
+  logoUrl?: string
+  errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H'
+}
+
+export interface LocationDetails {
+  address?: string
+  city?: string
+  state?: string
+  postal_code?: string
+  country?: string
+  contact_person?: string
+  contact_phone?: string
+  notes?: string
+}
+
+export interface AuditMetadata {
+  user_id?: string
+  ip_address?: string
+  user_agent?: string
+  source?: string
+  [key: string]: unknown
+}
+
 // Batch generation schemas
 export const generateBatchSchema = z.object({
   name: z.string().min(1),
@@ -142,7 +171,7 @@ export interface ReservedCode {
   status: 'available' | 'reserved' | 'assigned' | 'damaged' | 'expired' | 'lost'
   funnel_id?: string
   business_id?: string
-  generation_settings: any
+  generation_settings: QRGenerationSettings
   base_qr_svg?: string
   reserved_at?: Date
   reserved_until?: Date
@@ -166,7 +195,7 @@ export interface CodePrintRun {
   style_preset_id?: string
   quantity_ordered: number
   quantity_printed: number
-  generation_settings: any
+  generation_settings: QRGenerationSettings
   qr_code_svg?: string
   order_id?: string
   business_id: string
@@ -189,7 +218,7 @@ export interface CodeInventory {
   batch_id?: string
   location_type: 'warehouse' | 'office' | 'fulfillment_center' | 'in_transit'
   location_name: string
-  location_details?: any
+  location_details?: LocationDetails
   quantity_on_hand: number
   quantity_allocated: number
   quantity_available: number
@@ -216,7 +245,7 @@ export interface CodeAllocation {
   user_agent?: string
   session_id?: string
   reason?: string
-  metadata?: any
+  metadata?: AuditMetadata
   error_message?: string
   is_successful: boolean
   validated_at?: Date

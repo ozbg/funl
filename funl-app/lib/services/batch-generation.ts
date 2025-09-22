@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { nanoid } from 'nanoid'
 import { generateQRCodeWithPreset } from '@/lib/qr-generation'
 import type {
@@ -7,6 +6,7 @@ import type {
   QRCodeBatch,
   ReservedCode
 } from '@/lib/types/qr-reservation'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 /**
  * Generate export ID in format: {sequence}_{batch_number}_{month}_{year}_{url_code}
@@ -24,9 +24,9 @@ function generateExportId(sequence: number, batchNumber: string, urlCode: string
 }
 
 export class BatchGenerationService {
-  private supabase: any
+  private supabase: SupabaseClient
 
-  constructor(supabase: any) {
+  constructor(supabase: SupabaseClient) {
     this.supabase = supabase
   }
 
