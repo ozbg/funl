@@ -13,7 +13,15 @@ export class PrintRunService {
   }
 
   async createPrintRuns(request: CreatePrintRunRequest): Promise<PrintRunResponse> {
-    const printRuns: CodePrintRun[] = []
+    const printRuns: {
+      id: string
+      size: string
+      quantity: number
+      qrCodeSvg?: string
+      printFileUrl?: string
+      unitCost: number
+      totalCost: number
+    }[] = []
     let totalCost = 0
 
     // Get the reserved code
@@ -74,10 +82,11 @@ export class PrintRunService {
         throw new Error(`Failed to create print run: ${printError.message}`)
       }
 
+      const printRunData = printRun as Record<string, unknown>
       printRuns.push({
-        id: printRun.id,
-        size: printRun.size,
-        quantity: printRun.quantity_ordered,
+        id: printRunData.id as string,
+        size: printRunData.size as string,
+        quantity: printRunData.quantity_ordered as number,
         unitCost,
         totalCost: orderCost
       })
@@ -88,7 +97,7 @@ export class PrintRunService {
         .insert({
           reserved_code_id: request.reservedCodeId,
           action: 'print',
-          print_run_id: printRun.id,
+          print_run_id: printRunData.id as string,
           business_id: request.businessId,
           metadata: { order }
         })

@@ -17,43 +17,47 @@ export class InventoryService {
    */
   async getInventoryOverview(): Promise<InventoryOverview> {
     // Get total counts by status
-    const { data: statusCounts } = await this.supabase
+    const { data: statusData } = await this.supabase
       .from('reserved_codes')
       .select('status')
-      .then((result: unknown) => {
-        const counts = {
-          available: 0,
-          reserved: 0,
-          assigned: 0,
-          damaged: 0,
-          expired: 0,
-          lost: 0
-        }
-        result.data?.forEach((row: unknown) => {
-          counts[row.status as keyof typeof counts]++
-        })
-        return { data: counts }
-      })
+
+    const statusCounts = {
+      available: 0,
+      reserved: 0,
+      assigned: 0,
+      damaged: 0,
+      expired: 0,
+      lost: 0
+    }
+
+    statusData?.forEach((row: unknown) => {
+      const status = (row as Record<string, unknown>).status as keyof typeof statusCounts
+      if (status in statusCounts) {
+        statusCounts[status]++
+      }
+    })
 
     // Get counts by batch (replacing size concept)
-    const { data: batchCounts } = await this.supabase
+    const { data: batchData } = await this.supabase
       .from('reserved_codes')
       .select(`
         id,
         qr_code_batches!inner(name, batch_number)
       `)
       .eq('status', 'available')
-      .then((result: unknown) => {
-        const counts: Record<string, number> = {}
-        result.data?.forEach((row: unknown) => {
-          const batchName = (row as Record<string, unknown>).qr_code_batches.name
-          counts[batchName] = (counts[batchName] || 0) + 1
-        })
-        return { data: counts }
-      })
+
+    const batchCounts: Record<string, number> = {}
+    batchData?.forEach((row: unknown) => {
+      const rowData = row as Record<string, unknown>
+      const qrCodeBatches = rowData.qr_code_batches as Record<string, unknown> | undefined
+      const batchName = qrCodeBatches?.name as string
+      if (batchName) {
+        batchCounts[batchName] = (batchCounts[batchName] || 0) + 1
+      }
+    })
 
     // Get counts by style
-    const { data: styleCounts } = await this.supabase
+    const { data: styleData } = await this.supabase
       .from('reserved_codes')
       .select(`
         id,
@@ -62,14 +66,17 @@ export class InventoryService {
         )
       `)
       .eq('status', 'available')
-      .then((result: unknown) => {
-        const counts: Record<string, number> = {}
-        result.data?.forEach((row: unknown) => {
-          const style = (row as Record<string, unknown>).qr_code_batches.qr_code_presets.name
-          counts[style] = (counts[style] || 0) + 1
-        })
-        return { data: counts }
-      })
+
+    const styleCounts: Record<string, number> = {}
+    styleData?.forEach((row: unknown) => {
+      const rowData = row as Record<string, unknown>
+      const qrCodeBatches = rowData.qr_code_batches as Record<string, unknown> | undefined
+      const qrCodePresets = qrCodeBatches?.qr_code_presets as Record<string, unknown> | undefined
+      const style = qrCodePresets?.name as string
+      if (style) {
+        styleCounts[style] = (styleCounts[style] || 0) + 1
+      }
+    })
 
     // Get low stock alerts
     const { data: lowStockBatches } = await this.supabase
@@ -84,20 +91,23 @@ export class InventoryService {
       .lt('quantity_available', 100) // Alert when less than 100 available
       .order('quantity_available', { ascending: true })
 
-    const lowStockAlerts = lowStockBatches?.map((batch: unknown) => ({
-      batchId: batch.id,
-      batchNumber: batch.batch_number,
-      size: 'All Sizes', // Physical size chosen at print time
-      available: batch.quantity_available,
-      reorderPoint: 100 // Default reorder point
-    })) || []
+    const lowStockAlerts = lowStockBatches?.map((batch: unknown) => {
+      const batchData = batch as Record<string, unknown>
+      return {
+        batchId: batchData.id as string,
+        batchNumber: batchData.batch_number as string,
+        size: 'All Sizes', // Physical size chosen at print time
+        available: batchData.quantity_available as number,
+        reorderPoint: 100 // Default reorder point
+      }
+    }) || []
 
     return {
-      totalCodes: (statusCounts?.available || 0) + (statusCounts?.reserved || 0) + (statusCounts?.assigned || 0) + (statusCounts?.damaged || 0) + (statusCounts?.expired || 0) + (statusCounts?.lost || 0),
-      availableCodes: statusCounts?.available || 0,
-      reservedCodes: statusCounts?.reserved || 0,
-      assignedCodes: statusCounts?.assigned || 0,
-      damagedCodes: (statusCounts?.damaged || 0) + (statusCounts?.lost || 0),
+      totalCodes: (statusCounts.available || 0) + (statusCounts.reserved || 0) + (statusCounts.assigned || 0) + (statusCounts.damaged || 0) + (statusCounts.expired || 0) + (statusCounts.lost || 0),
+      availableCodes: statusCounts.available || 0,
+      reservedCodes: statusCounts.reserved || 0,
+      assignedCodes: statusCounts.assigned || 0,
+      damagedCodes: (statusCounts.damaged || 0) + (statusCounts.lost || 0),
       bySize: batchCounts || {},
       byStyle: styleCounts || {},
       lowStockAlerts
@@ -125,7 +135,7 @@ export class InventoryService {
       return []
     }
 
-    return data as unknown[]
+    return data as CodeInventory[]
   }
 
   /**
@@ -298,7 +308,7 @@ export class InventoryService {
       return []
     }
 
-    return data as unknown[]
+    return data as CodeInventory[]
   }
 
   /**

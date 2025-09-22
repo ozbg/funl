@@ -50,16 +50,10 @@ export class AllocationService {
     const expiresAt = new Date(Date.now() + duration * 60 * 1000)
 
     // Find an available code matching criteria
-    let query = this.supabase
-      .from('reserved_codes')
-      .select('*')
-      .eq('status', 'available')
-      .is('business_id', null)
-      .limit(1)
+    let availableCode
 
-    // Add filters if provided
     if (size || stylePresetId) {
-      query = query
+      let query = this.supabase
         .from('reserved_codes')
         .select(`
           *,
@@ -74,9 +68,20 @@ export class AllocationService {
       if (stylePresetId) {
         query = query.eq('qr_code_batches.style_preset_id', stylePresetId)
       }
-    }
 
-    const { data: availableCode } = await query.single()
+      const result = await query.limit(1).single()
+      availableCode = result.data
+    } else {
+      const result = await this.supabase
+        .from('reserved_codes')
+        .select('*')
+        .eq('status', 'available')
+        .is('business_id', null)
+        .limit(1)
+        .single()
+
+      availableCode = result.data
+    }
 
     if (!availableCode) {
       throw new AllocationError('No available codes matching criteria')

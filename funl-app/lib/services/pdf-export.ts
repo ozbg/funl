@@ -129,7 +129,8 @@ export class PDFExportService {
     }
 
     // Generate the QR code URL
-    const url = code.generation_settings.url || `${process.env.NEXT_PUBLIC_APP_URL}/f/${code.code}`
+    const generationSettings = code.generation_settings as Record<string, unknown> | undefined
+    const url = (generationSettings?.url as string) || `${process.env.NEXT_PUBLIC_APP_URL}/f/${code.code}`
     console.log(`🔧 QR code URL: ${url}`)
     console.log(`🔧 Using style preset: ${stylePreset.name} (${presetId})`)
 
@@ -157,7 +158,7 @@ export class PDFExportService {
       idText: string
       textSize: number
       qrUrl: string
-      stylePreset: unknown
+      stylePreset: Record<string, unknown>
     }
   ): Promise<Buffer> {
     try {
@@ -196,14 +197,14 @@ export class PDFExportService {
 
       // Generate styled QR code using the existing function
       console.log(`🔧 Generating QR code for URL: ${textOptions.qrUrl}`)
-      console.log(`🔧 Using style preset: ${textOptions.stylePreset.name}`)
+      console.log(`🔧 Using style preset: ${textOptions.stylePreset.name as string}`)
 
       const qrSvg = await generateQRCodeWithPreset({
         url: textOptions.qrUrl,
         preset: {
-          id: textOptions.stylePreset.id,
-          name: textOptions.stylePreset.name,
-          style_config: textOptions.stylePreset.style_config
+          id: textOptions.stylePreset.id as string,
+          name: textOptions.stylePreset.name as string,
+          style_config: textOptions.stylePreset.style_config as Record<string, unknown>
         },
         width: 400, // Fixed pixel size for consistent quality
         height: 400
@@ -264,7 +265,7 @@ export class PDFExportService {
       // Set up global environment to match browser
       const window = dom.window
       global.document = window.document
-      global.window = window as typeof window
+      global.window = window as unknown as Window & typeof globalThis
       global.DOMParser = window.DOMParser
 
       console.log('🔧 Parsing SVG with DOMParser (like working client-side code)...')
