@@ -16,6 +16,7 @@ interface SettingsFormData {
   type: 'individual' | 'agency'
   phone: string
   website: string
+  accent_color: string
   vcard_data: {
     firstName: string
     lastName: string
@@ -32,12 +33,13 @@ export default function SettingsForm({ business }: SettingsFormProps) {
   const [success, setSuccess] = useState(false)
   const router = useRouter()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<SettingsFormData>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<SettingsFormData>({
     defaultValues: {
       name: business.name || '',
       type: business.type || 'individual',
       phone: business.phone || '',
       website: business.website || '',
+      accent_color: business.accent_color || '#10b981',
       vcard_data: {
         firstName: business.vcard_data?.firstName || '',
         lastName: business.vcard_data?.lastName || '',
@@ -48,6 +50,8 @@ export default function SettingsForm({ business }: SettingsFormProps) {
       }
     }
   })
+
+  const watchedAccentColor = watch('accent_color')
 
   const onSubmit = async (data: SettingsFormData) => {
     setLoading(true)
@@ -187,6 +191,47 @@ export default function SettingsForm({ business }: SettingsFormProps) {
                 className={inputStyles}
                 placeholder="https://"
               />
+            </Box>
+
+            <Box>
+              <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                Accent Color
+              </label>
+              <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>
+                Choose the main color for buttons on your funnel pages.
+              </p>
+              <Flex gap={3} alignItems="center">
+                <input
+                  type="color"
+                  {...register('accent_color')}
+                  className={css({
+                    w: '60px',
+                    h: '40px',
+                    borderRadius: 'md',
+                    borderWidth: '1px',
+                    borderColor: 'border.default',
+                    cursor: 'pointer',
+                    _focus: {
+                      outline: 'none',
+                      ringWidth: '2',
+                      ringColor: 'colorPalette.default',
+                    }
+                  })}
+                />
+                <Box
+                  flex={1}
+                  px={4}
+                  py={2}
+                  borderRadius="md"
+                  fontWeight="medium"
+                  fontSize="sm"
+                  color="white"
+                  textAlign="center"
+                  style={{ backgroundColor: watchedAccentColor }}
+                >
+                  Button Preview
+                </Box>
+              </Flex>
             </Box>
           </Stack>
         </Box>

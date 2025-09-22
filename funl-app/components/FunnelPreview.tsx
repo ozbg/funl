@@ -32,10 +32,11 @@ interface FunnelPreviewProps {
   }
   businessName?: string
   contactName?: string
+  accentColor?: string
   testimonialConfig?: TestimonialConfig | null
 }
 
-export default function FunnelPreview({ formData, businessName = 'Your Business', contactName, testimonialConfig }: FunnelPreviewProps) {
+export default function FunnelPreview({ formData, businessName = 'Your Business', contactName, accentColor, testimonialConfig }: FunnelPreviewProps) {
   // Use a default config with share button enabled when no config is provided
   const effectiveTestimonialConfig = testimonialConfig === null ? {
     enabled: false,
@@ -72,6 +73,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
     type: 'individual',
     phone: '+61 400 000 000',
     website: 'https://example.com',
+    accent_color: accentColor || '#10b981',
     vcard_data: {
       firstName: contactName?.split(' ')[0] || 'John',
       lastName: contactName?.split(' ').slice(1).join(' ') || 'Doe',

@@ -7,6 +7,7 @@ const UpdateBusinessSchema = z.object({
   type: z.enum(['individual', 'agency']),
   phone: z.string().optional(),
   website: z.string().url().optional().or(z.literal('')),
+  accent_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color format'),
   vcard_data: z.object({
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
@@ -45,6 +46,7 @@ export async function PUT(request: NextRequest) {
         type: validatedData.type,
         phone: validatedData.phone || null,
         website: validatedData.website || null,
+        accent_color: validatedData.accent_color,
         vcard_data: validatedData.vcard_data,
         updated_at: new Date().toISOString(),
       })

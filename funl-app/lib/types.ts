@@ -6,6 +6,7 @@ export interface Business {
   phone?: string
   website?: string
   vcard_data: VCardData
+  accent_color?: string
   subscription_status: 'trial' | 'active' | 'cancelled'
   subscription_tier: 'basic' | 'pro' | 'enterprise'
   created_at: string

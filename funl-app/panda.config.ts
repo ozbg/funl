@@ -16,4 +16,13 @@ export default defineConfig({
   include: ['./src/**/*.{js,jsx,ts,tsx}', './app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   jsxFramework: 'react',
   outdir: 'styled-system',
+  theme: {
+    extend: {
+      tokens: {
+        fonts: {
+          sans: { value: ['var(--font-jakarta)', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  }
 })

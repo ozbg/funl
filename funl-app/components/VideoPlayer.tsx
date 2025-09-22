@@ -7,10 +7,11 @@ import { Box } from '@/styled-system/jsx'
 interface VideoPlayerProps {
   videoUrl: string
   autoPlay?: boolean
+  accentColor?: string
   onPlay?: () => void
 }
 
-export function VideoPlayer({ videoUrl, autoPlay = false, onPlay }: VideoPlayerProps) {
+export function VideoPlayer({ videoUrl, autoPlay = false, accentColor = '#dc2626', onPlay }: VideoPlayerProps) {
   const [isVideoVisible, setIsVideoVisible] = useState(false)
   const [hasError, setHasError] = useState(false)
 
@@ -63,19 +64,17 @@ export function VideoPlayer({ videoUrl, autoPlay = false, onPlay }: VideoPlayerP
         onClick={handleShowVideo}
         className={css({
           w: 'full',
-          colorPalette: 'red',
-          bg: 'colorPalette.default',
-          color: 'colorPalette.fg',
           fontWeight: 'semibold',
           py: 4, // Match call button height
           px: 6, // Match call button padding
           fontSize: 'lg', // Match call button font size
           textAlign: 'center',
           transition: 'colors',
-          _hover: {
-            bg: 'colorPalette.emphasized'
-          }
+          color: 'white'
         })}
+        style={{
+          backgroundColor: accentColor,
+        }}
       >
         ▶️ Watch Video
       </button>

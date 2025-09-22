@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { css } from '@/styled-system/css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
-const robotoMono = Roboto_Mono({
-  variable: "--font-roboto-mono",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700"]
+  weight: ["200", "300", "400", "500", "600", "700", "800"]
 });
 
 export const metadata: Metadata = {
@@ -23,9 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={css({
+        className={`${jakarta.variable} ${css({
           fontSmoothing: 'antialiased',
-        })}
+        })}`}
       >
         <ThemeProvider>
           {children}

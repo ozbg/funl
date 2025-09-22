@@ -205,6 +205,9 @@ export default function PublicFunnelWithTestimonials({
   console.log('PublicFunnel render - testimonialConfig:', testimonialConfig)
   console.log('PublicFunnel render - testimonialSettings:', testimonialSettings)
 
+  // Get business accent color for dynamic styling
+  const accentColor = business.accent_color || '#10b981'
+
   return (
     <Box minH="100vh" bg="bg.default">
       <Box maxW="md" mx="auto" pt={8} pb={16}>
@@ -227,7 +230,19 @@ export default function PublicFunnelWithTestimonials({
             </p>
 
             {funnel.type === 'property' && funnel.content?.state && (
-              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
+              <Box
+                display="inline-flex"
+                alignItems="center"
+                px={3}
+                py={1}
+                borderRadius="full"
+                fontSize="sm"
+                fontWeight="medium"
+                style={{
+                  backgroundColor: `${accentColor}20`,
+                  color: accentColor
+                }}
+              >
                 {funnel.content.state === 'for_sale' && '🏠 For Sale'}
                 {funnel.content.state === 'sold' && '✅ SOLD'}
                 {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
@@ -246,20 +261,18 @@ export default function PublicFunnelWithTestimonials({
                 businessName={business.name}
                 vCardData={vCardData}
                 className={css({
-                  colorPalette: 'mint',
                   w: 'full',
-                  bg: 'colorPalette.default',
-                  color: 'colorPalette.fg',
                   fontWeight: 'semibold',
                   py: 4,
                   px: 6,
                   fontSize: 'lg',
                   textAlign: 'center',
                   transition: 'colors',
-                  _hover: {
-                    bg: 'colorPalette.emphasized'
-                  }
+                  color: 'white'
                 })}
+                style={{
+                  backgroundColor: accentColor,
+                }}
                 onClick={handleVCardDownload}
               >
                 Save {business.vcard_data?.firstName}&apos;s Contact
@@ -272,19 +285,17 @@ export default function PublicFunnelWithTestimonials({
                   className={css({
                     w: 'full',
                     display: 'block',
-                    colorPalette: 'mint',
-                    bg: 'colorPalette.default',
-                    color: 'colorPalette.fg',
                     fontWeight: 'semibold',
                     py: 4,
                     px: 6,
                     fontSize: 'lg',
                     textAlign: 'center',
                     transition: 'colors',
-                    _hover: {
-                      bg: 'colorPalette.emphasized'
-                    }
+                    color: 'white'
                   })}
+                  style={{
+                    backgroundColor: accentColor,
+                  }}
                 >
                   Call {business.vcard_data?.firstName}
                 </a>
@@ -295,6 +306,7 @@ export default function PublicFunnelWithTestimonials({
                 <VideoPlayer
                   videoUrl={funnel.content.video_url}
                   autoPlay={funnel.content.video_autoplay}
+                  accentColor={accentColor}
                   onPlay={handleVideoClick}
                 />
               )}
@@ -305,18 +317,16 @@ export default function PublicFunnelWithTestimonials({
                   onClick={handleTestimonialClick}
                   className={css({
                     w: 'full',
-                    colorPalette: 'blue',
-                    bg: 'colorPalette.default',
-                    color: 'colorPalette.fg',
                     fontWeight: 'semibold',
                     py: 4,
                     px: 6,
                     fontSize: 'lg',
                     transition: 'colors',
-                    _hover: {
-                      bg: 'colorPalette.emphasized'
-                    }
+                    color: 'white'
                   })}
+                  style={{
+                    backgroundColor: accentColor,
+                  }}
                 >
                   💬 Share Your Experience
                 </button>
@@ -519,18 +529,16 @@ export default function PublicFunnelWithTestimonials({
                     <button
                       type="submit"
                       className={css({
-                        colorPalette: 'mint',
                         w: 'full',
-                        bg: 'colorPalette.default',
-                        color: 'colorPalette.fg',
                         fontWeight: 'semibold',
                         py: 2,
                         px: 4,
                         transition: 'colors',
-                        _hover: {
-                          bg: 'colorPalette.emphasized'
-                        }
+                        color: 'white'
                       })}
+                      style={{
+                        backgroundColor: accentColor,
+                      }}
                     >
                       Request Callback
                     </button>
@@ -557,10 +565,9 @@ export default function PublicFunnelWithTestimonials({
             <Link
               href="/"
               className={css({
-                colorPalette: 'mint',
-                color: 'colorPalette.default',
-                _hover: { color: 'colorPalette.emphasized' }
+                _hover: { opacity: 0.8 }
               })}
+              style={{ color: accentColor }}
             >
               funl.au
             </Link>

@@ -537,6 +537,7 @@ export default function NewFunnelPage() {
               }}
               businessName={business?.name || 'Your Business'}
               contactName={business?.vcard_data ? `${business.vcard_data.firstName} ${business.vcard_data.lastName}` : undefined}
+              accentColor={business?.accent_color}
               testimonialConfig={testimonialConfig}
             />
           </Box>

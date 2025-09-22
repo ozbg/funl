@@ -6,14 +6,16 @@ interface VCardDownloadProps {
   businessName: string
   vCardData: string
   className?: string
+  style?: React.CSSProperties
   children: React.ReactNode
   onClick?: () => void
 }
 
-export default function VCardDownload({ 
-  businessName, 
-  vCardData, 
+export default function VCardDownload({
+  businessName,
+  vCardData,
   className,
+  style,
   children,
   onClick
 }: VCardDownloadProps) {
@@ -59,6 +61,7 @@ export default function VCardDownload({
     <button
       onClick={downloadVCard}
       className={className || defaultStyles}
+      style={style}
       type="button"
     >
       {children}
