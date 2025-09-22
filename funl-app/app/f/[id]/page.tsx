@@ -93,8 +93,8 @@ export default async function PublicFunnelPage({ params }: PageProps) {
     lastName: business.vcard_data?.lastName || business.name.split(' ').slice(1).join(' ') || '',
     organization: business.name,
     phone: business.phone || '',
-    email: business.email,
-    website: business.website,
+    email: business.vcard_data?.email || business.email,
+    website: business.vcard_data?.website || business.website,
   })
 
   console.log('PublicFunnelPage - Returning PublicFunnelClient component')
