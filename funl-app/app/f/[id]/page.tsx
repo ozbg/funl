@@ -92,7 +92,7 @@ export default async function PublicFunnelPage({ params }: PageProps) {
     firstName: business.vcard_data?.firstName || business.name.split(' ')[0] || '',
     lastName: business.vcard_data?.lastName || business.name.split(' ').slice(1).join(' ') || '',
     organization: business.name,
-    phone: business.phone || '',
+    phone: business.vcard_data?.phone || business.phone || '',
     email: business.vcard_data?.email || business.email,
     website: business.vcard_data?.website || business.website,
   })

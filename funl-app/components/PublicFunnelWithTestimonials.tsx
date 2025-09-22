@@ -531,8 +531,9 @@ export default function PublicFunnelWithTestimonials({
                       className={css({
                         w: 'full',
                         fontWeight: 'semibold',
-                        py: 2,
-                        px: 4,
+                        py: 4,
+                        px: 6,
+                        fontSize: 'lg',
                         transition: 'colors',
                         color: 'white'
                       })}
