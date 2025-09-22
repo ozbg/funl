@@ -55,6 +55,7 @@ export default function NewFunnelPage() {
   const watchedPrice = watch('content.price')
   const watchedPropertyUrl = watch('content.property_url')
   const watchedVideoUrl = watch('content.video_url')
+  const watchedVideoAutoplay = watch('content.video_autoplay')
   const watchedCustomMessage = watch('content.custom_message')
   
   const selectedType = watchedType
@@ -122,7 +123,7 @@ export default function NewFunnelPage() {
             setValue('type', funnelData.type)
             if (funnelData.content) {
               Object.keys(funnelData.content).forEach(key => {
-                setValue(`content.${key}` as "content.state" | "content.price" | "content.property_url" | "content.video_url" | "content.custom_message" | "content.cta_button_text", funnelData.content[key as keyof FunnelContent])
+                setValue(`content.${key}` as "content.state" | "content.price" | "content.property_url" | "content.video_url" | "content.video_autoplay" | "content.custom_message" | "content.cta_button_text", funnelData.content[key as keyof FunnelContent])
               })
             }
             setDefaultNameSet(true)
@@ -440,17 +441,34 @@ export default function NewFunnelPage() {
                 )}
 
                 {(selectedType === 'video' || selectedType === 'video-showcase') && (
-                  <Box>
-                    <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
-                      Video URL (Optional)
-                    </label>
-                    <input
-                      type="url"
-                      {...register('content.video_url')}
-                      className={inputStyles}
-                      placeholder="https://youtube.com/watch?v=..."
-                    />
-                  </Box>
+                  <>
+                    <Box>
+                      <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                        Video URL (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        {...register('content.video_url')}
+                        className={inputStyles}
+                        placeholder="https://youtube.com/watch?v=..."
+                      />
+                    </Box>
+                    {watchedVideoUrl && (
+                      <Box>
+                        <label className={css({ display: 'flex', alignItems: 'center', fontSize: 'sm', color: 'fg.default', cursor: 'pointer' })}>
+                          <input
+                            type="checkbox"
+                            {...register('content.video_autoplay')}
+                            className={css({ mr: 2 })}
+                          />
+                          Auto-play video when opened
+                        </label>
+                        <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1, ml: 6 })}>
+                          Video will automatically start playing when the user clicks to watch
+                        </p>
+                      </Box>
+                    )}
+                  </>
                 )}
 
                 <Box>
@@ -513,6 +531,7 @@ export default function NewFunnelPage() {
                   price: watchedPrice || '',
                   property_url: watchedPropertyUrl || '',
                   video_url: watchedVideoUrl || '',
+                  video_autoplay: watchedVideoAutoplay || false,
                   custom_message: watchedCustomMessage || ''
                 }
               }}

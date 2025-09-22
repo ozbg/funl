@@ -51,6 +51,7 @@ export interface FunnelContent {
   price?: string
   property_url?: string
   video_url?: string
+  video_autoplay?: boolean
   custom_message?: string
   cta_button_text?: string
 }

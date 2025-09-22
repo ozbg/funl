@@ -10,6 +10,7 @@ export const CreateFunnelSchema = z.object({
     price: z.string().max(50, 'Price too long').optional(),
     property_url: z.string().url('Invalid URL').optional().or(z.literal('')),
     video_url: z.string().url('Invalid URL').optional().or(z.literal('')),
+    video_autoplay: z.boolean().optional(),
     custom_message: z.string().max(500, 'Message too long').optional(),
     cta_button_text: z.string().max(50, 'CTA text too long').optional(),
   }).optional(),

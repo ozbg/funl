@@ -26,6 +26,7 @@ interface FunnelPreviewProps {
       price?: string
       property_url?: string
       video_url?: string
+      video_autoplay?: boolean
       custom_message?: string
     }
   }

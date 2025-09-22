@@ -6,6 +6,7 @@ import { useTracking } from '@/hooks/useTracking'
 import VCardDownload from './VCardDownload'
 import TestimonialDisplay from './testimonials/TestimonialDisplay'
 import TestimonialSubmissionForm from './testimonials/TestimonialSubmissionForm'
+import { VideoPlayer } from './VideoPlayer'
 import { Funnel, Business } from '@/lib/types'
 import type { DisplayStyle, DisplayPosition } from '@/lib/database.types'
 import { css } from '@/styled-system/css'
@@ -289,6 +290,15 @@ export default function PublicFunnelWithTestimonials({
                 </a>
               )}
 
+              {/* Video Player */}
+              {(funnel.type === 'video' || funnel.type === 'video-showcase') && funnel.content?.video_url && (
+                <VideoPlayer
+                  videoUrl={funnel.content.video_url}
+                  autoPlay={funnel.content.video_autoplay}
+                  onPlay={handleVideoClick}
+                />
+              )}
+
               {/* Testimonial Button (only show if testimonials are available and share button is enabled) */}
               {testimonialSettings && testimonialConfig?.show_share_button && (
                 <button
@@ -401,34 +411,6 @@ export default function PublicFunnelWithTestimonials({
               </Box>
             )}
 
-            {/* Video Link */}
-            {(funnel.type === 'video' || funnel.type === 'video-showcase') && funnel.content?.video_url && (
-              <Box mb={6}>
-                <a
-                  href={funnel.content.video_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleVideoClick}
-                  className={css({
-                    w: 'full',
-                    display: 'block',
-                    colorPalette: 'red',
-                    bg: 'colorPalette.default',
-                    color: 'colorPalette.fg',
-                    fontWeight: 'semibold',
-                    py: 3,
-                    px: 4,
-                    textAlign: 'center',
-                    transition: 'colors',
-                    _hover: {
-                      bg: 'colorPalette.emphasized'
-                    }
-                  })}
-                >
-                  ▶️ Watch Video
-                </a>
-              </Box>
-            )}
 
             {/* Middle Testimonials */}
             {testimonialConfig?.enabled && testimonialConfig.position === 'bottom' && (
