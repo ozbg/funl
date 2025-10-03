@@ -2,7 +2,7 @@
  * PassKit Certificate Management
  *
  * This module handles Apple Developer certificate operations including:
- * - Certificate validation and loading
+ * - Certificate validation and loading from files (local) or env vars (production)
  * - Private key management
  * - WWDR certificate handling
  * - Cryptographic signing preparation
@@ -27,43 +27,92 @@ export interface CertificateValidation {
 }
 
 /**
- * Loads Apple Developer certificates from the filesystem
+ * Determines if running in production (Vercel/cloud) environment
+ */
+const isProduction = (): boolean => {
+  return process.env.NODE_ENV === 'production' || process.env.VERCEL === '1'
+}
+
+/**
+ * Loads certificates from environment variables (production/Vercel)
+ */
+const loadCertificatesFromEnv = (): CertificateData => {
+  const certificate = process.env.PASSKIT_CERTIFICATE_PEM
+  const privateKey = process.env.PASSKIT_PRIVATE_KEY_PEM
+  const wwdrCertificate = process.env.PASSKIT_WWDR_CERTIFICATE_PEM
+
+  if (!certificate) {
+    throw new Error('PASSKIT_CERTIFICATE_PEM environment variable is required in production')
+  }
+
+  if (!privateKey) {
+    throw new Error('PASSKIT_PRIVATE_KEY_PEM environment variable is required in production')
+  }
+
+  if (!wwdrCertificate) {
+    throw new Error('PASSKIT_WWDR_CERTIFICATE_PEM environment variable is required in production')
+  }
+
+  return {
+    certificate: Buffer.from(certificate, 'utf-8'),
+    privateKey: Buffer.from(privateKey, 'utf-8'),
+    wwdrCertificate: Buffer.from(wwdrCertificate, 'utf-8'),
+    passphrase: process.env.PASSKIT_PRIVATE_KEY_PASSPHRASE
+  }
+}
+
+/**
+ * Loads certificates from filesystem (local development)
+ */
+const loadCertificatesFromFiles = async (config: PassKitConfig): Promise<CertificateData> => {
+  // Convert relative paths to absolute paths
+  const certificatePath = path.resolve(config.certificatePath)
+  const keyPath = path.resolve(config.keyPath)
+  const wwdrPath = path.resolve(config.wwdrCertificatePath)
+
+  // Check if all certificate files exist
+  if (!existsSync(certificatePath)) {
+    throw new Error(`Pass certificate not found at: ${certificatePath}`)
+  }
+
+  if (!existsSync(keyPath)) {
+    throw new Error(`Private key not found at: ${keyPath}`)
+  }
+
+  if (!existsSync(wwdrPath)) {
+    throw new Error(`WWDR certificate not found at: ${wwdrPath}`)
+  }
+
+  // Load certificate files
+  const [certificate, privateKey, wwdrCertificate] = await Promise.all([
+    readFile(certificatePath),
+    readFile(keyPath),
+    readFile(wwdrPath)
+  ])
+
+  return {
+    certificate,
+    privateKey,
+    wwdrCertificate,
+    passphrase: process.env.PASSKIT_PRIVATE_KEY_PASSPHRASE
+  }
+}
+
+/**
+ * Loads Apple Developer certificates
+ * - In production (Vercel): Load from environment variables
+ * - In local dev: Load from filesystem
  */
 export const loadCertificates = async (config?: PassKitConfig): Promise<CertificateData> => {
-  const passKitConfig = config || getPassKitConfig()
-
   try {
-    // Convert relative paths to absolute paths
-    const certificatePath = path.resolve(passKitConfig.certificatePath)
-    const keyPath = path.resolve(passKitConfig.keyPath)
-    const wwdrPath = path.resolve(passKitConfig.wwdrCertificatePath)
-
-    // Check if all certificate files exist
-    if (!existsSync(certificatePath)) {
-      throw new Error(`Pass certificate not found at: ${certificatePath}`)
+    // Production: Load from environment variables
+    if (isProduction()) {
+      return loadCertificatesFromEnv()
     }
 
-    if (!existsSync(keyPath)) {
-      throw new Error(`Private key not found at: ${keyPath}`)
-    }
-
-    if (!existsSync(wwdrPath)) {
-      throw new Error(`WWDR certificate not found at: ${wwdrPath}`)
-    }
-
-    // Load certificate files
-    const [certificate, privateKey, wwdrCertificate] = await Promise.all([
-      readFile(certificatePath),
-      readFile(keyPath),
-      readFile(wwdrPath)
-    ])
-
-    return {
-      certificate,
-      privateKey,
-      wwdrCertificate,
-      passphrase: process.env.PASSKIT_PRIVATE_KEY_PASSPHRASE
-    }
+    // Local development: Load from files
+    const passKitConfig = config || getPassKitConfig()
+    return await loadCertificatesFromFiles(passKitConfig)
   } catch (error) {
     throw new Error(`Failed to load certificates: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
@@ -137,9 +186,30 @@ export const checkCertificateSetup = async (): Promise<{
   const recommendations: string[] = []
 
   try {
+    // Production: Check environment variables
+    if (isProduction()) {
+      if (!process.env.PASSKIT_CERTIFICATE_PEM) {
+        issues.push('PASSKIT_CERTIFICATE_PEM environment variable is required in production')
+      }
+      if (!process.env.PASSKIT_PRIVATE_KEY_PEM) {
+        issues.push('PASSKIT_PRIVATE_KEY_PEM environment variable is required in production')
+      }
+      if (!process.env.PASSKIT_WWDR_CERTIFICATE_PEM) {
+        issues.push('PASSKIT_WWDR_CERTIFICATE_PEM environment variable is required in production')
+      }
+
+      if (issues.length > 0) {
+        recommendations.push('Set certificate environment variables in Vercel dashboard')
+        recommendations.push('Include full PEM content with -----BEGIN/END----- markers')
+      }
+
+      return { configured: issues.length === 0, issues, recommendations }
+    }
+
+    // Local development: Check files
     const config = getPassKitConfig()
 
-    // Check if paths are configured (check if they're using the default fallback values)
+    // Check if paths are configured
     if (!config.certificatePath || config.certificatePath === 'lib/passkit/certificates/pass_certificate.pem') {
       issues.push('Pass certificate path not configured. Set PASSKIT_CERTIFICATE_PATH environment variable.')
     }
@@ -190,20 +260,4 @@ export const checkCertificateSetup = async (): Promise<{
     issues,
     recommendations
   }
-}
-
-/**
- * Creates placeholder certificate files for development
- * WARNING: Only use for development - never in production
- */
-export const createDevelopmentCertificates = async (): Promise<void> => {
-  const config = getPassKitConfig()
-
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Development certificates cannot be created in production environment')
-  }
-
-  // This is just a placeholder - actual implementation would need
-  // proper certificate generation or developer instructions
-  throw new Error('Development certificate creation not implemented. Please follow Apple Developer setup instructions.')
 }

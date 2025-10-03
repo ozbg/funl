@@ -70,26 +70,33 @@ export const getPassKitConfig = (): PassKitConfig => {
  */
 export const validatePassKitConfig = (config: PassKitConfig): { valid: boolean; errors: string[] } => {
   const errors: string[] = []
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1'
 
-  if (!config.teamIdentifier || config.teamIdentifier === 'DEVELOPMENT') {
-    errors.push('Apple Team Identifier is required and must be set via APPLE_TEAM_IDENTIFIER environment variable')
-  }
+  // Only validate in production
+  if (isProduction) {
+    if (!config.teamIdentifier || config.teamIdentifier === 'DEVELOPMENT') {
+      errors.push('APPLE_TEAM_IDENTIFIER environment variable is required in production')
+    }
 
-  if (!config.passTypeIdentifier || config.passTypeIdentifier.includes('DEVELOPMENT')) {
-    errors.push('Pass Type Identifier is required and must be set via APPLE_PASS_TYPE_IDENTIFIER environment variable')
+    if (!config.passTypeIdentifier || config.passTypeIdentifier.includes('DEVELOPMENT')) {
+      errors.push('APPLE_PASS_TYPE_IDENTIFIER environment variable is required in production')
+    }
+
+    // Validate team identifier format (should be 10 alphanumeric characters)
+    if (config.teamIdentifier && config.teamIdentifier.length !== 10 && config.teamIdentifier !== 'DEVELOPMENT') {
+      errors.push('Apple Team Identifier must be exactly 10 characters')
+    }
+
+    // Note: webServiceURL is optional for static passes (MVP)
+    // Only required if implementing pass updates/push notifications
+    if (!config.webServiceURL || config.webServiceURL.includes('your-domain.com')) {
+      // This is a warning, not an error - web service is for Phase 2
+      // errors.push('PASSKIT_WEB_SERVICE_URL environment variable is required in production')
+    }
   }
 
   if (!config.organizationName) {
     errors.push('Organization Name is required')
-  }
-
-  if (!config.webServiceURL || config.webServiceURL.includes('your-domain.com')) {
-    errors.push('Web Service URL must be configured via PASSKIT_WEB_SERVICE_URL environment variable')
-  }
-
-  // Validate team identifier format (should be 10 alphanumeric characters)
-  if (config.teamIdentifier.length !== 10 && config.teamIdentifier !== 'DEVELOPMENT') {
-    errors.push('Apple Team Identifier must be exactly 10 characters')
   }
 
   return {
