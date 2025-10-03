@@ -100,13 +100,17 @@ const loadCertificatesFromFiles = async (config: PassKitConfig): Promise<Certifi
 
 /**
  * Loads Apple Developer certificates
- * - In production (Vercel): Load from environment variables
- * - In local dev: Load from filesystem
+ * - If env vars exist: Load from environment variables (production/Vercel)
+ * - Otherwise: Load from filesystem (local dev)
  */
 export const loadCertificates = async (config?: PassKitConfig): Promise<CertificateData> => {
   try {
-    // Production: Load from environment variables
-    if (isProduction()) {
+    // Check if certificate env vars are set - if so, use them (production/Vercel)
+    const hasEnvCerts = process.env.PASSKIT_CERTIFICATE_PEM &&
+                        process.env.PASSKIT_PRIVATE_KEY_PEM &&
+                        process.env.PASSKIT_WWDR_CERTIFICATE_PEM
+
+    if (hasEnvCerts) {
       return loadCertificatesFromEnv()
     }
 
