@@ -43,7 +43,7 @@ export interface Funnel {
   reserved_code_id?: string
   code_source?: 'generated' | 'reserved'
   wallet_pass_enabled?: boolean
-  wallet_pass_config?: Record<string, any>
+  wallet_pass_config?: Record<string, unknown>
   wallet_pass_download_count?: number
   wallet_pass_last_updated?: string
   created_at: string
@@ -143,8 +143,8 @@ export interface WalletPassUpdate {
   id: string
   passInstanceId: string
   updateType: 'price_change' | 'status_update' | 'content_change' | 'configuration_change'
-  oldContent?: Record<string, any>
-  newContent?: Record<string, any>
+  oldContent?: Record<string, unknown>
+  newContent?: Record<string, unknown>
   changeDescription?: string
   notificationSent: boolean
   notificationSentAt?: string
@@ -166,7 +166,7 @@ export interface WalletPassAnalytics {
   userAgent?: string
   ipAddress?: string
   referrer?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   createdAt: string
 }
 
@@ -174,7 +174,7 @@ export interface WalletPassTemplate {
   id: string
   name: string
   description?: string
-  templateConfig: Record<string, any>
+  templateConfig: Record<string, unknown>
   category: 'property' | 'contact' | 'event' | 'general'
   businessCategoryId?: string
   isActive: boolean
@@ -257,7 +257,7 @@ export interface ApplePassJson {
   appLaunchURL?: string
 
   // User info
-  userInfo?: Record<string, any>
+  userInfo?: Record<string, unknown>
 }
 
 // Pass generation types

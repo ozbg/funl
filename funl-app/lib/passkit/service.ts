@@ -67,7 +67,7 @@ export class PassKitServiceImpl implements PassKitService {
       // Add header fields (strip textAlignment as passkit-generator handles it)
       if (request.passData?.generic?.headerFields) {
         for (const field of request.passData.generic.headerFields) {
-          const { textAlignment, ...cleanField } = field as any
+          const { textAlignment, ...cleanField } = field as Record<string, unknown>
           pass.headerFields.push(cleanField)
         }
       }
@@ -75,7 +75,7 @@ export class PassKitServiceImpl implements PassKitService {
       // Add primary fields
       if (request.passData?.generic?.primaryFields) {
         for (const field of request.passData.generic.primaryFields) {
-          const { textAlignment, ...cleanField } = field as any
+          const { textAlignment, ...cleanField } = field as Record<string, unknown>
           pass.primaryFields.push(cleanField)
         }
       }
@@ -83,7 +83,7 @@ export class PassKitServiceImpl implements PassKitService {
       // Add secondary fields
       if (request.passData?.generic?.secondaryFields) {
         for (const field of request.passData.generic.secondaryFields) {
-          const { textAlignment, ...cleanField } = field as any
+          const { textAlignment, ...cleanField } = field as Record<string, unknown>
           pass.secondaryFields.push(cleanField)
         }
       }
@@ -91,7 +91,7 @@ export class PassKitServiceImpl implements PassKitService {
       // Add auxiliary fields
       if (request.passData?.generic?.auxiliaryFields) {
         for (const field of request.passData.generic.auxiliaryFields) {
-          const { textAlignment, ...cleanField } = field as any
+          const { textAlignment, ...cleanField } = field as Record<string, unknown>
           pass.auxiliaryFields.push(cleanField)
         }
       }
@@ -99,7 +99,7 @@ export class PassKitServiceImpl implements PassKitService {
       // Add back fields
       if (request.passData?.generic?.backFields) {
         for (const field of request.passData.generic.backFields) {
-          const { textAlignment, ...cleanField } = field as any
+          const { textAlignment, ...cleanField } = field as Record<string, unknown>
           pass.backFields.push(cleanField)
         }
       }

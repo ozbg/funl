@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.au.funl.wallet",
+  "serialNumber": "MGALW3QJ-QX9DLX",
+  "teamIdentifier": "LQUL3AF44X",
+  "organizationName": "mcneice ",
+  "description": "Property listing information from mcneice ",
+  "authenticationToken": "73de20eff89423781038b0f959f37c75",
+  "webServiceURL": "http://192.168.4.167:37542/api/passkit",
+  "backgroundColor": "#FFFFFF",
+  "foregroundColor": "#000000",
+  "labelColor": "#666666",
+  "generic": {
+    "headerFields": [
+      {
+        "key": "property_name",
+        "label": "Property",
+        "value": "2 - 13 Sep 2025",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ],
+    "primaryFields": [
+      {
+        "key": "status",
+        "label": "Status",
+        "value": "For Sale",
+        "textAlignment": "PKTextAlignmentLeft"
+      },
+      {
+        "key": "price",
+        "label": "Price",
+        "value": "7500",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ],
+    "secondaryFields": [
+      {
+        "key": "agent",
+        "label": "Agent",
+        "value": "Troy Mcneice",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ],
+    "auxiliaryFields": [
+      {
+        "key": "agent_phone",
+        "label": "Phone",
+        "value": "0402 0756 302",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ],
+    "backFields": [
+      {
+        "key": "message",
+        "label": "Message",
+        "value": "Yo whats up",
+        "textAlignment": "PKTextAlignmentLeft"
+      }
+    ]
+  },
+  "barcodes": [
+    {
+      "message": "https://funl.app/f/6e33c75a-a035-4b45-9a8d-aacaf80901f0",
+      "format": "PKBarcodeFormatQR",
+      "messageEncoding": "iso-8859-1",
+      "altText": "Scan to view 2 - 13 Sep 2025"
+    }
+  ],
+  "userInfo": {
+    "funnelId": "6e33c75a-a035-4b45-9a8d-aacaf80901f0",
+    "funnelType": "property-listing",
+    "businessId": "d34a4a01-e701-4d06-95cd-6cb4addf0c4d",
+    "funnelName": "2 - 13 Sep 2025"
+  }
+}
