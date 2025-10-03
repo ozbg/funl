@@ -29,10 +29,17 @@ export class PassContentMapperImpl implements PassContentMapper {
    */
   async mapFunnelToPassData(funnel: Funnel, business: Business): Promise<Partial<ApplePassJson>> {
     const passType = this.determinePassType(funnel.type)
+
+    // Use agent's accent color as background, or default to white
+    const backgroundColor = business.accent_color || 'rgb(255, 255, 255)'
+
     const baseData: Partial<ApplePassJson> = {
       description: this.generatePassDescription(funnel, business),
       organizationName: business.name,
       logoText: business.name,
+      backgroundColor,
+      foregroundColor: 'rgb(255, 255, 255)', // White text on colored background
+      labelColor: 'rgb(255, 255, 255)', // White labels
 
       // QR code linking to funnel
       barcodes: [{
@@ -74,44 +81,45 @@ export class PassContentMapperImpl implements PassContentMapper {
   mapPropertyListingFields(content: FunnelContent, business: Business): PassField[] {
     const fields: PassField[] = []
 
-    // Property status
+    // Property status (no label - just the value like "For Sale")
     if (content.state) {
       fields.push(this.formatPassField(
         'status',
-        'Status',
+        '', // No label
         this.formatPropertyStatus(content.state)
       ))
     }
 
-    // Property price
+    // Property price (no label)
     if (content.price) {
       fields.push(this.formatPassField(
         'price',
-        'Price',
+        '', // No label
         content.price
       ))
     }
 
-    // Agent information
+    // Agent name (no label - just the name)
     fields.push(this.formatPassField(
       'agent',
-      'Agent',
+      '', // No label
       `${business.vcard_data.firstName} ${business.vcard_data.lastName}`
     ))
 
+    // Agent phone (no label - just the number)
     if (business.vcard_data.phone) {
       fields.push(this.formatPassField(
         'agent_phone',
-        'Phone',
+        '', // No label
         business.vcard_data.phone
       ))
     }
 
-    // Custom message
+    // Custom message (no label)
     if (content.custom_message) {
       fields.push(this.formatPassField(
         'message',
-        'Message',
+        '', // No label
         content.custom_message
       ))
     }
@@ -207,15 +215,18 @@ export class PassContentMapperImpl implements PassContentMapper {
     const content = funnel.content
     const fields = this.mapPropertyListingFields(content, business)
 
-    // Add funnel name as header
-    const headerField = this.formatPassField('property_name', 'Property', funnel.name)
+    // Property name in primary (large, no label)
+    const propertyNameField = this.formatPassField('property_name', '', funnel.name)
 
     const structure = {
-      headerFields: [headerField],
-      primaryFields: this.selectFieldsForSection(fields, ['price', 'status']),
-      secondaryFields: this.selectFieldsForSection(fields, ['agent']),
-      auxiliaryFields: this.selectFieldsForSection(fields, ['agent_phone']),
-      backFields: this.selectFieldsForSection(fields, ['message'])
+      headerFields: [], // Empty header
+      primaryFields: [
+        propertyNameField,
+        ...this.selectFieldsForSection(fields, ['status']) // "For Sale" bigger in primary
+      ],
+      secondaryFields: this.selectFieldsForSection(fields, ['price', 'agent']), // Price and agent name
+      auxiliaryFields: this.selectFieldsForSection(fields, ['agent_phone', 'message']), // Phone and message
+      backFields: [] // No back fields
     }
 
     return structure
