@@ -6,10 +6,10 @@
  */
 
 import { PKPass } from 'passkit-generator'
-import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import { getPassKitConfig, type PassKitConfig } from './config'
+import { loadCertificates } from './certificates'
 import type {
   ApplePassJson,
   PassGenerationRequest,
@@ -36,11 +36,12 @@ export class PassKitServiceImpl implements PassKitService {
       const serialNumber = this.generateSerialNumber()
       const authenticationToken = this.generateAuthenticationToken()
 
-      // Load certificates
+      // Load certificates (from env vars in production, files in dev)
+      const certData = await loadCertificates(this.config)
       const certificates = {
-        wwdr: fs.readFileSync(this.config.wwdrCertificatePath),
-        signerCert: fs.readFileSync(this.config.certificatePath),
-        signerKey: fs.readFileSync(this.config.keyPath)
+        wwdr: certData.wwdrCertificate,
+        signerCert: certData.certificate,
+        signerKey: certData.privateKey
       }
 
       // Get template path - use process.cwd() for Next.js app directory
