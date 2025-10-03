@@ -133,6 +133,7 @@ export type Database = {
       }
       businesses: {
         Row: {
+          accent_color: string | null
           business_category_id: string | null
           created_at: string | null
           email: string
@@ -148,6 +149,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          accent_color?: string | null
           business_category_id?: string | null
           created_at?: string | null
           email: string
@@ -163,6 +165,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          accent_color?: string | null
           business_category_id?: string | null
           created_at?: string | null
           email?: string
@@ -313,7 +316,9 @@ export type Database = {
           funnel_id: string
           id: string
           metadata: Json | null
+          pass_serial_number: string | null
           session_id: string
+          wallet_pass_related: boolean | null
         }
         Insert: {
           action: string
@@ -321,7 +326,9 @@ export type Database = {
           funnel_id: string
           id?: string
           metadata?: Json | null
+          pass_serial_number?: string | null
           session_id: string
+          wallet_pass_related?: boolean | null
         }
         Update: {
           action?: string
@@ -329,7 +336,9 @@ export type Database = {
           funnel_id?: string
           id?: string
           metadata?: Json | null
+          pass_serial_number?: string | null
           session_id?: string
+          wallet_pass_related?: boolean | null
         }
         Relationships: [
           {
@@ -352,6 +361,7 @@ export type Database = {
           minimum_rating: number | null
           position: string | null
           show_featured_only: boolean | null
+          show_share_button: boolean | null
           theme_override: Json | null
           updated_at: string | null
         }
@@ -365,6 +375,7 @@ export type Database = {
           minimum_rating?: number | null
           position?: string | null
           show_featured_only?: boolean | null
+          show_share_button?: boolean | null
           theme_override?: Json | null
           updated_at?: string | null
         }
@@ -378,6 +389,7 @@ export type Database = {
           minimum_rating?: number | null
           position?: string | null
           show_featured_only?: boolean | null
+          show_share_button?: boolean | null
           theme_override?: Json | null
           updated_at?: string | null
         }
@@ -427,9 +439,81 @@ export type Database = {
         }
         Relationships: []
       }
+      funnel_wallet_pass_config: {
+        Row: {
+          auto_update_enabled: boolean | null
+          background_color: string | null
+          created_at: string | null
+          enabled: boolean | null
+          expiration_date: string | null
+          foreground_color: string | null
+          funnel_id: string
+          id: string
+          logo_url: string | null
+          max_description_length: number | null
+          max_downloads: number | null
+          pass_type_identifier: string | null
+          show_open_house_times: boolean | null
+          show_price_history: boolean | null
+          show_property_features: boolean | null
+          strip_image_url: string | null
+          team_identifier: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_update_enabled?: boolean | null
+          background_color?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          expiration_date?: string | null
+          foreground_color?: string | null
+          funnel_id: string
+          id?: string
+          logo_url?: string | null
+          max_description_length?: number | null
+          max_downloads?: number | null
+          pass_type_identifier?: string | null
+          show_open_house_times?: boolean | null
+          show_price_history?: boolean | null
+          show_property_features?: boolean | null
+          strip_image_url?: string | null
+          team_identifier?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_update_enabled?: boolean | null
+          background_color?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          expiration_date?: string | null
+          foreground_color?: string | null
+          funnel_id?: string
+          id?: string
+          logo_url?: string | null
+          max_description_length?: number | null
+          max_downloads?: number | null
+          pass_type_identifier?: string | null
+          show_open_house_times?: boolean | null
+          show_price_history?: boolean | null
+          show_property_features?: boolean | null
+          strip_image_url?: string | null
+          team_identifier?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funnel_wallet_pass_config_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: true
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       funnels: {
         Row: {
           business_id: string
+          code_source: string | null
           content: Json | null
           created_at: string | null
           expires_at: string | null
@@ -439,14 +523,20 @@ export type Database = {
           print_status: string | null
           qr_code_url: string | null
           qr_preset_id: string | null
+          reserved_code_id: string | null
           short_url: string | null
           status: string | null
           template_id: string | null
           type: string
           updated_at: string | null
+          wallet_pass_config: Json | null
+          wallet_pass_download_count: number | null
+          wallet_pass_enabled: boolean | null
+          wallet_pass_last_updated: string | null
         }
         Insert: {
           business_id: string
+          code_source?: string | null
           content?: Json | null
           created_at?: string | null
           expires_at?: string | null
@@ -456,14 +546,20 @@ export type Database = {
           print_status?: string | null
           qr_code_url?: string | null
           qr_preset_id?: string | null
+          reserved_code_id?: string | null
           short_url?: string | null
           status?: string | null
           template_id?: string | null
           type: string
           updated_at?: string | null
+          wallet_pass_config?: Json | null
+          wallet_pass_download_count?: number | null
+          wallet_pass_enabled?: boolean | null
+          wallet_pass_last_updated?: string | null
         }
         Update: {
           business_id?: string
+          code_source?: string | null
           content?: Json | null
           created_at?: string | null
           expires_at?: string | null
@@ -473,11 +569,16 @@ export type Database = {
           print_status?: string | null
           qr_code_url?: string | null
           qr_preset_id?: string | null
+          reserved_code_id?: string | null
           short_url?: string | null
           status?: string | null
           template_id?: string | null
           type?: string
           updated_at?: string | null
+          wallet_pass_config?: Json | null
+          wallet_pass_download_count?: number | null
+          wallet_pass_enabled?: boolean | null
+          wallet_pass_last_updated?: string | null
         }
         Relationships: [
           {
@@ -499,6 +600,13 @@ export type Database = {
             columns: ["qr_preset_id"]
             isOneToOne: false
             referencedRelation: "qr_code_presets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "funnels_reserved_code_id_fkey"
+            columns: ["reserved_code_id"]
+            isOneToOne: false
+            referencedRelation: "reserved_codes"
             referencedColumns: ["id"]
           },
         ]
@@ -863,6 +971,253 @@ export type Database = {
             columns: ["funnel_id"]
             isOneToOne: false
             referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_pass_analytics: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          event_type: string
+          funnel_id: string
+          id: string
+          ios_version: string | null
+          ip_address: unknown | null
+          latitude: number | null
+          longitude: number | null
+          metadata: Json | null
+          pass_instance_id: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          event_type: string
+          funnel_id: string
+          id?: string
+          ios_version?: string | null
+          ip_address?: unknown | null
+          latitude?: number | null
+          longitude?: number | null
+          metadata?: Json | null
+          pass_instance_id?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          event_type?: string
+          funnel_id?: string
+          id?: string
+          ios_version?: string | null
+          ip_address?: unknown | null
+          latitude?: number | null
+          longitude?: number | null
+          metadata?: Json | null
+          pass_instance_id?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_pass_analytics_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: false
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_pass_analytics_pass_instance_id_fkey"
+            columns: ["pass_instance_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_pass_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_pass_instances: {
+        Row: {
+          authentication_token: string
+          business_id: string
+          country_code: string | null
+          created_at: string | null
+          device_library_identifier: string | null
+          download_count: number | null
+          first_downloaded_at: string | null
+          funnel_id: string
+          id: string
+          ip_address: unknown | null
+          last_downloaded_at: string | null
+          last_updated_at: string | null
+          pass_type_identifier: string
+          push_token: string | null
+          registered_at: string | null
+          serial_number: string
+          status: string | null
+          update_tag: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          authentication_token: string
+          business_id: string
+          country_code?: string | null
+          created_at?: string | null
+          device_library_identifier?: string | null
+          download_count?: number | null
+          first_downloaded_at?: string | null
+          funnel_id: string
+          id?: string
+          ip_address?: unknown | null
+          last_downloaded_at?: string | null
+          last_updated_at?: string | null
+          pass_type_identifier: string
+          push_token?: string | null
+          registered_at?: string | null
+          serial_number: string
+          status?: string | null
+          update_tag?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          authentication_token?: string
+          business_id?: string
+          country_code?: string | null
+          created_at?: string | null
+          device_library_identifier?: string | null
+          download_count?: number | null
+          first_downloaded_at?: string | null
+          funnel_id?: string
+          id?: string
+          ip_address?: unknown | null
+          last_downloaded_at?: string | null
+          last_updated_at?: string | null
+          pass_type_identifier?: string
+          push_token?: string | null
+          registered_at?: string | null
+          serial_number?: string
+          status?: string | null
+          update_tag?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_pass_instances_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_pass_instances_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: false
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_pass_templates: {
+        Row: {
+          business_category_id: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          sort_order: number | null
+          template_config: Json
+          updated_at: string | null
+        }
+        Insert: {
+          business_category_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          sort_order?: number | null
+          template_config?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          business_category_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          sort_order?: number | null
+          template_config?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_pass_templates_business_category_id_fkey"
+            columns: ["business_category_id"]
+            isOneToOne: false
+            referencedRelation: "business_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_pass_updates: {
+        Row: {
+          change_description: string | null
+          created_at: string | null
+          id: string
+          new_content: Json | null
+          notification_sent: boolean | null
+          notification_sent_at: string | null
+          old_content: Json | null
+          pass_instance_id: string
+          push_response_body: string | null
+          push_response_status: string | null
+          update_type: string
+        }
+        Insert: {
+          change_description?: string | null
+          created_at?: string | null
+          id?: string
+          new_content?: Json | null
+          notification_sent?: boolean | null
+          notification_sent_at?: string | null
+          old_content?: Json | null
+          pass_instance_id: string
+          push_response_body?: string | null
+          push_response_status?: string | null
+          update_type: string
+        }
+        Update: {
+          change_description?: string | null
+          created_at?: string | null
+          id?: string
+          new_content?: Json | null
+          notification_sent?: boolean | null
+          notification_sent_at?: string | null
+          old_content?: Json | null
+          pass_instance_id?: string
+          push_response_body?: string | null
+          push_response_status?: string | null
+          update_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_pass_updates_pass_instance_id_fkey"
+            columns: ["pass_instance_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_pass_instances"
             referencedColumns: ["id"]
           },
         ]

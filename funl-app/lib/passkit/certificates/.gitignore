@@ -1,0 +1,10 @@
+# Exclude all certificate and key files
+*.pem
+*.cer
+*.p12
+*.key
+*.crt
+
+# Only allow README and .gitignore
+!README.md
+!.gitignore

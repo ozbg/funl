@@ -308,6 +308,39 @@ export default function PublicFunnelWithTestimonials({
                 </a>
               )}
 
+              {/* Apple Wallet Pass */}
+              {(funnel.type === 'property-listing') && funnel.wallet_pass_enabled && (
+                <a
+                  href={`/api/passkit/generate?funnelId=${funnel.id}`}
+                  onClick={(e) => {
+                    track('wallet_pass_download')
+                  }}
+                  className={css({
+                    w: 'full',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                    fontWeight: 'semibold',
+                    py: 4,
+                    px: 6,
+                    fontSize: 'lg',
+                    textAlign: 'center',
+                    transition: 'colors',
+                    color: 'white',
+                    textDecoration: 'none'
+                  })}
+                  style={{
+                    backgroundColor: '#000',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.5 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zM12.5 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM7 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.33 13 8.5 13 7 12.33 7 11.5zM14.5 10c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/>
+                  </svg>
+                  Add to Apple Wallet
+                </a>
+              )}
+
               {/* Video Player */}
               {(funnel.type === 'video' || funnel.type === 'video-showcase' || funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.video_url && (
                 <VideoPlayer

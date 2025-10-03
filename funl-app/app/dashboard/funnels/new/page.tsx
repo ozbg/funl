@@ -12,6 +12,7 @@ import FunnelPreview from '@/components/FunnelPreview'
 import FunnelTestimonialSettings from '@/components/testimonials/FunnelTestimonialSettings'
 import { createClient } from '@/lib/supabase/client'
 import CodeSelectionModal from '@/components/CodeSelectionModal'
+import { PassKitToggle } from '@/components/passkit/PassKitToggle'
 
 export default function NewFunnelPage() {
   const [loading, setLoading] = useState(false)
@@ -543,6 +544,28 @@ export default function NewFunnelPage() {
               <FunnelTestimonialSettings
                 funnelId={existingFunnel.id}
                 onConfigChange={setTestimonialConfig}
+              />
+            </Box>
+          )}
+
+          {/* Apple Wallet Pass - Only show in edit mode for property-listing funnels */}
+          {isEditMode && existingFunnel && selectedType === 'property-listing' && (
+            <Box mt={8}>
+              <PassKitToggle
+                funnel={existingFunnel}
+                onToggle={async (enabled) => {
+                  const response = await fetch('/api/passkit/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      funnelId: existingFunnel.id,
+                      enabled
+                    })
+                  })
+                  if (!response.ok) {
+                    throw new Error('Failed to toggle PassKit')
+                  }
+                }}
               />
             </Box>
           )}
