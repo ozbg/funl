@@ -1,3 +1,4 @@
+commit
 during debug, you said
 I notice that the API calls are going directly to https://wwxcimelgqyilgzojyks.supabase.co/rest/v1/testimonials instead of our Next.js app's /api/testimonials route.
 
