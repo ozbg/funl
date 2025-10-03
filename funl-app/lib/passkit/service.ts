@@ -64,43 +64,38 @@ export class PassKitServiceImpl implements PassKitService {
         pass.setBarcodes(barcode.message)
       }
 
-      // Add header fields (strip textAlignment as passkit-generator handles it)
+      // Add header fields
       if (request.passData?.generic?.headerFields) {
         for (const field of request.passData.generic.headerFields) {
-          const { textAlignment, ...cleanField } = field as Record<string, unknown>
-          pass.headerFields.push(cleanField)
+          pass.headerFields.push(field)
         }
       }
 
       // Add primary fields
       if (request.passData?.generic?.primaryFields) {
         for (const field of request.passData.generic.primaryFields) {
-          const { textAlignment, ...cleanField } = field as Record<string, unknown>
-          pass.primaryFields.push(cleanField)
+          pass.primaryFields.push(field)
         }
       }
 
       // Add secondary fields
       if (request.passData?.generic?.secondaryFields) {
         for (const field of request.passData.generic.secondaryFields) {
-          const { textAlignment, ...cleanField } = field as Record<string, unknown>
-          pass.secondaryFields.push(cleanField)
+          pass.secondaryFields.push(field)
         }
       }
 
       // Add auxiliary fields
       if (request.passData?.generic?.auxiliaryFields) {
         for (const field of request.passData.generic.auxiliaryFields) {
-          const { textAlignment, ...cleanField } = field as Record<string, unknown>
-          pass.auxiliaryFields.push(cleanField)
+          pass.auxiliaryFields.push(field)
         }
       }
 
       // Add back fields
       if (request.passData?.generic?.backFields) {
         for (const field of request.passData.generic.backFields) {
-          const { textAlignment, ...cleanField } = field as Record<string, unknown>
-          pass.backFields.push(cleanField)
+          pass.backFields.push(field)
         }
       }
 
