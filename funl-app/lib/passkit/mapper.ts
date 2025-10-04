@@ -100,19 +100,21 @@ export class PassContentMapperImpl implements PassContentMapper {
       ))
     }
 
-    // Agent name (no label - just the name)
+    // Agent name (no label - right aligned to appear next to price)
     fields.push(this.formatPassField(
       'agent',
       '', // No label
-      `${business.vcard_data.firstName} ${business.vcard_data.lastName}`
+      `${business.vcard_data.firstName} ${business.vcard_data.lastName}`,
+      'PKTextAlignmentRight'
     ))
 
-    // Agent phone (no label - just the number)
+    // Agent phone (no label - right aligned to appear next to message)
     if (business.vcard_data.phone) {
       fields.push(this.formatPassField(
         'agent_phone',
         '', // No label
-        business.vcard_data.phone
+        business.vcard_data.phone,
+        'PKTextAlignmentRight'
       ))
     }
 
@@ -200,12 +202,12 @@ export class PassContentMapperImpl implements PassContentMapper {
   /**
    * Creates a properly formatted pass field
    */
-  formatPassField(key: string, label: string, value: string | number): PassField {
+  formatPassField(key: string, label: string, value: string | number, textAlignment: string = 'PKTextAlignmentLeft'): PassField {
     return {
       key,
       label,
       value,
-      textAlignment: 'PKTextAlignmentLeft'
+      textAlignment
     }
   }
 
@@ -225,8 +227,8 @@ export class PassContentMapperImpl implements PassContentMapper {
         propertyNameField,
         ...this.selectFieldsForSection(fields, ['status']) // "For Sale" bigger in primary
       ],
-      secondaryFields: this.selectFieldsForSection(fields, ['price', 'message']), // Price (left), custom message (right)
-      auxiliaryFields: this.selectFieldsForSection(fields, ['agent', 'agent_phone']), // Agent name (left), phone (right)
+      secondaryFields: this.selectFieldsForSection(fields, ['price', 'agent']), // Price (left), agent name (right)
+      auxiliaryFields: this.selectFieldsForSection(fields, ['message', 'agent_phone']), // Custom message (left), phone (right)
       backFields: [] // No back fields
     }
 
