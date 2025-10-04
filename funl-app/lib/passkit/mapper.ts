@@ -32,6 +32,7 @@ export class PassContentMapperImpl implements PassContentMapper {
 
     // Use agent's accent color as background, or default to white
     const backgroundColor = business.accent_color || 'rgb(255, 255, 255)'
+    console.log('[PassKit Mapper] Accent color:', business.accent_color, '-> backgroundColor:', backgroundColor)
 
     const baseData: Partial<ApplePassJson> = {
       description: this.generatePassDescription(funnel, business),
@@ -228,6 +229,9 @@ export class PassContentMapperImpl implements PassContentMapper {
       auxiliaryFields: this.selectFieldsForSection(fields, ['agent_phone', 'message']), // Phone and message
       backFields: [] // No back fields
     }
+
+    console.log('[PassKit Mapper] Pass structure:', JSON.stringify(structure, null, 2))
+    console.log('[PassKit Mapper] All fields:', fields.map(f => `${f.key}: ${f.value}`))
 
     return structure
   }

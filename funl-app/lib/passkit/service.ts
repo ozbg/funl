@@ -48,14 +48,16 @@ export class PassKitServiceImpl implements PassKitService {
       const templatePath = path.join(process.cwd(), 'lib', 'passkit', 'templates', 'property-listing.pass')
 
       // Create pass from template (without webService/authToken for now)
+      // Spread all passData properties to ensure colors and other settings are applied
       const pass = await PKPass.from({
         model: templatePath,
         certificates
       }, {
-        serialNumber,
+        ...request.passData, // Spread all pass data including colors
+        serialNumber, // Override with generated serial
         description: request.passData?.description || 'Property Information Pass',
         organizationName: request.passData?.organizationName || this.config.organizationName
-        // NOTE: Removed authenticationToken and webServiceURL - they require a working web service
+        // NOTE: authenticationToken and webServiceURL removed - they require a working web service
         // which causes iOS to reject the pass if the service isn't running
       })
 
