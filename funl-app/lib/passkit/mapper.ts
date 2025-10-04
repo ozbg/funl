@@ -202,7 +202,12 @@ export class PassContentMapperImpl implements PassContentMapper {
   /**
    * Creates a properly formatted pass field
    */
-  formatPassField(key: string, label: string, value: string | number, textAlignment: string = 'PKTextAlignmentLeft'): PassField {
+  formatPassField(
+    key: string,
+    label: string,
+    value: string | number,
+    textAlignment: 'PKTextAlignmentLeft' | 'PKTextAlignmentCenter' | 'PKTextAlignmentRight' | 'PKTextAlignmentNatural' = 'PKTextAlignmentLeft'
+  ): PassField {
     return {
       key,
       label,
