@@ -225,8 +225,8 @@ export class PassContentMapperImpl implements PassContentMapper {
         propertyNameField,
         ...this.selectFieldsForSection(fields, ['status']) // "For Sale" bigger in primary
       ],
-      secondaryFields: this.selectFieldsForSection(fields, ['price', 'agent']), // Price and agent name
-      auxiliaryFields: this.selectFieldsForSection(fields, ['agent_phone', 'message']), // Phone and message
+      secondaryFields: this.selectFieldsForSection(fields, ['price', 'message']), // Price (left), custom message (right)
+      auxiliaryFields: this.selectFieldsForSection(fields, ['agent', 'agent_phone']), // Agent name (left), phone (right)
       backFields: [] // No back fields
     }
 
