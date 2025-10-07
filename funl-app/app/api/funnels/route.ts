@@ -127,6 +127,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Extract property_address and open_house_time from content to top-level fields
+    const content = { ...(validatedData.content || {}) }
+    const property_address = content.property_address as string | undefined
+    const open_house_time = content.open_house_time as string | undefined
+    delete content.property_address
+    delete content.open_house_time
+
     // Create funnel in database
     const { data: funnel, error } = await supabase
       .from('funnels')
@@ -137,7 +144,9 @@ export async function POST(request: NextRequest) {
         funnel_type_id,
         qr_preset_id: null,
         short_url: shortId, // Store just the short ID
-        content: validatedData.content || {},
+        content,
+        property_address,
+        open_house_time,
         qr_code_url: qrCodeSVG, // Store SVG directly as text
         status: 'draft',
         code_source: validatedData.code_source || 'generated',

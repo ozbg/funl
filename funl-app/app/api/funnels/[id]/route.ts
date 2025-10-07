@@ -63,17 +63,28 @@ export async function PATCH(
       return NextResponse.json({ error: 'Funnel not found' }, { status: 404 })
     }
 
+    // Extract property_address and open_house_time from content to top-level fields
+    const updateData: Record<string, unknown> = {}
+    if (validatedData.name) updateData.name = validatedData.name
+    if (validatedData.type) updateData.type = validatedData.type
+    if (validatedData.status) updateData.status = validatedData.status
+
+    if (validatedData.content) {
+      const content = { ...existingFunnel.content, ...validatedData.content }
+      const property_address = content.property_address as string | undefined
+      const open_house_time = content.open_house_time as string | undefined
+      delete content.property_address
+      delete content.open_house_time
+
+      updateData.content = content
+      if (property_address !== undefined) updateData.property_address = property_address
+      if (open_house_time !== undefined) updateData.open_house_time = open_house_time
+    }
+
     // Update funnel
     const { data: funnel, error } = await supabase
       .from('funnels')
-      .update({
-        ...(validatedData.name && { name: validatedData.name }),
-        ...(validatedData.type && { type: validatedData.type }),
-        ...(validatedData.status && { status: validatedData.status }),
-        ...(validatedData.content && { 
-          content: { ...existingFunnel.content, ...validatedData.content }
-        }),
-      })
+      .update(updateData)
       .eq('id', id)
       .eq('business_id', user.id)
       .select()

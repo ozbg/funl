@@ -13,6 +13,8 @@ export const CreateFunnelSchema = z.object({
     video_autoplay: z.boolean().optional(),
     custom_message: z.string().max(500, 'Message too long').optional(),
     cta_button_text: z.string().max(50, 'CTA text too long').optional(),
+    property_address: z.string().max(200, 'Address too long').optional(),
+    open_house_time: z.string().optional(),
   }).optional(),
 })
 

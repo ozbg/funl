@@ -402,6 +402,21 @@ export default function NewFunnelPage() {
                   <>
                     <Box>
                       <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                        Property Address
+                      </label>
+                      <input
+                        type="text"
+                        {...register('content.property_address')}
+                        className={inputStyles}
+                        placeholder="e.g., 43 The Waves Thirroul, NSW"
+                      />
+                      <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                        Single line address for Apple Wallet pass
+                      </p>
+                    </Box>
+
+                    <Box>
+                      <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
                         Property State
                       </label>
                       <select
@@ -425,6 +440,20 @@ export default function NewFunnelPage() {
                         className={inputStyles}
                         placeholder="e.g., $750,000"
                       />
+                    </Box>
+
+                    <Box>
+                      <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 1 })}>
+                        Open House Time (Optional)
+                      </label>
+                      <input
+                        type="datetime-local"
+                        {...register('content.open_house_time')}
+                        className={inputStyles}
+                      />
+                      <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                        Date and time of next open house inspection
+                      </p>
                     </Box>
 
                     <Box>
