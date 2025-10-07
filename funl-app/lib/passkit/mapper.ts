@@ -106,20 +106,29 @@ export class PassContentMapperImpl implements PassContentMapper {
       ))
     }
 
-    // Agent name (secondary - left, with "Agent" label)
+    // Open house time (secondary - with "Open House" label)
+    if (openHouseTime) {
+      const formattedTime = this.formatOpenHouseTime(openHouseTime)
+      fields.push(this.formatPassField(
+        'open_house',
+        'Open House',
+        formattedTime
+      ))
+    }
+
+    // Agent name (auxiliary - left, with "Agent" label)
     fields.push(this.formatPassField(
       'agent',
       'Agent',
       `${business.vcard_data.firstName} ${business.vcard_data.lastName}`
     ))
 
-    // Agent phone (secondary - right, with "Phone" label)
+    // Agent phone (auxiliary - right, with "Phone" label)
     if (business.vcard_data.phone) {
       fields.push(this.formatPassField(
         'agent_phone',
         'Phone',
-        business.vcard_data.phone,
-        'PKTextAlignmentRight'
+        business.vcard_data.phone
       ))
     }
 
@@ -214,12 +223,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * New layout matching viewer test:
+   * Final layout matching viewer test:
    * - logoText: Property status (e.g., "For Sale") - top-left
    * - Header: Company name - top-right
    * - Primary: Property address with "Property" label - large centered
-   * - Secondary: Agent name (left) and phone (right)
-   * - Auxiliary: Empty
+   * - Secondary: Open house date/time with "Open House" label
+   * - Auxiliary: Agent name (left) and phone (right) with labels
    * - Back: Empty
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
@@ -235,11 +244,13 @@ export class PassContentMapperImpl implements PassContentMapper {
     // Property address in primary with "Property" label (large centered)
     const primaryFields = this.selectFieldsForSection(fields, ['property_address'])
 
-    // Agent name and phone in secondary (side by side)
-    const secondaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
+    // Open house in secondary with "Open House" label
+    const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
 
-    // Empty auxiliary and back
-    const auxiliaryFields: PassField[] = []
+    // Agent name and phone in auxiliary (side by side with labels)
+    const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
+
+    // Empty back
     const backFields: PassField[] = []
 
     const structure = {
