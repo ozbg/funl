@@ -218,11 +218,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * Layout based on reference design:
-   * - Header: Business name (left), Property address (right)
-   * - Primary: Property status (e.g., "For Sale")
-   * - Secondary: Open house time with label
-   * - Auxiliary: Agent name (left), Agent phone (right)
+   * Layout optimized for prominence:
+   * - Header: Business name (logoText)
+   * - Primary: Property address (largest, 25% bigger than header)
+   * - Secondary: Property status (e.g., "For Sale")
+   * - Auxiliary: Open house time with spacer
+   * - Back: Agent name and phone (additional row creates spacing)
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
     const content = funnel.content
@@ -231,25 +232,27 @@ export class PassContentMapperImpl implements PassContentMapper {
     const openHouseTime = funnelWithPropertyFields.open_house_time
     const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Business name in header (left) - logoText handles this automatically
-    // Property address in header (right)
-    const headerFields = this.selectFieldsForSection(fields, ['property_address'])
+    // Business name handled by logoText
+    const headerFields: PassField[] = []
 
-    // Property status in primary (large, centered)
-    const primaryFields = this.selectFieldsForSection(fields, ['status'])
+    // Property address in primary (largest text - ~25% bigger than header)
+    const primaryFields = this.selectFieldsForSection(fields, ['property_address'])
 
-    // Open house time in secondary with label "Next open"
-    const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
+    // Property status in secondary
+    const secondaryFields = this.selectFieldsForSection(fields, ['status'])
 
-    // Agent name (left) and phone (right) in auxiliary
-    const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
+    // Open house in auxiliary (provides spacing before back fields)
+    const auxiliaryFields = this.selectFieldsForSection(fields, ['open_house'])
+
+    // Agent details on back - this creates a new row with spacing from auxiliary
+    const backFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
     const structure = {
       headerFields,
       primaryFields,
       secondaryFields,
       auxiliaryFields,
-      backFields: []
+      backFields
     }
 
     console.log('[PassKit Mapper] Pass structure:', JSON.stringify(structure, null, 2))
