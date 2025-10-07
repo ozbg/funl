@@ -218,12 +218,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * Layout matching reference design (first image):
-   * - Header: Business name (logoText left), Property address (right)
+   * All text elements at logo text size (13pt):
+   * - Header: Property address (same size as logoText "mcneice")
    * - Primary: Property status (e.g., "For Sale") - large centered
    * - Secondary: Open house time with label "NEXT OPEN"
-   * - Auxiliary: Empty row for spacing
-   * - Back: Agent name (left), Agent phone (right) - visible on front bottom
+   * - Auxiliary: Agent name and phone (same size as logoText)
+   * - Back: Empty
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
     const content = funnel.content
@@ -232,7 +232,7 @@ export class PassContentMapperImpl implements PassContentMapper {
     const openHouseTime = funnelWithPropertyFields.open_house_time
     const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Business name (logoText) + Property address top right
+    // Business name (logoText) + Property address - both ~13pt
     const headerFields = this.selectFieldsForSection(fields, ['property_address'])
 
     // Property status ("For Sale") - large centered
@@ -241,11 +241,11 @@ export class PassContentMapperImpl implements PassContentMapper {
     // Open house time
     const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
 
-    // Empty auxiliary for spacing before agent details
-    const auxiliaryFields: PassField[] = []
+    // Agent name and phone - same size as header/logo text (~13pt)
+    const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
-    // Agent name and phone at bottom (back fields appear on front bottom)
-    const backFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
+    // Empty back
+    const backFields: PassField[] = []
 
     const structure = {
       headerFields,
