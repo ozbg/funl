@@ -34,10 +34,15 @@ export class PassContentMapperImpl implements PassContentMapper {
     const backgroundColor = business.accent_color || 'rgb(255, 255, 255)'
     console.log('[PassKit Mapper] Accent color:', business.accent_color, '-> backgroundColor:', backgroundColor)
 
+    // Get property address for logoText if it's a property listing
+    const funnelWithPropertyFields = funnel as Funnel & { property_address?: string }
+    const propertyAddress = funnelWithPropertyFields.property_address
+
     const baseData: Partial<ApplePassJson> = {
       description: this.generatePassDescription(funnel, business),
       organizationName: business.name,
-      logoText: business.name,
+      // Use property address as logoText (top-left, ~20pt) for property listings
+      logoText: propertyAddress || business.name,
       backgroundColor,
       foregroundColor: 'rgb(255, 255, 255)', // White text on colored background
       labelColor: 'rgb(255, 255, 255)', // White labels
@@ -82,12 +87,12 @@ export class PassContentMapperImpl implements PassContentMapper {
   mapPropertyListingFields(content: FunnelContent, business: Business, propertyAddress?: string, openHouseTime?: string): PassField[] {
     const fields: PassField[] = []
 
-    // Property address (top right - no label)
+    // Company name (top right - no label) - only add if address is in logoText
     if (propertyAddress) {
       fields.push(this.formatPassField(
-        'property_address',
+        'company_name',
         '',
-        propertyAddress,
+        business.name,
         'PKTextAlignmentRight'
       ))
     }
@@ -218,11 +223,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * All text elements at logo text size (13pt):
-   * - Header: Property address (same size as logoText "mcneice")
+   * Swapped layout:
+   * - logoText: Property address (top-left, ~20pt, largest)
+   * - Header: Company name (top-right, ~13pt)
    * - Primary: Property status (e.g., "For Sale") - large centered
    * - Secondary: Open house time with label "NEXT OPEN"
-   * - Auxiliary: Agent name and phone (same size as logoText)
+   * - Auxiliary: Agent name and phone
    * - Back: Empty
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
@@ -232,8 +238,8 @@ export class PassContentMapperImpl implements PassContentMapper {
     const openHouseTime = funnelWithPropertyFields.open_house_time
     const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Business name (logoText) + Property address - both ~13pt
-    const headerFields = this.selectFieldsForSection(fields, ['property_address'])
+    // Company name in header (top-right, ~13pt)
+    const headerFields = this.selectFieldsForSection(fields, ['company_name'])
 
     // Property status ("For Sale") - large centered
     const primaryFields = this.selectFieldsForSection(fields, ['status'])
@@ -241,7 +247,7 @@ export class PassContentMapperImpl implements PassContentMapper {
     // Open house time
     const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
 
-    // Agent name and phone - same size as header/logo text (~13pt)
+    // Agent name and phone
     const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
     // Empty back
