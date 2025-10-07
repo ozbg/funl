@@ -218,12 +218,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * Layout optimized for prominence:
-   * - Header: Business name (logoText)
-   * - Primary: Property address (largest, 25% bigger than header)
-   * - Secondary: Property status (e.g., "For Sale")
-   * - Auxiliary: Open house time with spacer
-   * - Back: Agent name and phone (additional row creates spacing)
+   * Layout matching reference design (first image):
+   * - Header: Business name (logoText left), Property address (right)
+   * - Primary: Property status (e.g., "For Sale") - large centered
+   * - Secondary: Open house time with label "NEXT OPEN"
+   * - Auxiliary: Empty row for spacing
+   * - Back: Agent name (left), Agent phone (right) - visible on front bottom
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
     const content = funnel.content
@@ -232,19 +232,19 @@ export class PassContentMapperImpl implements PassContentMapper {
     const openHouseTime = funnelWithPropertyFields.open_house_time
     const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Business name handled by logoText
-    const headerFields: PassField[] = []
+    // Business name (logoText) + Property address top right
+    const headerFields = this.selectFieldsForSection(fields, ['property_address'])
 
-    // Property address in primary (largest text - ~25% bigger than header)
-    const primaryFields = this.selectFieldsForSection(fields, ['property_address'])
+    // Property status ("For Sale") - large centered
+    const primaryFields = this.selectFieldsForSection(fields, ['status'])
 
-    // Property status in secondary
-    const secondaryFields = this.selectFieldsForSection(fields, ['status'])
+    // Open house time
+    const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
 
-    // Open house in auxiliary (provides spacing before back fields)
-    const auxiliaryFields = this.selectFieldsForSection(fields, ['open_house'])
+    // Empty auxiliary for spacing before agent details
+    const auxiliaryFields: PassField[] = []
 
-    // Agent details on back - this creates a new row with spacing from auxiliary
+    // Agent name and phone at bottom (back fields appear on front bottom)
     const backFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
     const structure = {
