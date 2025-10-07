@@ -34,15 +34,11 @@ export class PassContentMapperImpl implements PassContentMapper {
     const backgroundColor = business.accent_color || 'rgb(255, 255, 255)'
     console.log('[PassKit Mapper] Accent color:', business.accent_color, '-> backgroundColor:', backgroundColor)
 
-    // Get property address for logoText if it's a property listing
-    const funnelWithPropertyFields = funnel as Funnel & { property_address?: string }
-    const propertyAddress = funnelWithPropertyFields.property_address
-
     const baseData: Partial<ApplePassJson> = {
       description: this.generatePassDescription(funnel, business),
       organizationName: business.name,
-      // Use property address as logoText (top-left, ~20pt) for property listings
-      logoText: propertyAddress || business.name,
+      // logoText will be property_status (e.g., "For Sale")
+      logoText: '', // Set per funnel type
       backgroundColor,
       foregroundColor: 'rgb(255, 255, 255)', // White text on colored background
       labelColor: 'rgb(255, 255, 255)', // White labels
@@ -66,14 +62,20 @@ export class PassContentMapperImpl implements PassContentMapper {
     // Map fields based on funnel type
     switch (passType) {
       case PASS_TYPES.PROPERTY_LISTING:
+        // Set logoText to property status (e.g., "For Sale")
+        if (funnel.content?.state) {
+          baseData.logoText = this.formatPropertyStatus(funnel.content.state)
+        }
         baseData.generic = this.mapPropertyListingStructure(funnel, business)
         break
 
       case PASS_TYPES.CONTACT_CARD:
+        baseData.logoText = business.name
         baseData.generic = this.mapContactCardStructure(funnel, business)
         break
 
       default:
+        baseData.logoText = business.name
         baseData.generic = this.mapGenericStructure(funnel, business)
         break
     }
@@ -87,48 +89,37 @@ export class PassContentMapperImpl implements PassContentMapper {
   mapPropertyListingFields(content: FunnelContent, business: Business, propertyAddress?: string, openHouseTime?: string): PassField[] {
     const fields: PassField[] = []
 
-    // Company name (top right - no label) - only add if address is in logoText
+    // Company name (header - top right, no label)
+    fields.push(this.formatPassField(
+      'company_name',
+      '',
+      business.name,
+      'PKTextAlignmentRight'
+    ))
+
+    // Property address (primary - large centered with "Property" label)
     if (propertyAddress) {
       fields.push(this.formatPassField(
-        'company_name',
-        '',
-        business.name,
-        'PKTextAlignmentRight'
+        'property_address',
+        'Property',
+        propertyAddress
       ))
     }
 
-    // Property status (no label - just the value like "For Sale")
-    if (content.state) {
-      fields.push(this.formatPassField(
-        'status',
-        '',
-        this.formatPropertyStatus(content.state)
-      ))
-    }
-
-    // Open house time (formatted as "Next open\nWed 8 Oct, 5:00 pm")
-    if (openHouseTime) {
-      const formattedTime = this.formatOpenHouseTime(openHouseTime)
-      fields.push(this.formatPassField(
-        'open_house',
-        'Next open',
-        formattedTime
-      ))
-    }
-
-    // Agent name (no label)
+    // Agent name (secondary - left, with "Agent" label)
     fields.push(this.formatPassField(
       'agent',
-      '',
+      'Agent',
       `${business.vcard_data.firstName} ${business.vcard_data.lastName}`
     ))
 
-    // Agent phone (no label)
+    // Agent phone (secondary - right, with "Phone" label)
     if (business.vcard_data.phone) {
       fields.push(this.formatPassField(
         'agent_phone',
-        '',
-        business.vcard_data.phone
+        'Phone',
+        business.vcard_data.phone,
+        'PKTextAlignmentRight'
       ))
     }
 
@@ -223,12 +214,12 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
-   * Swapped layout:
-   * - logoText: Property address (top-left, ~20pt, largest)
-   * - Header: Company name (top-right, ~13pt)
-   * - Primary: Property status (e.g., "For Sale") - large centered
-   * - Secondary: Open house time with label "NEXT OPEN"
-   * - Auxiliary: Agent name and phone
+   * New layout matching viewer test:
+   * - logoText: Property status (e.g., "For Sale") - top-left
+   * - Header: Company name - top-right
+   * - Primary: Property address with "Property" label - large centered
+   * - Secondary: Agent name (left) and phone (right)
+   * - Auxiliary: Empty
    * - Back: Empty
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
@@ -238,19 +229,17 @@ export class PassContentMapperImpl implements PassContentMapper {
     const openHouseTime = funnelWithPropertyFields.open_house_time
     const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Company name in header (top-right, ~13pt)
+    // Company name in header (top-right)
     const headerFields = this.selectFieldsForSection(fields, ['company_name'])
 
-    // Property status ("For Sale") - large centered
-    const primaryFields = this.selectFieldsForSection(fields, ['status'])
+    // Property address in primary with "Property" label (large centered)
+    const primaryFields = this.selectFieldsForSection(fields, ['property_address'])
 
-    // Open house time
-    const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
+    // Agent name and phone in secondary (side by side)
+    const secondaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
-    // Agent name and phone
-    const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
-
-    // Empty back
+    // Empty auxiliary and back
+    const auxiliaryFields: PassField[] = []
     const backFields: PassField[] = []
 
     const structure = {
