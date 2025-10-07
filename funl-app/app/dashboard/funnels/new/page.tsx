@@ -128,11 +128,12 @@ export default function NewFunnelPage() {
               })
             }
             // Load property_address and open_house_time from top-level columns
-            if ((funnelData as any).property_address) {
-              setValue('content.property_address', (funnelData as any).property_address)
+            const funnelWithPropertyFields = funnelData as Funnel & { property_address?: string; open_house_time?: string }
+            if (funnelWithPropertyFields.property_address) {
+              setValue('content.property_address', funnelWithPropertyFields.property_address)
             }
-            if ((funnelData as any).open_house_time) {
-              setValue('content.open_house_time', (funnelData as any).open_house_time)
+            if (funnelWithPropertyFields.open_house_time) {
+              setValue('content.open_house_time', funnelWithPropertyFields.open_house_time)
             }
             setDefaultNameSet(true)
 
