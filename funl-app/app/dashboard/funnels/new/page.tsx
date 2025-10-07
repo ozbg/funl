@@ -127,6 +127,13 @@ export default function NewFunnelPage() {
                 setValue(`content.${key}` as "content.state" | "content.price" | "content.property_url" | "content.video_url" | "content.video_autoplay" | "content.custom_message" | "content.cta_button_text", funnelData.content[key as keyof FunnelContent])
               })
             }
+            // Load property_address and open_house_time from top-level columns
+            if ((funnelData as any).property_address) {
+              setValue('content.property_address', (funnelData as any).property_address)
+            }
+            if ((funnelData as any).open_house_time) {
+              setValue('content.open_house_time', (funnelData as any).open_house_time)
+            }
             setDefaultNameSet(true)
 
             // Fetch testimonial config for existing funnel
