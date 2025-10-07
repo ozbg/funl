@@ -79,51 +79,51 @@ export class PassContentMapperImpl implements PassContentMapper {
   /**
    * Maps property listing funnel to pass fields
    */
-  mapPropertyListingFields(content: FunnelContent, business: Business): PassField[] {
+  mapPropertyListingFields(content: FunnelContent, business: Business, propertyAddress?: string, openHouseTime?: string): PassField[] {
     const fields: PassField[] = []
+
+    // Property address (top right - no label)
+    if (propertyAddress) {
+      fields.push(this.formatPassField(
+        'property_address',
+        '',
+        propertyAddress,
+        'PKTextAlignmentRight'
+      ))
+    }
 
     // Property status (no label - just the value like "For Sale")
     if (content.state) {
       fields.push(this.formatPassField(
         'status',
-        '', // No label
+        '',
         this.formatPropertyStatus(content.state)
       ))
     }
 
-    // Property price (no label)
-    if (content.price) {
+    // Open house time (formatted as "Next open\nWed 8 Oct, 5:00 pm")
+    if (openHouseTime) {
+      const formattedTime = this.formatOpenHouseTime(openHouseTime)
       fields.push(this.formatPassField(
-        'price',
-        '', // No label
-        content.price
+        'open_house',
+        'Next open',
+        formattedTime
       ))
     }
 
-    // Agent name (no label - right aligned to appear next to price)
+    // Agent name (no label)
     fields.push(this.formatPassField(
       'agent',
-      '', // No label
-      `${business.vcard_data.firstName} ${business.vcard_data.lastName}`,
-      'PKTextAlignmentRight'
+      '',
+      `${business.vcard_data.firstName} ${business.vcard_data.lastName}`
     ))
 
-    // Agent phone (no label - right aligned to appear next to message)
+    // Agent phone (no label)
     if (business.vcard_data.phone) {
       fields.push(this.formatPassField(
         'agent_phone',
-        '', // No label
-        business.vcard_data.phone,
-        'PKTextAlignmentRight'
-      ))
-    }
-
-    // Custom message (no label)
-    if (content.custom_message) {
-      fields.push(this.formatPassField(
-        'message',
-        '', // No label
-        content.custom_message
+        '',
+        business.vcard_data.phone
       ))
     }
 
@@ -218,23 +218,38 @@ export class PassContentMapperImpl implements PassContentMapper {
 
   /**
    * Maps property listing to pass structure
+   * Layout based on reference design:
+   * - Header: Business name (left), Property address (right)
+   * - Primary: Property status (e.g., "For Sale")
+   * - Secondary: Open house time with label
+   * - Auxiliary: Agent name (left), Agent phone (right)
    */
   private mapPropertyListingStructure(funnel: Funnel, business: Business) {
     const content = funnel.content
-    const fields = this.mapPropertyListingFields(content, business)
+    const funnelWithPropertyFields = funnel as Funnel & { property_address?: string; open_house_time?: string }
+    const propertyAddress = funnelWithPropertyFields.property_address
+    const openHouseTime = funnelWithPropertyFields.open_house_time
+    const fields = this.mapPropertyListingFields(content, business, propertyAddress, openHouseTime)
 
-    // Property name in primary (large, no label)
-    const propertyNameField = this.formatPassField('property_name', '', funnel.name)
+    // Business name in header (left) - logoText handles this automatically
+    // Property address in header (right)
+    const headerFields = this.selectFieldsForSection(fields, ['property_address'])
+
+    // Property status in primary (large, centered)
+    const primaryFields = this.selectFieldsForSection(fields, ['status'])
+
+    // Open house time in secondary with label "Next open"
+    const secondaryFields = this.selectFieldsForSection(fields, ['open_house'])
+
+    // Agent name (left) and phone (right) in auxiliary
+    const auxiliaryFields = this.selectFieldsForSection(fields, ['agent', 'agent_phone'])
 
     const structure = {
-      headerFields: [], // Empty header
-      primaryFields: [
-        propertyNameField,
-        ...this.selectFieldsForSection(fields, ['status']) // "For Sale" bigger in primary
-      ],
-      secondaryFields: this.selectFieldsForSection(fields, ['price', 'agent']), // Price (left), agent name (right)
-      auxiliaryFields: this.selectFieldsForSection(fields, ['message', 'agent_phone']), // Custom message (left), phone (right)
-      backFields: [] // No back fields
+      headerFields,
+      primaryFields,
+      secondaryFields,
+      auxiliaryFields,
+      backFields: []
     }
 
     console.log('[PassKit Mapper] Pass structure:', JSON.stringify(structure, null, 2))
@@ -358,6 +373,32 @@ export class PassContentMapperImpl implements PassContentMapper {
       default:
         return status.charAt(0).toUpperCase() + status.slice(1)
     }
+  }
+
+  /**
+   * Formats open house time for display
+   * Input: ISO 8601 timestamp (e.g., "2025-10-08T17:00:00+11:00")
+   * Output: "Wed 8 Oct, 5:00 pm"
+   */
+  private formatOpenHouseTime(timestamp: string): string {
+    const date = new Date(timestamp)
+
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    const dayName = days[date.getDay()]
+    const dayNum = date.getDate()
+    const monthName = months[date.getMonth()]
+
+    let hours = date.getHours()
+    const minutes = date.getMinutes()
+    const ampm = hours >= 12 ? 'pm' : 'am'
+    hours = hours % 12 || 12
+
+    const minuteStr = minutes.toString().padStart(2, '0')
+    const timeStr = `${hours}:${minuteStr} ${ampm}`
+
+    return `${dayName} ${dayNum} ${monthName}, ${timeStr}`
   }
 
   /**
