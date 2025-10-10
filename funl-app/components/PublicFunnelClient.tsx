@@ -278,16 +278,17 @@ export default function PublicFunnelClient({
                     />
                   </Box>
                   <Box>
-                    <select 
+                    <select
                       name="preferred_time"
                       className={css({
                         w: 'full',
                         px: 3,
-                        py: 2,
+                        py: 2.5,
                         borderWidth: '1px',
                         borderColor: 'border.default',
                         bg: 'bg.default',
                         color: 'fg.default',
+                        h: '42px',
                         _focus: {
                           outline: 'none',
                           ringWidth: '2',
