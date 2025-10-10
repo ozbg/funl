@@ -230,17 +230,10 @@ export default function PublicFunnelWithTestimonials({
             </p>
 
             {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.state && (
-              <Box mb={3}>
-                <Box display="inline-flex" alignItems="center" px={4} py={1.5} borderRadius="full" fontSize="lg" fontWeight="semibold" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
-                  {funnel.content.state === 'for_sale' && 'For Sale'}
-                  {funnel.content.state === 'sold' && 'SOLD'}
-                  {funnel.content.state === 'coming_soon' && 'Coming Soon'}
-                </Box>
-                {funnel.content?.open_house_time && (
-                  <p className={css({ fontSize: 'sm', color: 'fg.subtle', fontWeight: 'normal', mt: 2 })}>
-                    Open House: {funnel.content.open_house_time}
-                  </p>
-                )}
+              <Box display="inline-flex" alignItems="center" px={4} py={1.5} borderRadius="full" fontSize="lg" fontWeight="semibold" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text" mb={3}>
+                {funnel.content.state === 'for_sale' && 'For Sale'}
+                {funnel.content.state === 'sold' && 'SOLD'}
+                {funnel.content.state === 'coming_soon' && 'Coming Soon'}
               </Box>
             )}
 

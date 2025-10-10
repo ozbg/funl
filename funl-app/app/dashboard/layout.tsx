@@ -5,6 +5,7 @@ import { css } from '@/styled-system/css'
 import { Box, Flex, Container } from '@/styled-system/jsx'
 import ThemeToggle from '@/components/ThemeToggle'
 import { DashboardNav } from '@/components/dashboard/DashboardNav'
+import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 
 export default async function DashboardLayout({
   children,
@@ -36,6 +37,7 @@ export default async function DashboardLayout({
 
   return (
     <Box minHeight="100vh" bg="bg.muted">
+      <ImpersonationBanner />
       <nav className={css({ bg: 'bg.default', boxShadow: 'sm', borderBottom: '1px solid', borderColor: 'border.default' })}>
         <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }}>
           <Flex justify="space-between" h="16" align="center">

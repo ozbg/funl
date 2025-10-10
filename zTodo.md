@@ -10,3 +10,6 @@ should be universal so they always match
 
 funnel type (not tesimonial), when testimonials enabled, should not show share your experiences by default
 
+
+Funel > Edit > mobile preview not showing wallet card, must match real preview
+

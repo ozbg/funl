@@ -141,25 +141,23 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
           >
             Edit
           </Link>
-          {hasAssignedCode && (
-            <Link
-              href={`/f/${codeValue}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={css({
-                colorPalette: 'mint',
-                px: 3,
-                py: 1,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'colorPalette.default',
-                textDecoration: 'none',
-                _hover: { color: 'colorPalette.emphasized' }
-              })}
-            >
-              Preview
-            </Link>
-          )}
+          <Link
+            href={`/f/${codeValue || funnel.short_url}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={css({
+              colorPalette: 'mint',
+              px: 3,
+              py: 1,
+              fontSize: 'sm',
+              fontWeight: 'medium',
+              color: 'colorPalette.default',
+              textDecoration: 'none',
+              _hover: { color: 'colorPalette.emphasized' }
+            })}
+          >
+            Preview
+          </Link>
           <Link
             href={`/dashboard/funnels/${funnel.id}`}
             className={css({

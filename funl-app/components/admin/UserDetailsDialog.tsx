@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { Button } from '@/components/ui/button'
@@ -34,6 +36,56 @@ interface UserDetailsDialogProps {
 }
 
 export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogProps) {
+  const [isImpersonating, setIsImpersonating] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleImpersonate = async () => {
+    if (!user) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to impersonate ${user.business_name} (${user.email})?\n\nThis action will be logged for audit purposes.`
+    )
+
+    if (!confirmed) return
+
+    setIsImpersonating(true)
+    try {
+      // Call the impersonate API which will generate the magic link
+      const response = await fetch('/api/admin/impersonate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to impersonate user')
+      }
+
+      // Sign out current admin session
+      await supabase.auth.signOut()
+
+      // Use the hash from the magic link to authenticate as the target user
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        token_hash: data.impersonationHash,
+        type: 'magiclink'
+      })
+
+      if (verifyError) {
+        throw new Error('Failed to authenticate as user: ' + verifyError.message)
+      }
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard'
+    } catch (error) {
+      console.error('Impersonation error:', error)
+      alert(error instanceof Error ? error.message : 'Failed to impersonate user')
+      setIsImpersonating(false)
+    }
+  }
+
   if (!isOpen || !user) {
     return null
   }
@@ -222,12 +274,11 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
             Close
           </Button>
           <Button
-            onClick={() => {
-              // TODO: Implement impersonate functionality
-              console.log('Impersonate user:', user.id)
-            }}
+            onClick={handleImpersonate}
+            disabled={isImpersonating}
+            colorPalette="blue"
           >
-            Impersonate User
+            {isImpersonating ? 'Impersonating...' : 'Impersonate User'}
           </Button>
         </Flex>
       </Box>
