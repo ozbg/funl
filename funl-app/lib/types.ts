@@ -54,7 +54,9 @@ export interface Funnel {
 export interface FunnelContent {
   state?: 'for_sale' | 'sold' | 'coming_soon'
   price?: string
+  property_address?: string
   property_url?: string
+  open_house_time?: string
   video_url?: string
   video_autoplay?: boolean
   custom_message?: string

@@ -225,13 +225,32 @@ export default function PublicFunnelWithTestimonials({
             <h1 className={css({ fontSize: 'xl', fontWeight: 'medium', color: 'fg.default', mb: 2 })}>
               {business.name}
             </h1>
-            <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 8 })}>
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 4 })}>
               {business.vcard_data?.firstName} {business.vcard_data?.lastName}
             </p>
 
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.state && (
+              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text" mb={3}>
+                {funnel.content.state === 'for_sale' && '🏠 For Sale'}
+                {funnel.content.state === 'sold' && '✅ SOLD'}
+                {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
+              </Box>
+            )}
+
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.property_address && (
+              <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
+                {funnel.content.property_address}
+              </p>
+            )}
 
             {funnel.content?.price && (
-              <p className={css({ fontSize: 'lg', fontWeight: 'semibold', mt: 2 })}>{funnel.content.price}</p>
+              <p className={css({ fontSize: 'md', color: 'fg.muted', mb: 3 })}>{funnel.content.price}</p>
+            )}
+
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.open_house_time && (
+              <p className={css({ fontSize: 'md', color: 'fg.subtle', fontWeight: 'normal' })}>
+                Open House: {funnel.content.open_house_time}
+              </p>
             )}
           </Box>
 
