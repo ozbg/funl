@@ -108,7 +108,7 @@ export default function PublicFunnelClient({
 
             {funnel.type === 'property' && funnel.content?.open_house_time && (
               <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
-                Open House: {funnel.content.open_house_time}
+                Open House {funnel.content.open_house_time}
               </p>
             )}
 

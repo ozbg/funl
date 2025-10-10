@@ -239,7 +239,7 @@ export default function PublicFunnelWithTestimonials({
 
             {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.open_house_time && (
               <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
-                Open House: {funnel.content.open_house_time}
+                Open House {funnel.content.open_house_time}
               </p>
             )}
 
