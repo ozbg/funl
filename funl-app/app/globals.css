@@ -58,7 +58,7 @@
 /* Custom styles */
 @layer base {
   :root {
-    --font-roboto-mono: 'Roboto Mono', monospace;
+    --font-jakarta: 'Plus Jakarta Sans', sans-serif;
   }
 
   /* Light theme colors */
@@ -134,7 +134,7 @@
   }
 
   body {
-    font-family: var(--font-roboto-mono);
+    font-family: var(--font-jakarta);
     background: var(--colors-bg-default);
     color: var(--colors-fg-default);
   }
