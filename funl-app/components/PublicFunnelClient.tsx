@@ -99,10 +99,17 @@ export default function PublicFunnelClient({
             </p>
 
             {funnel.type === 'property' && funnel.content?.state && (
-              <Box display="inline-flex" alignItems="center" px={3} py={1} borderRadius="full" fontSize="sm" fontWeight="medium" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text" mb={3}>
-                {funnel.content.state === 'for_sale' && '🏠 For Sale'}
-                {funnel.content.state === 'sold' && '✅ SOLD'}
-                {funnel.content.state === 'coming_soon' && '🔜 Coming Soon'}
+              <Box mb={3}>
+                <Box display="inline-flex" alignItems="center" px={4} py={1.5} borderRadius="full" fontSize="lg" fontWeight="semibold" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text">
+                  {funnel.content.state === 'for_sale' && 'For Sale'}
+                  {funnel.content.state === 'sold' && 'SOLD'}
+                  {funnel.content.state === 'coming_soon' && 'Coming Soon'}
+                </Box>
+                {funnel.content?.open_house_time && (
+                  <p className={css({ fontSize: 'sm', color: 'fg.subtle', fontWeight: 'normal', mt: 2 })}>
+                    Open House: {funnel.content.open_house_time}
+                  </p>
+                )}
               </Box>
             )}
 
@@ -114,12 +121,6 @@ export default function PublicFunnelClient({
 
             {funnel.content?.price && (
               <p className={css({ fontSize: 'md', color: 'fg.muted', mb: 3 })}>{funnel.content.price}</p>
-            )}
-
-            {funnel.type === 'property' && funnel.content?.open_house_time && (
-              <p className={css({ fontSize: 'md', color: 'fg.subtle', fontWeight: 'normal' })}>
-                Open House: {funnel.content.open_house_time}
-              </p>
             )}
           </Box>
 
