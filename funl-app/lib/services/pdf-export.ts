@@ -107,9 +107,11 @@ export class PDFExportService {
     // Create ZIP archive
     const zipBuffer = await this.createZipArchive(pdfFiles)
 
-    // Generate unique export filename
-    const exportId = `export_${batch.batch_number}_${new Date().getTime()}`
-    const zipFilename = `${exportId}.zip`
+    // Generate clean filename: batch-name_YYYY-MM-DD.zip
+    const now = new Date()
+    const dateStr = now.toISOString().split('T')[0] // YYYY-MM-DD
+    const cleanBatchName = batch.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    const zipFilename = `${cleanBatchName}_${dateStr}.zip`
 
     // Convert buffer to base64 for direct download (Vercel serverless has read-only filesystem)
     const base64Zip = zipBuffer.toString('base64')
@@ -118,7 +120,7 @@ export class PDFExportService {
     return {
       zipUrl: dataUrl,
       totalCodes: codes.length,
-      exportId,
+      exportId: `export_${batch.batch_number}_${now.getTime()}`,
       filename: zipFilename
     }
   }
