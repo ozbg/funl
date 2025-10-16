@@ -1,8 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { BatchExportDialog } from './BatchExportDialog'
+import type { QRCodeBatch } from '@/lib/types/qr-reservation'
 
 interface BatchDetailHeaderProps {
   batch: {
@@ -13,6 +16,7 @@ interface BatchDetailHeaderProps {
     status: string
     quantity: number
     created_at: string
+    style_preset_id?: string
     qr_code_presets?: {
       name: string
       slug: string
@@ -29,6 +33,8 @@ interface BatchDetailHeaderProps {
 }
 
 export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
+  const [exportDialogOpen, setExportDialogOpen] = useState(false)
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'generated': return { bg: 'gray.100', color: 'gray.800' }
@@ -153,15 +159,37 @@ export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
               fontSize: 'sm',
               _hover: { bg: 'accent.emphasized' }
             })}
-            onClick={() => {
-              // TODO: Implement PDF export
-              alert('PDF export will be implemented next')
-            }}
+            onClick={() => setExportDialogOpen(true)}
           >
             Export PDFs
           </button>
         </Flex>
       </Flex>
+
+      {/* Export Dialog */}
+      {exportDialogOpen && (
+        <BatchExportDialog
+          batch={{
+            id: batch.id,
+            batch_number: batch.batch_number,
+            name: batch.name,
+            description: batch.description,
+            quantity: batch.quantity,
+            style_preset_id: batch.style_preset_id,
+            status: batch.status as QRCodeBatch['status'],
+            quantity_available: batch.availableCodes,
+            quantity_reserved: batch.reservedCodes,
+            quantity_assigned: batch.assignedCodes,
+            quantity_damaged: batch.damagedCodes,
+            sequence_counter: 0,
+            export_settings: {},
+            created_at: new Date(batch.created_at),
+            updated_at: new Date(batch.created_at)
+          }}
+          isOpen={exportDialogOpen}
+          onClose={() => setExportDialogOpen(false)}
+        />
+      )}
 
       {/* Quick Stats Summary */}
       <Box p={4} bg="bg.subtle" rounded="lg" borderWidth="1px" borderColor="border.default">

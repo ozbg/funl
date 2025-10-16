@@ -126,6 +126,7 @@ export default async function BatchDetailPage({ params, searchParams }: BatchDet
       <BatchDetailHeader
         batch={{
           ...batch,
+          style_preset_id: batch.style_preset_id,
           totalCodes,
           availableCodes,
           assignedCodes,
