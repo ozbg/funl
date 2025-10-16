@@ -197,13 +197,17 @@ export class PDFExportService {
       console.log(`🔧 Created PDF: ${dimensions.width}×${dimensions.height}mm`)
 
       // Calculate layout based on whether ID text is included
-      const baseMargin = 2 // 2mm base margin
+      // Use percentage-based margins so QR code fills same proportion regardless of size
+      const pageSize = Math.min(dimensions.width, dimensions.height)
+      const marginPercent = 0.05 // 5% margin on each side
+      const baseMargin = pageSize * marginPercent
+
       const textHeight = textOptions.includeIdText ? textOptions.textSize : 0
-      const textPadding = textOptions.includeIdText ? 2 : 0 // 2mm padding around text
+      const textPadding = textOptions.includeIdText ? pageSize * 0.02 : 0 // 2% padding for text
 
       // Total margin includes: base margin + text height + text padding
       const totalMargin = baseMargin + textHeight + textPadding
-      console.log(`🔧 Layout: ${dimensions.width}×${dimensions.height}mm, margin: ${totalMargin}mm, text: ${textHeight}mm`)
+      console.log(`🔧 Layout: ${dimensions.width}×${dimensions.height}mm, margin: ${totalMargin.toFixed(2)}mm (${(marginPercent*100)}%), text: ${textHeight}mm`)
 
       // Calculate QR code size and position
       const qrSize = Math.min(
@@ -211,7 +215,7 @@ export class PDFExportService {
         dimensions.height - (totalMargin * 2)
       )
       const qrX = (dimensions.width - qrSize) / 2
-      const qrY = (dimensions.height - qrSize) / 2 - (textOptions.includeIdText ? textHeight / 2 + 1 : 0)
+      const qrY = (dimensions.height - qrSize) / 2 - (textOptions.includeIdText ? textHeight / 2 + textPadding / 2 : 0)
 
       console.log(`🔧 QR positioning: ${qrX}, ${qrY}, size: ${qrSize}mm`)
 
