@@ -1,6 +1,4 @@
 import { generateQRCodeWithPreset } from '@/lib/qr-generation'
-import { mkdir, writeFile } from 'fs/promises'
-import { join } from 'path'
 import type {
   ReservedCode,
   QRCodeBatch,
@@ -113,13 +111,12 @@ export class PDFExportService {
     const exportId = `export_${batch.batch_number}_${new Date().getTime()}`
     const zipFilename = `${exportId}.zip`
 
-    // Save ZIP file to disk
-    await this.saveZipFile(zipFilename, zipBuffer)
-
-    const zipUrl = `/api/admin/qr-codes/exports/${zipFilename}`
+    // Convert buffer to base64 for direct download (Vercel serverless has read-only filesystem)
+    const base64Zip = zipBuffer.toString('base64')
+    const dataUrl = `data:application/zip;base64,${base64Zip}`
 
     return {
-      zipUrl,
+      zipUrl: dataUrl,
       totalCodes: codes.length,
       exportId,
       filename: zipFilename
@@ -431,23 +428,6 @@ export class PDFExportService {
       .from('reserved_codes')
       .update({ pdf_generated: true })
       .eq('id', codeId)
-  }
-
-  /**
-   * Save ZIP file to disk
-   */
-  private async saveZipFile(filename: string, zipBuffer: Buffer): Promise<void> {
-    const exportsDir = join(process.cwd(), 'temp', 'exports')
-
-    // Ensure exports directory exists
-    try {
-      await mkdir(exportsDir, { recursive: true })
-    } catch {
-      // Directory might already exist, that's fine
-    }
-
-    const filePath = join(exportsDir, filename)
-    await writeFile(filePath, zipBuffer)
   }
 
   /**
