@@ -108,7 +108,9 @@ export function BatchExportDialog({ batch, isOpen, onClose }: BatchExportDialogP
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || 'Failed to export batch')
+        const errorMessage = error.message || error.error || 'Failed to export batch'
+        console.error('Export error details:', error)
+        throw new Error(errorMessage)
       }
 
       const result = await response.json()
@@ -127,7 +129,8 @@ export function BatchExportDialog({ batch, isOpen, onClose }: BatchExportDialogP
       alert(`Successfully exported ${result.totalCodes} QR codes!`)
     } catch (error) {
       console.error('Error exporting batch:', error)
-      alert('Failed to export batch. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to export batch. Please try again.'
+      alert(`Export failed: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

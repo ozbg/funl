@@ -44,6 +44,8 @@ export async function POST(
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error exporting batch as PDFs:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('Error message:', error instanceof Error ? error.message : String(error))
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -53,7 +55,11 @@ export async function POST(
     }
 
     return NextResponse.json(
-      { error: 'Failed to export batch as PDFs' },
+      {
+        error: 'Failed to export batch as PDFs',
+        message: error instanceof Error ? error.message : String(error),
+        details: error instanceof Error ? error.stack : undefined
+      },
       { status: 500 }
     )
   }
