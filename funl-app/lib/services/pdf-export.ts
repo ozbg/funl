@@ -219,6 +219,8 @@ export class PDFExportService {
       console.log(`🔧 Generating QR code for URL: ${textOptions.qrUrl}`)
       console.log(`🔧 Using style preset: ${textOptions.stylePreset.name as string}`)
 
+      // Generate QR code at fixed pixel size
+      const qrPixelSize = 400
       const qrSvg = await generateQRCodeWithPreset({
         url: textOptions.qrUrl,
         preset: {
@@ -226,8 +228,8 @@ export class PDFExportService {
           name: textOptions.stylePreset.name as string,
           style_config: textOptions.stylePreset.style_config as Record<string, unknown>
         },
-        width: 400, // Fixed pixel size for consistent quality
-        height: 400
+        width: qrPixelSize,
+        height: qrPixelSize
       })
 
       console.log('🔧 Generated styled QR code SVG, length:', qrSvg.length)
@@ -252,8 +254,11 @@ export class PDFExportService {
 
       cleanedQrSvg = cleanedQrSvg.trim()
 
+      // Calculate correct scale: we want qrSize mm, QR SVG is qrPixelSize pixels
+      const scale = qrSize / qrPixelSize
+
       let pdfSvgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${dimensions.width}mm" height="${dimensions.height}mm" viewBox="0 0 ${dimensions.width} ${dimensions.height}">
-        <g transform="translate(${qrX}, ${qrY}) scale(${qrSize / 300})">
+        <g transform="translate(${qrX}, ${qrY}) scale(${scale})">
           ${cleanedQrSvg}
         </g>`
 
