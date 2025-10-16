@@ -196,26 +196,66 @@ export class PDFExportService {
 
       console.log(`🔧 Created PDF: ${dimensions.width}×${dimensions.height}mm`)
 
-      // Calculate layout based on whether ID text is included
-      // Use percentage-based margins so QR code fills same proportion regardless of size
+      // Smart adaptive layout calculation
+      // Goals:
+      // 1. QR code should be as large as possible while maintaining scannability
+      // 2. Margins should be proportional but have sensible min/max bounds
+      // 3. Text should scale proportionally but remain readable
+      // 4. Layout should work for any arbitrary size
+
       const pageSize = Math.min(dimensions.width, dimensions.height)
-      const marginPercent = 0.05 // 5% margin on each side
+
+      // Adaptive margin: 5-8% for small sizes, tapering down to 3-5% for large sizes
+      // This ensures small stickers have enough margin, large posters don't waste space
+      let marginPercent: number
+      if (pageSize <= 50) {
+        marginPercent = 0.08 // 8% for small stickers (25-50mm)
+      } else if (pageSize <= 100) {
+        marginPercent = 0.06 // 6% for medium (50-100mm)
+      } else if (pageSize <= 150) {
+        marginPercent = 0.05 // 5% for large (100-150mm)
+      } else {
+        marginPercent = 0.04 // 4% for posters (150mm+)
+      }
+
       const baseMargin = pageSize * marginPercent
 
-      const textHeight = textOptions.includeIdText ? textOptions.textSize : 0
-      const textPadding = textOptions.includeIdText ? pageSize * 0.02 : 0 // 2% padding for text
+      // Text height and padding should also scale but maintain readability
+      // For small sizes, text should be at least 2mm
+      // For large sizes, text can scale up but cap at reasonable maximum
+      let textHeight = 0
+      let textPadding = 0
 
-      // Total margin includes: base margin + text height + text padding
-      const totalMargin = baseMargin + textHeight + textPadding
-      console.log(`🔧 Layout: ${dimensions.width}×${dimensions.height}mm, margin: ${totalMargin.toFixed(2)}mm (${(marginPercent*100)}%), text: ${textHeight}mm`)
+      if (textOptions.includeIdText) {
+        // Scale text size but ensure minimum readability
+        if (textOptions.textSize < 2) {
+          textHeight = Math.max(2, pageSize * 0.03) // At least 2mm or 3% of page
+        } else {
+          textHeight = textOptions.textSize
+        }
+        textPadding = Math.max(1, pageSize * 0.015) // At least 1mm or 1.5% of page
+      }
 
-      // Calculate QR code size and position
-      const qrSize = Math.min(
-        dimensions.width - (totalMargin * 2),
-        dimensions.height - (totalMargin * 2)
-      )
+      // Calculate available space for QR code
+      const availableWidth = dimensions.width - (baseMargin * 2)
+      const availableHeight = dimensions.height - (baseMargin * 2) - textHeight - textPadding
+
+      // QR code fills the available space (whichever is smaller to maintain square)
+      const qrSize = Math.min(availableWidth, availableHeight)
+
+      // Center the QR code horizontally
       const qrX = (dimensions.width - qrSize) / 2
-      const qrY = (dimensions.height - qrSize) / 2 - (textOptions.includeIdText ? textHeight / 2 + textPadding / 2 : 0)
+
+      // Position QR code vertically, accounting for text below if present
+      const qrY = textOptions.includeIdText
+        ? baseMargin // Push to top to make room for text below
+        : (dimensions.height - qrSize) / 2 // Center vertically if no text
+
+      console.log(`🔧 Smart Layout: ${dimensions.width}×${dimensions.height}mm`)
+      console.log(`   Margin: ${baseMargin.toFixed(2)}mm (${(marginPercent*100).toFixed(1)}%)`)
+      console.log(`   QR size: ${qrSize.toFixed(2)}mm`)
+      console.log(`   Text: ${textHeight.toFixed(2)}mm + ${textPadding.toFixed(2)}mm padding`)
+      console.log(`   Position: (${qrX.toFixed(2)}, ${qrY.toFixed(2)})`)
 
       console.log(`🔧 QR positioning: ${qrX}, ${qrY}, size: ${qrSize}mm`)
 
@@ -345,12 +385,18 @@ export class PDFExportService {
       console.log('🔧 Successfully converted SVG to PDF vectors')
 
       // Add ID text using jsPDF's native text method (avoids getBBox issues)
-      if (textOptions.includeIdText) {
-        pdf.setFontSize(textOptions.textSize * 2.835) // Convert mm to points (1mm = 2.835 points)
+      if (textOptions.includeIdText && textHeight > 0) {
+        // Smart font sizing: scale with text height but ensure readability
+        const fontSizePoints = textHeight * 2.835 // Convert mm to points (1mm = 2.835 points)
+        pdf.setFontSize(fontSizePoints)
         pdf.setTextColor(128, 128, 128) // Gray color
+
+        // Position text at bottom with proper spacing
         const textX = dimensions.width / 2
-        const textY = dimensions.height - baseMargin
+        const textY = dimensions.height - (baseMargin + textPadding / 2)
+
         pdf.text(textOptions.idText, textX, textY, { align: 'center' })
+        console.log(`🔧 Added text at (${textX.toFixed(2)}, ${textY.toFixed(2)}), font size: ${fontSizePoints.toFixed(1)}pt`)
       }
 
       // Return PDF as buffer
