@@ -234,6 +234,23 @@ export class PDFExportService {
 
       console.log('🔧 Generated styled QR code SVG, length:', qrSvg.length)
 
+      // Extract viewBox from the original SVG to get actual dimensions
+      const viewBoxMatch = qrSvg.match(/viewBox=["']([^"']+)["']/)
+      let actualQrSize = qrPixelSize
+
+      if (viewBoxMatch) {
+        const viewBoxValues = viewBoxMatch[1].split(/\s+/)
+        if (viewBoxValues.length === 4) {
+          // viewBox format: "minX minY width height"
+          const viewBoxWidth = parseFloat(viewBoxValues[2])
+          const viewBoxHeight = parseFloat(viewBoxValues[3])
+          actualQrSize = Math.max(viewBoxWidth, viewBoxHeight)
+          console.log(`🔧 Extracted viewBox: ${viewBoxMatch[1]}, using size: ${actualQrSize}`)
+        }
+      } else {
+        console.log('⚠️ No viewBox found, using default qrPixelSize:', actualQrSize)
+      }
+
       // Create complete SVG with embedded QR code SVG as a symbol and proper layout
       // ULTRA-AGGRESSIVE XML cleaning to ensure no XML declarations remain
       let cleanedQrSvg = qrSvg
@@ -254,8 +271,9 @@ export class PDFExportService {
 
       cleanedQrSvg = cleanedQrSvg.trim()
 
-      // Calculate correct scale: we want qrSize mm, QR SVG is qrPixelSize pixels
-      const scale = qrSize / qrPixelSize
+      // Calculate correct scale: we want qrSize mm, QR SVG is actualQrSize pixels
+      const scale = qrSize / actualQrSize
+      console.log(`🔧 Scaling: ${qrSize}mm / ${actualQrSize}px = ${scale}`)
 
       let pdfSvgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${dimensions.width}mm" height="${dimensions.height}mm" viewBox="0 0 ${dimensions.width} ${dimensions.height}">
         <g transform="translate(${qrX}, ${qrY}) scale(${scale})">
