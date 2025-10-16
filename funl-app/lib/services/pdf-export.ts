@@ -33,15 +33,36 @@ const TEXT_SIZE_CONFIGS = {
 
 export class PDFExportService {
   private supabase: SupabaseClient
+  private jsdomInstance: typeof import('jsdom').JSDOM | null = null
+  private svg2pdfLib: typeof import('svg2pdf.js').svg2pdf | null = null
 
   constructor(supabase: SupabaseClient) {
     this.supabase = supabase
   }
 
   /**
+   * Initialize heavy dependencies once
+   */
+  private async initializeDependencies() {
+    if (!this.jsdomInstance || !this.svg2pdfLib) {
+      console.log('🔧 Initializing PDF dependencies (one-time setup)...')
+      const [{ svg2pdf }, { JSDOM }] = await Promise.all([
+        import('svg2pdf.js'),
+        import('jsdom')
+      ])
+      this.svg2pdfLib = svg2pdf
+      this.jsdomInstance = JSDOM
+      console.log('✅ PDF dependencies initialized')
+    }
+  }
+
+  /**
    * Export all QR codes from a batch as individual PDFs in a ZIP file
    */
   async exportBatchAsPDFs(request: PDFExportRequest): Promise<PDFExportResponse> {
+    // Initialize dependencies once before processing all PDFs
+    await this.initializeDependencies()
+
     // Get batch details
     const batch = await this.getBatch(request.batchId)
     if (!batch) {
@@ -245,19 +266,13 @@ export class PDFExportService {
 
       console.log('🔧 Created complete SVG content, length:', pdfSvgContent.length)
 
-      // Use svg2pdf.js to convert SVG directly to PDF vectors - exactly like working sticker export
-      console.log('🔧 Importing svg2pdf.js and jsdom...')
+      // Use cached svg2pdf and JSDOM instances
+      if (!this.svg2pdfLib || !this.jsdomInstance) {
+        throw new Error('PDF dependencies not initialized')
+      }
 
-      const [{ svg2pdf }, { JSDOM }] = await Promise.all([
-        import('svg2pdf.js'),
-        import('jsdom')
-      ])
-
-      console.log('🔧 Successfully imported libraries')
-
-      // Set up JSDOM environment exactly like working client-side code
       console.log('🔧 Setting up JSDOM environment...')
-      const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, {
+      const dom = new this.jsdomInstance(`<!DOCTYPE html><html><body></body></html>`, {
         pretendToBeVisual: true,
         resources: "usable"
       })
@@ -294,7 +309,7 @@ export class PDFExportService {
 
       // Convert SVG to PDF vectors - exactly like working client-side code (line 414)
       console.log('🔧 Converting SVG to PDF vectors...')
-      await svg2pdf(svgElement, pdf)
+      await this.svg2pdfLib(svgElement, pdf)
 
       // Clean up globals
       delete (global as Record<string, unknown>).document
