@@ -118,7 +118,7 @@ export function BatchExportDialog({ batch, isOpen, onClose }: BatchExportDialogP
       // Trigger download using proper download method
       const link = document.createElement('a')
       link.href = result.zipUrl
-      link.download = result.zipUrl.split('/').pop() || 'qr-codes.zip'
+      link.download = result.filename || 'qr-codes.zip'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
