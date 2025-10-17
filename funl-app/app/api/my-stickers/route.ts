@@ -15,7 +15,27 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const statusFilter = searchParams.get('status') // 'all', 'assigned', 'owned_unassigned', 'damaged', 'lost'
 
-    // Build query for reserved codes owned by user
+    // First, get ALL codes to calculate correct stats
+    const { data: allCodes, error: allCodesError } = await supabase
+      .from('reserved_codes')
+      .select('id, status')
+      .eq('business_id', user.id)
+
+    if (allCodesError) {
+      console.error('Error fetching all codes for stats:', allCodesError)
+      return NextResponse.json({ error: 'Failed to fetch codes' }, { status: 500 })
+    }
+
+    // Calculate stats from ALL codes (not filtered)
+    const stats = {
+      total: allCodes?.length || 0,
+      assigned: allCodes?.filter(c => c.status === 'assigned').length || 0,
+      available: allCodes?.filter(c => c.status === 'owned_unassigned').length || 0,
+      damaged: allCodes?.filter(c => c.status === 'damaged').length || 0,
+      lost: allCodes?.filter(c => c.status === 'lost').length || 0
+    }
+
+    // Build query for filtered codes with full details
     let query = supabase
       .from('reserved_codes')
       .select(`
@@ -79,15 +99,6 @@ export async function GET(request: NextRequest) {
         }
       })
     )
-
-    // Get summary stats
-    const stats = {
-      total: codes?.length || 0,
-      assigned: codes?.filter(c => c.status === 'assigned').length || 0,
-      available: codes?.filter(c => c.status === 'owned_unassigned').length || 0,
-      damaged: codes?.filter(c => c.status === 'damaged').length || 0,
-      lost: codes?.filter(c => c.status === 'lost').length || 0
-    }
 
     return NextResponse.json({
       codes: codesWithHistory,
