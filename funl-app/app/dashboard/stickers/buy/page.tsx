@@ -130,6 +130,7 @@ export default function BuyStickerPage() {
     return (
       <Container maxW="7xl" mx="auto" py={8}>
         <Box textAlign="center" py={12}>
+          <Box fontSize="4xl" mb={4}>📦</Box>
           <h2 className={css({ fontSize: 'xl', fontWeight: 'bold', mb: 4, color: 'fg.default' })}>
             No Stickers Available
           </h2>
@@ -137,18 +138,19 @@ export default function BuyStickerPage() {
             Pre-printed stickers are currently out of stock. Please check back later.
           </p>
           <button
-            onClick={() => router.push(`/dashboard/sticker-builder?funnelId=${funnelId}`)}
+            onClick={() => router.back()}
             className={css({
-              colorPalette: 'mint',
               px: 6,
               py: 2,
-              bg: 'colorPalette.default',
-              color: 'white',
+              borderWidth: '1px',
+              borderColor: 'border.default',
+              color: 'fg.default',
               fontWeight: 'medium',
-              _hover: { bg: 'colorPalette.emphasized' }
+              bg: 'bg.default',
+              _hover: { bg: 'bg.muted' }
             })}
           >
-            Design Your Own Instead
+            ← Go Back
           </button>
         </Box>
       </Container>
