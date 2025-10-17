@@ -24,7 +24,7 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
 
   const handleDesignOwn = () => {
     setLoading(true)
-    router.push(`/dashboard/sticker-builder?funnelId=${funnelId}`)
+    router.push(`/dashboard/funnels/${funnelId}`)
   }
 
   const handleConnectExisting = () => {
