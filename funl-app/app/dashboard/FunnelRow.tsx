@@ -34,13 +34,25 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
       const response = await fetch(`/api/funnels/${funnel.id}`, {
         method: 'DELETE'
       })
-      
+
+      const data = await response.json()
+
       if (response.ok) {
+        // Show success message with code release info if applicable
+        if (data.codes_released && data.codes_released > 0) {
+          const viewInventory = confirm(
+            `${data.message}\n\nWould you like to view your QR sticker inventory?`
+          )
+          if (viewInventory) {
+            window.location.href = '/dashboard/my-stickers'
+            return
+          }
+        }
         // Refresh the page to update the funnel list
         window.location.reload()
       } else {
-        console.error('Failed to delete funnel')
-        alert('Failed to delete funnel. Please try again.')
+        console.error('Failed to delete funnel:', data.error)
+        alert(data.error || 'Failed to delete funnel. Please try again.')
       }
     } catch (error) {
       console.error('Error deleting funnel:', error)

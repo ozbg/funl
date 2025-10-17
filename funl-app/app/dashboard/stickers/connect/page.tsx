@@ -42,11 +42,12 @@ export default function ConnectStickerPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      // Fetch codes that are owned but not assigned to a funnel
       const { data: stickers, error } = await supabase
         .from('reserved_codes')
         .select('*')
         .eq('business_id', user.id)
-        .eq('status', 'purchased')
+        .eq('status', 'owned_unassigned')
         .order('purchased_at', { ascending: false })
 
       if (error) throw error

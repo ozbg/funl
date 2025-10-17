@@ -22,6 +22,10 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
       exact: true
     },
     {
+      href: '/dashboard/my-stickers',
+      label: 'My Stickers'
+    },
+    {
       href: '/dashboard/messages',
       label: 'Messages',
       badge: unreadCount

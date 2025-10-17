@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // For list method with purchased stickers, verify ownership
-    if (method === 'list' && sticker.status === 'purchased') {
+    // For list method with owned stickers, verify ownership
+    if (method === 'list' && sticker.status === 'owned_unassigned') {
       if (sticker.business_id !== user.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
       }
@@ -79,6 +79,13 @@ export async function POST(request: NextRequest) {
     // Check if sticker is available for connection
     if (sticker.status === 'assigned' && sticker.funnel_id) {
       return NextResponse.json({ error: 'Sticker already assigned to a funnel' }, { status: 409 })
+    }
+
+    // Verify sticker is in a connectable state
+    if (!['owned_unassigned', 'available'].includes(sticker.status)) {
+      return NextResponse.json({
+        error: `Sticker cannot be connected (status: ${sticker.status})`
+      }, { status: 409 })
     }
 
     // Verify funnel ownership
@@ -133,7 +140,7 @@ export async function POST(request: NextRequest) {
       .upsert({
         business_id: user.id,
         reserved_code_id: stickerToConnect,
-        acquired_via: sticker.status === 'purchased' ? 'purchase' : 'promotion',
+        acquired_via: sticker.status === 'owned_unassigned' ? 'purchase' : 'promotion',
         is_used: true,
         used_for_funnel_id: funnelId,
         used_at: new Date().toISOString()

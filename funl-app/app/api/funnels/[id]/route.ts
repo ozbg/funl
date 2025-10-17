@@ -128,6 +128,20 @@ export async function DELETE(
     }
 
     const { id } = await params
+
+    // Check if funnel has assigned codes before deletion
+    const { data: assignedCodes, error: codesError } = await supabase
+      .from('reserved_codes')
+      .select('code, assigned_at')
+      .eq('funnel_id', id)
+      .eq('business_id', user.id)
+      .eq('status', 'assigned')
+
+    if (codesError) {
+      console.error('Error checking codes:', codesError)
+    }
+
+    // Delete funnel (trigger will automatically release codes to inventory)
     const { error } = await supabase
       .from('funnels')
       .delete()
@@ -136,10 +150,21 @@ export async function DELETE(
 
     if (error) {
       console.error('Database error:', error)
-      return NextResponse.json({ error: 'Failed to delete funnel' }, { status: 500 })
+      return NextResponse.json({
+        error: 'Failed to delete funnel',
+        details: error.message
+      }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    const codesReleased = assignedCodes?.length || 0
+
+    return NextResponse.json({
+      success: true,
+      codes_released: codesReleased,
+      message: codesReleased > 0
+        ? `Funnel deleted. ${codesReleased} QR code${codesReleased > 1 ? 's' : ''} returned to your inventory for reassignment.`
+        : 'Funnel deleted successfully.'
+    })
   } catch (error) {
     console.error('API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
