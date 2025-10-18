@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { IconButton } from '@/components/ui/icon-button'
 import ToggleButton from './ToggleButton'
 import DeleteConfirmDialog from '@/components/DeleteConfirmDialog'
+import AssignCodeModal from '@/components/AssignCodeModal'
 import { Funnel } from '@/lib/types'
 
 interface FunnelRowProps {
@@ -17,6 +18,7 @@ interface FunnelRowProps {
 export default function FunnelRow({ funnel }: FunnelRowProps) {
   const [status, setStatus] = useState(funnel.status)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showAssignModal, setShowAssignModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Check if this funnel has an assigned code
@@ -118,12 +120,34 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             </Box>
           </Box>
         </Flex>
-        <Flex gap={2}>
-          <ToggleButton 
+        <Flex gap={2} flexWrap="wrap">
+          <ToggleButton
             funnelId={funnel.id}
             currentStatus={status}
             onStatusChange={handleStatusChange}
           />
+
+          {/* Assign Code Button - Only show if no code assigned */}
+          {!hasAssignedCode && (
+            <button
+              onClick={() => setShowAssignModal(true)}
+              className={css({
+                colorPalette: 'blue',
+                px: 3,
+                py: 1,
+                fontSize: 'sm',
+                fontWeight: 'medium',
+                color: 'colorPalette.default',
+                borderWidth: '1px',
+                borderColor: 'colorPalette.default',
+                bg: 'transparent',
+                _hover: { bg: 'colorPalette.subtle' }
+              })}
+            >
+              + Code
+            </button>
+          )}
+
           <IconButton
             size="sm"
             variant="ghost"
@@ -194,6 +218,14 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteDialog(false)}
         isDeleting={isDeleting}
+      />
+
+      <AssignCodeModal
+        isOpen={showAssignModal}
+        funnelId={funnel.id}
+        funnelName={funnel.name}
+        onClose={() => setShowAssignModal(false)}
+        stickerDownloaded={funnel.sticker_downloaded}
       />
     </Box>
   )

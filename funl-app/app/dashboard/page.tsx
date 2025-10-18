@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   // First, get funnels without the join to see if that works
   const { data: funnels, error: funnelsError } = await supabase
     .from('funnels')
-    .select('*')
+    .select('*, sticker_downloaded')
     .eq('business_id', user?.id)
     .order('created_at', { ascending: false }) as { data: Funnel[] | null, error: PostgrestError | null }
 

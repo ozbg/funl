@@ -46,6 +46,9 @@ export interface Funnel {
   wallet_pass_config?: Record<string, unknown>
   wallet_pass_download_count?: number
   wallet_pass_last_updated?: string
+  sticker_downloaded?: boolean
+  sticker_downloaded_at?: string
+  download_count?: number
   created_at: string
   updated_at: string
   expires_at?: string
