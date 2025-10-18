@@ -66,8 +66,9 @@ export default function AssignCodeModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reserved_code_id: codeId,
-          funnel_id: funnelId
+          stickerId: codeId,
+          funnelId: funnelId,
+          method: 'assign'
         })
       })
 

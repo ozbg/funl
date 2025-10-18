@@ -107,14 +107,17 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             >
               {funnel.name}
             </Link>
-            <Box fontSize="sm" color="fg.muted">
-              Type: {funnel.type}
-            </Box>
-            {hasAssignedCode && (
-              <Box fontSize="xs" color="blue.600" mt={1} fontWeight="medium">
-                🏷️ Admin Assigned Code: {codeValue}
-              </Box>
-            )}
+            <Flex align="center" gap={2} fontSize="sm" color="fg.muted">
+              <span>Type: {funnel.type}</span>
+              {hasAssignedCode && (
+                <>
+                  <span>•</span>
+                  <Badge colorPalette="blue" size="sm" variant="subtle">
+                    Code: {codeValue}
+                  </Badge>
+                </>
+              )}
+            </Flex>
             <Box fontSize="xs" color="fg.muted" mt={1}>
               Created {new Date(funnel.created_at).toISOString().split('T')[0]}
             </Box>
