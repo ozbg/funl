@@ -106,12 +106,6 @@ export default function PublicFunnelClient({
               </Box>
             )}
 
-            {funnel.type === 'property' && funnel.content?.open_house_time && (
-              <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
-                Open House {funnel.content.open_house_time}
-              </p>
-            )}
-
             {funnel.type === 'property' && funnel.content?.property_address && (
               <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
                 {funnel.content.property_address}
@@ -120,6 +114,12 @@ export default function PublicFunnelClient({
 
             {funnel.content?.price && (
               <p className={css({ fontSize: 'md', color: 'fg.muted', mb: 3 })}>{funnel.content.price}</p>
+            )}
+
+            {funnel.type === 'property' && funnel.content?.open_house_time && (
+              <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
+                Open House {funnel.content.open_house_time}
+              </p>
             )}
           </Box>
 
