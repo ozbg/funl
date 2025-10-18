@@ -98,7 +98,7 @@ export default function PublicFunnelClient({
               {business.vcard_data?.firstName} {business.vcard_data?.lastName}
             </p>
 
-            {funnel.type === 'property' && funnel.content?.state && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.state && (
               <Box display="inline-flex" alignItems="center" px={4} py={1.5} borderRadius="full" fontSize="lg" fontWeight="semibold" colorPalette="mint" bg="colorPalette.muted" color="colorPalette.text" mb={3}>
                 {funnel.content.state === 'for_sale' && 'For Sale'}
                 {funnel.content.state === 'sold' && 'SOLD'}
@@ -106,9 +106,9 @@ export default function PublicFunnelClient({
               </Box>
             )}
 
-            {funnel.type === 'property' && funnel.content?.property_address && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.property_address && (
               <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                {funnel.content.property_address}
+                {funnel.property_address}
               </p>
             )}
 
@@ -116,9 +116,9 @@ export default function PublicFunnelClient({
               <p className={css({ fontSize: 'md', color: 'fg.muted', mb: 3 })}>{funnel.content.price}</p>
             )}
 
-            {funnel.type === 'property' && funnel.content?.open_house_time && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.open_house_time && (
               <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
-                Open House {funnel.content.open_house_time}
+                Open House {new Date(funnel.open_house_time).toLocaleString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}
               </p>
             )}
           </Box>
@@ -184,7 +184,7 @@ export default function PublicFunnelClient({
             )}
 
             {/* Property Link */}
-            {funnel.type === 'property' && funnel.content?.property_url && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.property_url && (
               <Box mb={6}>
                 <a
                   href={funnel.content.property_url}

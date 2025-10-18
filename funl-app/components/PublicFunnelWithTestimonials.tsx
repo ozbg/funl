@@ -237,9 +237,9 @@ export default function PublicFunnelWithTestimonials({
               </Box>
             )}
 
-            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.property_address && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.property_address && (
               <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
-                {funnel.content.property_address}
+                {funnel.property_address}
               </p>
             )}
 
@@ -247,9 +247,9 @@ export default function PublicFunnelWithTestimonials({
               <p className={css({ fontSize: 'md', color: 'fg.muted', mb: 3 })}>{funnel.content.price}</p>
             )}
 
-            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.content?.open_house_time && (
+            {(funnel.type === 'property' || funnel.type === 'property-listing') && funnel.open_house_time && (
               <p className={css({ fontSize: 'sm', color: 'fg.subtle', mb: 3 })}>
-                Open House {funnel.content.open_house_time}
+                Open House {new Date(funnel.open_house_time).toLocaleString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}
               </p>
             )}
           </Box>
