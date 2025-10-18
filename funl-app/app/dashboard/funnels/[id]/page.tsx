@@ -22,7 +22,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
 
   const { data: funnel, error } = await supabase
     .from('funnels')
-    .select('*')
+    .select('*, sticker_downloaded, sticker_downloaded_at, download_count')
     .eq('id', id)
     .eq('business_id', user.id)
     .single()
@@ -89,6 +89,32 @@ export default async function FunnelDetailPage({ params }: PageProps) {
       </Box>
 
       <Stack gap={8}>
+        {/* Sticker Downloaded Lock Notice */}
+        {funnelWithCode.sticker_downloaded && (
+          <Box
+            bg="amber.50"
+            borderWidth="2px"
+            borderColor="amber.400"
+            p={6}
+          >
+            <Flex align="start" gap={3}>
+              <Box fontSize="2xl">🔒</Box>
+              <Box flex="1">
+                <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'amber.900', mb: 2 })}>
+                  QR Code Locked
+                </h3>
+                <p className={css({ fontSize: 'sm', color: 'amber.800', mb: 2 })}>
+                  This funnel&apos;s sticker has been downloaded and potentially distributed. The QR code cannot be changed to prevent invalidating printed stickers in circulation.
+                </p>
+                <Flex gap={4} fontSize="xs" color="amber.700">
+                  <span>First downloaded: {new Date(funnelWithCode.sticker_downloaded_at).toLocaleDateString()}</span>
+                  <span>Downloads: {funnelWithCode.download_count}</span>
+                </Flex>
+              </Box>
+            </Flex>
+          </Box>
+        )}
+
         {/* QR Layout Preview Section */}
         <QRLayoutPreview
           qrCodeUrl={funnelWithCode.qr_code_url || ''}

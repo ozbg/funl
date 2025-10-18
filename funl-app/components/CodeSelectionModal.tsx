@@ -9,9 +9,10 @@ interface CodeSelectionModalProps {
   funnelId: string
   isOpen: boolean
   onClose: () => void
+  stickerDownloaded?: boolean
 }
 
-export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSelectionModalProps) {
+export default function CodeSelectionModal({ funnelId, isOpen, onClose, stickerDownloaded = false }: CodeSelectionModalProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -78,6 +79,30 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
           </p>
         </Box>
 
+        {/* Locked Notice - Sticker Already Downloaded */}
+        {stickerDownloaded && (
+          <Box
+            bg="amber.50"
+            borderWidth="2px"
+            borderColor="amber.400"
+            p={6}
+            mb={6}
+            textAlign="center"
+          >
+            <Box fontSize="3xl" mb={2}>🔒</Box>
+            <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'amber.900', mb: 2 })}>
+              QR Code Locked
+            </h3>
+            <p className={css({ fontSize: 'sm', color: 'amber.800', mb: 3 })}>
+              This funnel&apos;s sticker has already been downloaded and potentially distributed.
+              The QR code cannot be changed to prevent invalidating printed stickers in circulation.
+            </p>
+            <p className={css({ fontSize: 'sm', color: 'amber.700', fontWeight: 'medium' })}>
+              To use a different QR code, please create a new funnel.
+            </p>
+          </Box>
+        )}
+
         {/* Options Grid */}
         <Grid columns={{ base: 1, md: 3 }} gap={6}>
           {/* Buy Pre-Printed Option */}
@@ -85,15 +110,16 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
             borderWidth="2px"
             borderColor="border.default"
             p={6}
-            cursor="pointer"
+            cursor={stickerDownloaded ? 'not-allowed' : 'pointer'}
             transition="all 0.2s"
             position="relative"
-            _hover={{
+            opacity={stickerDownloaded ? 0.5 : 1}
+            _hover={stickerDownloaded ? {} : {
               borderColor: 'mint.default',
               transform: 'translateY(-2px)',
               boxShadow: 'lg'
             }}
-            onClick={handleBuySticker}
+            onClick={stickerDownloaded ? undefined : handleBuySticker}
           >
             {/* Most Popular Badge */}
             <Box
@@ -129,7 +155,7 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
               </ul>
 
               <button
-                disabled={loading}
+                disabled={loading || stickerDownloaded}
                 className={css({
                   colorPalette: 'mint',
                   w: 'full',
@@ -142,7 +168,7 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
                   _disabled: { opacity: 0.5, cursor: 'not-allowed' }
                 })}
               >
-                Browse Stickers
+                {stickerDownloaded ? 'Locked' : 'Browse Stickers'}
               </button>
             </Flex>
           </Box>
@@ -203,14 +229,15 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
             borderWidth="2px"
             borderColor="border.default"
             p={6}
-            cursor="pointer"
+            cursor={stickerDownloaded ? 'not-allowed' : 'pointer'}
             transition="all 0.2s"
-            _hover={{
+            opacity={stickerDownloaded ? 0.5 : 1}
+            _hover={stickerDownloaded ? {} : {
               borderColor: 'mint.default',
               transform: 'translateY(-2px)',
               boxShadow: 'lg'
             }}
-            onClick={handleConnectExisting}
+            onClick={stickerDownloaded ? undefined : handleConnectExisting}
           >
             <Flex direction="column" align="center" gap={4}>
               {/* Icon */}
@@ -230,7 +257,7 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
               </ul>
 
               <button
-                disabled={loading}
+                disabled={loading || stickerDownloaded}
                 className={css({
                   w: 'full',
                   py: 2,
@@ -244,7 +271,7 @@ export default function CodeSelectionModal({ funnelId, isOpen, onClose }: CodeSe
                   _disabled: { opacity: 0.5, cursor: 'not-allowed' }
                 })}
               >
-                Connect Sticker
+                {stickerDownloaded ? 'Locked' : 'Connect Sticker'}
               </button>
             </Flex>
           </Box>

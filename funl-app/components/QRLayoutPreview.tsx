@@ -315,10 +315,10 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           ` : ''}
         </svg>
       `
-      
+
       console.log('📦 Export SVG using embedded SVG content with gradients')
       console.log('📦 Export SVG content length:', svgContent.length)
-      
+
       // Create download link
       const blob = new Blob([svgContent], { type: 'image/svg+xml' })
       const link = document.createElement('a')
@@ -326,7 +326,30 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
       link.href = URL.createObjectURL(blob)
       link.click()
       URL.revokeObjectURL(link.href)
-      
+
+      // Mark funnel as downloaded (locks it from code reassignment)
+      try {
+        const { data: currentFunnel } = await supabase
+          .from('funnels')
+          .select('sticker_downloaded, download_count')
+          .eq('id', funnelId)
+          .single()
+
+        await supabase
+          .from('funnels')
+          .update({
+            sticker_downloaded: true,
+            sticker_downloaded_at: currentFunnel?.sticker_downloaded ? undefined : new Date().toISOString(),
+            download_count: (currentFunnel?.download_count || 0) + 1
+          })
+          .eq('id', funnelId)
+
+        console.log('✅ Funnel marked as downloaded - code reassignment now locked')
+      } catch (error) {
+        console.error('⚠️ Failed to update download tracking:', error)
+        // Non-blocking error - download still succeeds
+      }
+
     } catch (error) {
       console.error('Failed to generate SVG:', error)
       alert('Failed to generate SVG')
@@ -391,7 +414,7 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
           ` : ''}
         </svg>
       `
-      
+
       console.log('📦 Export PDF using <image> method like preview')
       console.log('📦 Export PDF content length:', svgContent.length)
 
@@ -400,24 +423,47 @@ export default function QRLayoutPreview({ qrCodeUrl, shortUrl, funnelName, funne
         import('jspdf'),
         import('svg2pdf.js')
       ])
-      
+
       // Create PDF with final output dimensions in mm
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [outputDims.width, outputDims.height] // Use final dimensions
       })
-      
+
       // Parse SVG and convert to PDF as vectors
       const parser = new DOMParser()
       const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml')
       const svgElement = svgDoc.documentElement
-      
+
       await svg2pdf(svgElement, pdf)
-      
+
       // Download the PDF
       pdf.save(`${funnelName}_sticker.pdf`)
-      
+
+      // Mark funnel as downloaded (locks it from code reassignment)
+      try {
+        const { data: currentFunnel } = await supabase
+          .from('funnels')
+          .select('sticker_downloaded, download_count')
+          .eq('id', funnelId)
+          .single()
+
+        await supabase
+          .from('funnels')
+          .update({
+            sticker_downloaded: true,
+            sticker_downloaded_at: currentFunnel?.sticker_downloaded ? undefined : new Date().toISOString(),
+            download_count: (currentFunnel?.download_count || 0) + 1
+          })
+          .eq('id', funnelId)
+
+        console.log('✅ Funnel marked as downloaded - code reassignment now locked')
+      } catch (error) {
+        console.error('⚠️ Failed to update download tracking:', error)
+        // Non-blocking error - download still succeeds
+      }
+
     } catch (error) {
       console.error('Failed to generate PDF:', error)
       alert('Failed to generate PDF')
