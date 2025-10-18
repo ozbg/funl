@@ -39,6 +39,8 @@ export interface Funnel {
   qr_code_url?: string
   short_url: string
   content: FunnelContent
+  property_address?: string
+  open_house_time?: string
   print_status?: 'pending' | 'processing' | 'shipped'
   reserved_code_id?: string
   code_source?: 'generated' | 'reserved'
