@@ -21,10 +21,18 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // Check if this funnel has an assigned code
+  // Check if this funnel has an assigned code (from reserved_codes table)
   const assignedCode = (funnel as Funnel & { reserved_codes?: { code: string } | null }).reserved_codes
   const hasAssignedCode = Array.isArray(assignedCode) ? assignedCode.length > 0 : Boolean(assignedCode)
   const codeValue = Array.isArray(assignedCode) ? assignedCode[0]?.code : assignedCode?.code
+
+  // Check if this funnel has a manual/generated code (not from reserved_codes)
+  const hasManualCode = !funnel.reserved_code_id && funnel.short_url && funnel.code_source === 'generated'
+  const manualCodeValue = hasManualCode ? funnel.short_url : null
+
+  // Determine if funnel has any code at all (either assigned or manual)
+  const hasAnyCode = hasAssignedCode || hasManualCode
+  const displayCode = codeValue || manualCodeValue
   
   const handleStatusChange = (newStatus: string) => {
     setStatus(newStatus as typeof funnel.status)
@@ -109,11 +117,15 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             </Link>
             <Flex align="center" gap={2} fontSize="sm" color="fg.muted">
               <span>Type: {funnel.type}</span>
-              {hasAssignedCode && (
+              {hasAnyCode && (
                 <>
                   <span>•</span>
-                  <Badge colorPalette="blue" size="sm" variant="subtle">
-                    Code: {codeValue}
+                  <Badge
+                    colorPalette={hasManualCode ? 'purple' : 'blue'}
+                    size="sm"
+                    variant="subtle"
+                  >
+                    {hasManualCode && '✏️ '}Code: {displayCode}
                   </Badge>
                 </>
               )}
@@ -130,8 +142,8 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             onStatusChange={handleStatusChange}
           />
 
-          {/* Assign Code Button - Only show if no code assigned */}
-          {!hasAssignedCode && (
+          {/* Assign Code Button - Only show if no code at all (neither assigned nor manual) */}
+          {!hasAnyCode && (
             <button
               onClick={() => setShowAssignModal(true)}
               className={css({
@@ -181,7 +193,7 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             Edit
           </Link>
           <Link
-            href={`/f/${codeValue || funnel.short_url}`}
+            href={`/f/${displayCode || funnel.short_url}`}
             target="_blank"
             rel="noopener noreferrer"
             className={css({
