@@ -33,7 +33,7 @@ interface QRCode {
     type: string
     status: string
   } | null
-  qr_code_batches: {
+  batch: {
     asset_type: string
     asset_metadata: {
       size?: string
@@ -381,10 +381,10 @@ export default function MyAssetsPage() {
                         </p>
                       </Box>
                       {getStatusBadge(code.status)}
-                      {code.qr_code_batches && getAssetTypeBadge(code.qr_code_batches.asset_type)}
-                      {code.qr_code_batches?.asset_metadata?.size && (
+                      {code.batch && getAssetTypeBadge(code.batch.asset_type)}
+                      {code.batch?.asset_metadata?.size && (
                         <Badge colorPalette="gray" variant="outline" size="sm">
-                          {code.qr_code_batches.asset_metadata.size}
+                          {code.batch.asset_metadata.size}
                         </Badge>
                       )}
                       {wasPreviouslyUsed && code.status === 'owned_unassigned' && (

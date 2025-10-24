@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
           type,
           status
         ),
-        qr_code_batches:batch_id (
+        batch:batch_id (
           asset_type,
           asset_metadata
         )
