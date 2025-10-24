@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import type { FunctionComponent } from 'react'
 import type { CqProperties } from '../patterns/cq';
 import type { HTMLStyledProps } from '../types/jsx';

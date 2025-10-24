@@ -93,6 +93,8 @@ export class BatchGenerationService {
         description: params.description,
         quantity: params.quantity,
         style_preset_id: params.stylePresetId,
+        asset_type: params.assetType || 'sticker',
+        asset_metadata: params.assetMetadata || {},
         status: 'generated',
         quantity_available: params.quantity, // All codes start as available
         quantity_reserved: 0,

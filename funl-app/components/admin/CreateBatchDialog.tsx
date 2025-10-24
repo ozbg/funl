@@ -7,7 +7,7 @@ import { Box, Flex } from '@/styled-system/jsx'
 import { createClient } from '@/lib/supabase/client'
 import { loadQRPresetsForBusiness, type QRPreset } from '@/lib/qr-generation'
 import { QRPreview } from '@/components/QRPreview'
-import type { GenerateBatchRequest } from '@/lib/types/qr-reservation'
+import type { GenerateBatchRequest, AssetType } from '@/lib/types/qr-reservation'
 
 interface CreateBatchDialogProps {
   qrPresets?: Array<{
@@ -28,6 +28,8 @@ export function CreateBatchDialog({ qrPresets: initialPresets = [] }: CreateBatc
     quantity: 1000,
     prefix: 'PP',
     description: '',
+    assetType: 'sticker' as AssetType,
+    assetSize: '50mm',
     expiresInDays: undefined as number | undefined
   })
 
@@ -72,9 +74,14 @@ export function CreateBatchDialog({ qrPresets: initialPresets = [] }: CreateBatc
 
     setLoading(true)
 
-    const data = {
-      ...formData,
+    const data: GenerateBatchRequest = {
+      name: formData.name,
+      quantity: formData.quantity,
       stylePresetId: selectedPresetId,
+      assetType: formData.assetType,
+      assetMetadata: {
+        size: formData.assetSize
+      },
       prefix: formData.prefix || undefined,
       description: formData.description || undefined,
       expiresInDays: formData.expiresInDays || undefined
@@ -103,6 +110,8 @@ export function CreateBatchDialog({ qrPresets: initialPresets = [] }: CreateBatc
         quantity: 1000,
         prefix: 'PP',
         description: '',
+        assetType: 'sticker' as AssetType,
+        assetSize: '50mm',
         expiresInDays: undefined
       })
 
@@ -245,6 +254,90 @@ export function CreateBatchDialog({ qrPresets: initialPresets = [] }: CreateBatc
                         fontSize: 'sm'
                       })}
                     />
+                  </div>
+                </div>
+
+                <div className={css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 })}>
+                  <div>
+                    <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 1 })}>
+                      Asset Type
+                    </label>
+                    <select
+                      value={formData.assetType}
+                      onChange={(e) => setFormData({ ...formData, assetType: e.target.value as AssetType })}
+                      required
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        border: '1px solid',
+                        borderColor: 'border.default',
+                        rounded: 'md',
+                        fontSize: 'sm',
+                        cursor: 'pointer'
+                      })}
+                    >
+                      <option value="sticker">Sticker</option>
+                      <option value="flyer">Flyer</option>
+                      <option value="poster">Poster</option>
+                      <option value="card">Card</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 1 })}>
+                      Size
+                    </label>
+                    <select
+                      value={formData.assetSize}
+                      onChange={(e) => setFormData({ ...formData, assetSize: e.target.value })}
+                      required
+                      className={css({
+                        w: 'full',
+                        px: 3,
+                        py: 2,
+                        border: '1px solid',
+                        borderColor: 'border.default',
+                        rounded: 'md',
+                        fontSize: 'sm',
+                        cursor: 'pointer'
+                      })}
+                    >
+                      {formData.assetType === 'sticker' && (
+                        <>
+                          <option value="25mm">25mm × 25mm</option>
+                          <option value="50mm">50mm × 50mm</option>
+                          <option value="75mm">75mm × 75mm</option>
+                          <option value="100mm">100mm × 100mm</option>
+                          <option value="150mm">150mm × 150mm</option>
+                          <option value="200mm">200mm × 200mm</option>
+                        </>
+                      )}
+                      {formData.assetType === 'flyer' && (
+                        <>
+                          <option value="DL">DL (99mm × 210mm)</option>
+                          <option value="A5">A5 (148mm × 210mm)</option>
+                          <option value="A4">A4 (210mm × 297mm)</option>
+                        </>
+                      )}
+                      {formData.assetType === 'poster' && (
+                        <>
+                          <option value="A3">A3 (297mm × 420mm)</option>
+                          <option value="A2">A2 (420mm × 594mm)</option>
+                          <option value="A1">A1 (594mm × 841mm)</option>
+                        </>
+                      )}
+                      {formData.assetType === 'card' && (
+                        <>
+                          <option value="standard">Standard (90mm × 55mm)</option>
+                          <option value="square">Square (85mm × 85mm)</option>
+                        </>
+                      )}
+                      {formData.assetType === 'other' && (
+                        <option value="custom">Custom Size</option>
+                      )}
+                    </select>
                   </div>
                 </div>
 

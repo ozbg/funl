@@ -1,5 +1,30 @@
 import { z } from 'zod'
 
+// Asset types
+export type AssetType = 'sticker' | 'flyer' | 'poster' | 'card' | 'other'
+
+export interface AssetMetadata {
+  // Common fields
+  size?: string
+
+  // Sticker-specific
+  material?: 'vinyl' | 'paper' | 'waterproof' | 'removable'
+  shape?: 'square' | 'circle' | 'rounded' | 'custom'
+  finish?: 'glossy' | 'matte' | 'transparent'
+
+  // Flyer/Poster-specific
+  paper_weight?: string // e.g., "150gsm", "200gsm"
+  color?: 'full' | 'black_white'
+  laminated?: boolean
+
+  // Card-specific
+  cardstock?: string
+  orientation?: 'landscape' | 'portrait'
+
+  // Custom fields
+  [key: string]: unknown
+}
+
 // Type definitions for settings and metadata
 export interface QRGenerationSettings {
   size?: number
@@ -34,6 +59,8 @@ export const generateBatchSchema = z.object({
   name: z.string().min(1),
   quantity: z.number().int().min(1).max(10000),
   stylePresetId: z.string().uuid(),
+  assetType: z.enum(['sticker', 'flyer', 'poster', 'card', 'other']).default('sticker'),
+  assetMetadata: z.record(z.string(), z.unknown()).optional(),
   prefix: z.string().optional(),
   expiresInDays: z.number().int().min(1).optional(),
   description: z.string().optional(),
@@ -153,6 +180,8 @@ export interface QRCodeBatch {
   description?: string
   quantity: number
   style_preset_id?: string
+  asset_type: AssetType
+  asset_metadata: AssetMetadata
   status: 'generated' | 'exporting' | 'printing' | 'printed' | 'shipped' | 'received' | 'active' | 'depleted'
   quantity_available: number
   quantity_reserved: number

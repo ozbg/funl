@@ -102,6 +102,7 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
         <thead>
           <tr className={css({ borderBottom: '1px solid', borderColor: 'border.default' })}>
             <th className={css({ p: 3, textAlign: 'left', fontSize: 'sm', fontWeight: 'medium' })}>Batch</th>
+            <th className={css({ p: 3, textAlign: 'left', fontSize: 'sm', fontWeight: 'medium' })}>Asset Type</th>
             <th className={css({ p: 3, textAlign: 'left', fontSize: 'sm', fontWeight: 'medium' })}>Description</th>
             <th className={css({ p: 3, textAlign: 'left', fontSize: 'sm', fontWeight: 'medium' })}>Status</th>
             <th className={css({ p: 3, textAlign: 'left', fontSize: 'sm', fontWeight: 'medium' })}>Quantity</th>
@@ -127,6 +128,27 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                     {batch.name}
                   </button>
                   <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>{batch.batch_number}</p>
+                </Box>
+              </td>
+              <td className={css({ p: 3 })}>
+                <Box>
+                  <span className={css({
+                    px: 2,
+                    py: 1,
+                    bg: 'blue.100',
+                    color: 'blue.800',
+                    rounded: 'sm',
+                    fontSize: 'xs',
+                    fontWeight: 'medium',
+                    textTransform: 'capitalize'
+                  })}>
+                    {batch.asset_type}
+                  </span>
+                  {batch.asset_metadata?.size && (
+                    <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                      {batch.asset_metadata.size}
+                    </p>
+                  )}
                 </Box>
               </td>
               <td className={css({ p: 3 })}>

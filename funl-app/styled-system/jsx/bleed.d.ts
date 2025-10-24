@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import type { FunctionComponent } from 'react'
 import type { BleedProperties } from '../patterns/bleed';
 import type { HTMLStyledProps } from '../types/jsx';

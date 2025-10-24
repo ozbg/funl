@@ -176,6 +176,8 @@ export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
             description: batch.description,
             quantity: batch.quantity,
             style_preset_id: batch.style_preset_id,
+            asset_type: 'sticker',
+            asset_metadata: {},
             status: batch.status as QRCodeBatch['status'],
             quantity_available: batch.availableCodes,
             quantity_reserved: batch.reservedCodes,

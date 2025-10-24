@@ -22,8 +22,8 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
       exact: true
     },
     {
-      href: '/dashboard/my-stickers',
-      label: 'My Stickers'
+      href: '/dashboard/my-assets',
+      label: 'My Assets'
     },
     {
       href: '/dashboard/messages',
