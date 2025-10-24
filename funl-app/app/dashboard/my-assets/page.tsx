@@ -33,6 +33,13 @@ interface QRCode {
     type: string
     status: string
   } | null
+  qr_code_batches: {
+    asset_type: string
+    asset_metadata: {
+      size?: string
+      [key: string]: unknown
+    }
+  } | null
   history: CodeHistory[]
 }
 
@@ -130,6 +137,28 @@ export default function MyAssetsPage() {
     return (
       <Badge colorPalette={config.color} variant={config.variant} size="sm">
         {config.label}
+      </Badge>
+    )
+  }
+
+  const getAssetTypeBadge = (assetType: string) => {
+    const assetTypeConfig = {
+      sticker: { label: 'Sticker', color: 'blue' as const, icon: '🏷️' },
+      flyer: { label: 'Flyer', color: 'purple' as const, icon: '📄' },
+      poster: { label: 'Poster', color: 'pink' as const, icon: '📋' },
+      card: { label: 'Card', color: 'cyan' as const, icon: '💳' },
+      other: { label: 'Other', color: 'gray' as const, icon: '📦' }
+    }
+
+    const config = assetTypeConfig[assetType as keyof typeof assetTypeConfig] || {
+      label: assetType,
+      color: 'gray' as const,
+      icon: '📦'
+    }
+
+    return (
+      <Badge colorPalette={config.color} variant="subtle" size="sm">
+        {config.icon} {config.label}
       </Badge>
     )
   }
@@ -339,7 +368,7 @@ export default function MyAssetsPage() {
                 {/* Main Code Info */}
                 <Box p={4}>
                   <Flex justify="space-between" align="start" mb={3}>
-                    <Flex align="center" gap={3}>
+                    <Flex align="center" gap={3} flexWrap="wrap">
                       <Box>
                         <p className={css({
                           fontSize: '2xl',
@@ -352,6 +381,12 @@ export default function MyAssetsPage() {
                         </p>
                       </Box>
                       {getStatusBadge(code.status)}
+                      {code.qr_code_batches && getAssetTypeBadge(code.qr_code_batches.asset_type)}
+                      {code.qr_code_batches?.asset_metadata?.size && (
+                        <Badge colorPalette="gray" variant="outline" size="sm">
+                          {code.qr_code_batches.asset_metadata.size}
+                        </Badge>
+                      )}
                       {wasPreviouslyUsed && code.status === 'owned_unassigned' && (
                         <Badge colorPalette="amber" variant="outline" size="sm">
                           ♻️ Previously Used

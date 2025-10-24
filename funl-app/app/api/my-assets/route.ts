@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       lost: allCodes?.filter(c => c.status === 'lost').length || 0
     }
 
-    // Build query for filtered codes with full details
+    // Build query for filtered codes with full details including batch asset info
     let query = supabase
       .from('reserved_codes')
       .select(`
@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
         status,
         business_id,
         funnel_id,
+        batch_id,
         assigned_at,
         purchased_at,
         purchase_price,
@@ -54,6 +55,10 @@ export async function GET(request: NextRequest) {
           name,
           type,
           status
+        ),
+        qr_code_batches:batch_id (
+          asset_type,
+          asset_metadata
         )
       `)
       .eq('business_id', user.id)
