@@ -51,14 +51,16 @@ export default function NewFunnelPage() {
 
   // Watch specific form fields to trigger re-renders
   const watchedName = watch('name')
-  const watchedType = watch('type') 
+  const watchedType = watch('type')
   const watchedState = watch('content.state')
   const watchedPrice = watch('content.price')
   const watchedPropertyUrl = watch('content.property_url')
   const watchedVideoUrl = watch('content.video_url')
   const watchedVideoAutoplay = watch('content.video_autoplay')
   const watchedCustomMessage = watch('content.custom_message')
-  
+  const watchedPropertyAddress = watch('content.property_address')
+  const watchedOpenHouseTime = watch('content.open_house_time')
+
   const selectedType = watchedType
 
   // Fetch business data and funnel count on component mount
@@ -358,13 +360,6 @@ export default function NewFunnelPage() {
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
                   Funnel Type
                 </label>
-                {business?.business_categories && (
-                  <Box mb={2} p={2} bg="bg.subtle" rounded="md">
-                    <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>
-                      Available for: {business?.business_categories?.name}
-                    </span>
-                  </Box>
-                )}
                 <Grid columns={{ base: 1, sm: availableFunnelTypes.length <= 2 ? availableFunnelTypes.length : 3 }} gap={3}>
                   {availableFunnelTypes.map((funnelType) => (
                     <label key={funnelType.id} className={css({ cursor: 'pointer' })}>
@@ -385,11 +380,6 @@ export default function NewFunnelPage() {
                         _hover={selectedType !== funnelType.slug ? { borderColor: 'border.default' } : {}}
                       >
                         <h3 className={css({ fontWeight: 'medium' })}>{funnelType.name}</h3>
-                        {funnelType.description && (
-                          <p className={css({ fontSize: 'xs', mt: 1, opacity: 0.8 })}>
-                            {funnelType.description}
-                          </p>
-                        )}
                       </Box>
                     </label>
                   ))}
@@ -612,7 +602,7 @@ export default function NewFunnelPage() {
         <Box>
           <Box bg="bg.default" boxShadow="md" p={6} position="sticky" top={6}>
             <FunnelPreview
-              key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedCustomMessage}-${JSON.stringify(testimonialConfig)}`}
+              key={`${watchedType}-${watchedName}-${watchedState}-${watchedPrice}-${watchedPropertyAddress}-${watchedOpenHouseTime}-${watchedCustomMessage}-${JSON.stringify(testimonialConfig)}`}
               formData={{
                 name: watchedName || '',
                 type: watchedType || 'contact-card',
@@ -622,7 +612,9 @@ export default function NewFunnelPage() {
                   property_url: watchedPropertyUrl || '',
                   video_url: watchedVideoUrl || '',
                   video_autoplay: watchedVideoAutoplay || false,
-                  custom_message: watchedCustomMessage || ''
+                  custom_message: watchedCustomMessage || '',
+                  property_address: watchedPropertyAddress || '',
+                  open_house_time: watchedOpenHouseTime || ''
                 }
               }}
               businessName={business?.name || 'Your Business'}

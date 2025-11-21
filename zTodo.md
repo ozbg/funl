@@ -1,3 +1,23 @@
+
+Entry Pricing 
+$3.5 per week for each funl
+Stickers $23 for 30x30 (white long term outdoor premium vinyl)
+And goes down from there for volume - so very in expensive for 2m homes
+
+
+Features
+Removes friction - specifically designed to funl buyers in
+Visually stunning - super easy for buyer to make contact - learn more - save property detail
+You control the messaging
+Fully Dynamic codes - updatable
+Analytics - u learn what works - do more of it
+Built in Messaging
+Dead simple to use
+
+
+
+
+
 commit
 during debug, you said
 I notice that the API calls are going directly to https://wwxcimelgqyilgzojyks.supabase.co/rest/v1/testimonials instead of our Next.js app's /api/testimonials route.

@@ -72,7 +72,9 @@ export async function PATCH(
     if (validatedData.content) {
       const content = { ...existingFunnel.content, ...validatedData.content }
       const property_address = content.property_address as string | undefined
-      const open_house_time = content.open_house_time as string | undefined
+      const open_house_time_raw = content.open_house_time as string | undefined
+      // Convert empty string to null for timestamp field
+      const open_house_time = open_house_time_raw && open_house_time_raw.trim() !== '' ? open_house_time_raw : null
       delete content.property_address
       delete content.open_house_time
 

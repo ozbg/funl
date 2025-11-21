@@ -28,6 +28,8 @@ interface FunnelPreviewProps {
       video_url?: string
       video_autoplay?: boolean
       custom_message?: string
+      property_address?: string
+      open_house_time?: string
     }
   }
   businessName?: string
@@ -48,6 +50,7 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
     show_share_button: true
   } : testimonialConfig;
   // Create mock data structures that match the real component's expectations
+  // IMPORTANT: Map top-level columns (property_address, open_house_time) correctly
   const mockFunnel: Funnel = {
     id: 'preview-funnel',
     business_id: 'preview-business',
@@ -60,8 +63,13 @@ export default function FunnelPreview({ formData, businessName = 'Your Business'
       price: formData.content.price,
       property_url: formData.content.property_url,
       video_url: formData.content.video_url,
+      video_autoplay: formData.content.video_autoplay,
       custom_message: formData.content.custom_message
     },
+    // Map top-level columns from form data
+    property_address: formData.content.property_address,
+    open_house_time: formData.content.open_house_time,
+    wallet_pass_enabled: false, // Preview doesn't need wallet pass
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   }

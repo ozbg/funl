@@ -23,7 +23,7 @@ interface FunnelType {
   sort_order: number
   created_at: string
   updated_at: string
-  category_funnel_types: {
+  category_funnel_types?: {
     business_categories: BusinessCategory
   }[]
 }
@@ -50,8 +50,13 @@ export function FunnelTypesTable({ funnelTypes: initialFunnelTypes, categories }
 
       if (response.ok) {
         const { funnelType } = await response.json()
-        setFunnelTypes(prev => prev.map(ft => 
-          ft.id === id ? { ...ft, ...funnelType } : ft
+        setFunnelTypes(prev => prev.map(ft =>
+          ft.id === id ? {
+            ...ft,
+            ...funnelType,
+            // Preserve the relation data if not included in response
+            category_funnel_types: funnelType.category_funnel_types || ft.category_funnel_types
+          } : ft
         ))
       }
     } catch (error) {
@@ -118,12 +123,12 @@ export function FunnelTypesTable({ funnelTypes: initialFunnelTypes, categories }
               </td>
               <td className={css({ px: 4, py: 3 })}>
                 <div className={css({ maxW: '150px' })}>
-                  {funnelType.category_funnel_types.length > 0 ? (
+                  {funnelType.category_funnel_types && funnelType.category_funnel_types.length > 0 ? (
                     <div className={css({ fontSize: 'xs' })}>
                       {funnelType.category_funnel_types.map((cft, index) => (
                         <span key={cft.business_categories.id}>
                           {cft.business_categories.name}
-                          {index < funnelType.category_funnel_types.length - 1 && ', '}
+                          {index < (funnelType.category_funnel_types?.length ?? 0) - 1 && ', '}
                         </span>
                       ))}
                     </div>

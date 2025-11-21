@@ -1,4 +1,4 @@
- 
+/* eslint-disable */
 import type { ConditionalValue } from '../types/index';
 import type { DistributiveOmit, Pretty } from '../types/system-types';
 

@@ -22,7 +22,7 @@ interface FunnelType {
   sort_order: number
   created_at: string
   updated_at: string
-  category_funnel_types: {
+  category_funnel_types?: {
     business_categories: BusinessCategory
   }[]
 }
@@ -42,7 +42,7 @@ export function EditFunnelTypeDialog({ funnelType, categories, onUpdate }: EditF
     description: funnelType.description || '',
     is_active: funnelType.is_active,
     sort_order: funnelType.sort_order,
-    category_ids: funnelType.category_funnel_types.map(cft => cft.business_categories.id)
+    category_ids: funnelType.category_funnel_types?.map(cft => cft.business_categories.id) || []
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
