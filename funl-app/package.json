@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "prepare": "panda codegen",
+    "prepare": "panda codegen && cd .. && husky || true",
     "pre-commit": "./scripts/pre-commit-check.sh",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -60,6 +60,7 @@
     "@types/xmldom": "^0.1.34",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
+    "husky": "^9.1.7",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "typescript": "^5"
