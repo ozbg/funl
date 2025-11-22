@@ -139,6 +139,14 @@
     color: var(--colors-fg-default);
   }
 
+  a {
+    text-decoration: none !important;
+  }
+
+  button {
+    text-decoration: none !important;
+  }
+
   @keyframes pulse {
     0%, 100% {
       opacity: 1;
