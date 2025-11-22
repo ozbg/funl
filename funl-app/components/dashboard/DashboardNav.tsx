@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { css } from '@/styled-system/css';
 import { Flex } from '@/styled-system/jsx';
 import { NotificationBadge } from '@/components/messaging';
@@ -14,6 +15,11 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const unreadCount = useUnreadMessageCount();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     {
@@ -45,6 +51,7 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
   ];
 
   const isActive = (href: string, exact = false) => {
+    if (!mounted) return false;
     if (exact) {
       return pathname === href;
     }
