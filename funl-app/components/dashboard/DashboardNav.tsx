@@ -57,6 +57,7 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
         <Link
           key={item.href}
           href={item.href}
+          style={{ textDecoration: 'none' }}
           className={css({
             borderBottom: '2px solid',
             borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'transparent',
@@ -69,11 +70,9 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
             fontSize: 'sm',
             fontWeight: 'medium',
             position: 'relative',
-            textDecoration: 'none !important',
             _hover: {
               borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'border.default',
               color: 'fg.default',
-              textDecoration: 'none !important',
             },
           })}
         >
