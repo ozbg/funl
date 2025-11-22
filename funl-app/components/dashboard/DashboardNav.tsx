@@ -32,6 +32,14 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
       label: 'My Assets'
     },
     {
+      href: '/dashboard/stickers/buy',
+      label: 'Buy Stickers'
+    },
+    {
+      href: '/dashboard/stickers/reprint',
+      label: 'Reprint'
+    },
+    {
       href: '/dashboard/messages',
       label: 'Messages',
       badge: unreadCount
