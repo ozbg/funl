@@ -69,9 +69,11 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
             fontSize: 'sm',
             fontWeight: 'medium',
             position: 'relative',
+            textDecoration: 'none',
             _hover: {
               borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'border.default',
               color: 'fg.default',
+              textDecoration: 'none',
             },
           })}
         >
