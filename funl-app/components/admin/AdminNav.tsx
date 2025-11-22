@@ -1,12 +1,18 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Flex } from '@/styled-system/jsx'
 
 export function AdminNav() {
+  const router = useRouter()
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const navItems = [
     {
@@ -37,6 +43,7 @@ export function AdminNav() {
   ]
 
   const isActive = (href: string, exact = false) => {
+    if (!mounted) return false
     if (exact) {
       return pathname === href
     }
@@ -46,11 +53,13 @@ export function AdminNav() {
   return (
     <Flex gap="8" display={{ base: 'none', sm: 'flex' }}>
       {navItems.map((item) => (
-        <Link
+        <button
           key={item.href}
-          href={item.href}
+          onClick={() => router.push(item.href)}
           className={css({
-            borderBottom: '2px solid',
+            background: 'transparent',
+            border: 'none',
+            borderBottom: isActive(item.href, item.exact) ? '2px solid' : 'none',
             borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'transparent',
             color: isActive(item.href, item.exact) ? 'fg.default' : 'fg.muted',
             display: 'inline-flex',
@@ -59,14 +68,14 @@ export function AdminNav() {
             pt: '1',
             fontSize: 'sm',
             fontWeight: 'medium',
+            cursor: 'pointer',
             _hover: {
-              borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'border.default',
               color: 'fg.default',
             },
           })}
         >
           {item.label}
-        </Link>
+        </button>
       ))}
     </Flex>
   )
