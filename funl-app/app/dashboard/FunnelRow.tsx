@@ -104,8 +104,10 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
             <Link
               href={`/dashboard/funnels/new?edit=${funnel.id}`}
               className={css({
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
                 fontSize: 'sm',
-                fontWeight: 'medium',
                 color: 'fg.default',
                 textDecoration: 'none',
                 _hover: {
@@ -113,26 +115,18 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
                 }
               })}
             >
-              {funnel.name}
+              <span className={css({ fontWeight: 'bold', textTransform: 'capitalize' })}>
+                {funnel.type}
+              </span>
+              <span className={css({ color: 'fg.muted' })}>•</span>
+              <span className={css({ fontWeight: 'medium' })}>
+                {funnel.name}
+              </span>
+              <span className={css({ color: 'fg.muted' })}>•</span>
+              <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>
+                {new Date(funnel.created_at).toISOString().split('T')[0]}
+              </span>
             </Link>
-            <Flex align="center" gap={2} fontSize="sm" color="fg.muted">
-              <span>Type: {funnel.type}</span>
-              {hasAnyCode && (
-                <>
-                  <span>•</span>
-                  <Badge
-                    colorPalette={hasManualCode ? 'purple' : 'blue'}
-                    size="sm"
-                    variant="subtle"
-                  >
-                    {hasManualCode && '✏️ '}Code: {displayCode}
-                  </Badge>
-                </>
-              )}
-            </Flex>
-            <Box fontSize="xs" color="fg.muted" mt={1}>
-              Created {new Date(funnel.created_at).toISOString().split('T')[0]}
-            </Box>
           </Box>
         </Flex>
         <Flex gap={2} flexWrap="wrap">
