@@ -309,34 +309,6 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
           ))}
         </Box>
       )}
-
-      {/* Create New Funnel Option */}
-      <Box mt={3} p={3} bg="bg.subtle" borderWidth="1px" borderColor="border.default" rounded="md">
-        <Flex justify="between" align="center">
-          <Box>
-            <p className={css({ fontSize: 'sm', fontWeight: 'medium' })}>Need a new funnel?</p>
-            <p className={css({ fontSize: 'xs', color: 'fg.muted' })}>Create a new funnel for this business</p>
-          </Box>
-          <button
-            className={css({
-              px: 3,
-              py: 2,
-              border: '1px solid',
-              borderColor: 'accent.default',
-              color: 'accent.default',
-              rounded: 'md',
-              fontSize: 'sm',
-              _hover: { bg: 'accent.subtle' }
-            })}
-            onClick={() => {
-              // TODO: Navigate to create funnel with pre-selected business
-              window.open(`/dashboard/funnels/new?businessId=${businessId}`, '_blank')
-            }}
-          >
-            Create Funnel
-          </button>
-        </Flex>
-      </Box>
     </Box>
   )
 }
