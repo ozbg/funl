@@ -102,7 +102,7 @@ export default function FunnelRow({ funnel }: FunnelRowProps) {
           </Box>
           <Box>
             <Link
-              href={`/dashboard/funnels/${funnel.id}`}
+              href={`/dashboard/funnels/new?edit=${funnel.id}`}
               className={css({
                 fontSize: 'sm',
                 fontWeight: 'medium',
