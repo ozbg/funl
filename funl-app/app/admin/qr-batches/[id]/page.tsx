@@ -4,6 +4,8 @@ import { css } from '@/styled-system/css'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { BatchDetailHeader } from '@/components/admin/BatchDetailHeader'
 import { CodeTable } from '@/components/admin/CodeTable'
+import { BatchPricingEditor } from '@/components/admin/BatchPricingEditor'
+import { StripeSyncPanel } from '@/components/admin/StripeSyncPanel'
 
 interface BatchDetailPageProps {
   params: Promise<{
@@ -157,6 +159,35 @@ export default async function BatchDetailPage({ params, searchParams }: BatchDet
           <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'red.600' })}>{damagedCodes.toLocaleString()}</p>
         </Box>
       </Grid>
+
+      {/* Pricing & Availability Section */}
+      <Box mb={6}>
+        <BatchPricingEditor
+          batchId={id}
+          currentPricing={{
+            pricing_tiers: batch.pricing_tiers || [
+              { min_quantity: 1, max_quantity: 9, unit_price: 5.00 },
+              { min_quantity: 10, max_quantity: 49, unit_price: 4.50 },
+              { min_quantity: 50, max_quantity: 99, unit_price: 4.00 },
+              { min_quantity: 100, max_quantity: null, unit_price: 3.50 }
+            ],
+            size_pricing: batch.size_pricing || { '50mm': 1.0, '75mm': 1.5, '100mm': 2.0 },
+            is_available_for_purchase: batch.is_available_for_purchase ?? true,
+            featured: batch.featured ?? false,
+            min_purchase_quantity: batch.min_purchase_quantity ?? 1,
+            max_purchase_quantity: batch.max_purchase_quantity,
+          }}
+        />
+      </Box>
+
+      {/* Stripe Sync Section */}
+      <Box mb={6}>
+        <StripeSyncPanel
+          batchId={id}
+          stripeProductId={batch.stripe_product_id}
+          stripePriceId={batch.stripe_price_id}
+        />
+      </Box>
 
       {/* Codes Table */}
       <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default">

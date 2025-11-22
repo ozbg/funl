@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { nanoid } from 'nanoid'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,56 +24,86 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Shipping address required' }, { status: 400 })
     }
 
-    // Transform items for the database function
-    const dbItems = items.map((item: {
-      batch_id: string
-      quantity: number
-      unit_price: number
-      style: Record<string, unknown>
-      size: string
-    }) => ({
-      batch_id: item.batch_id,
-      quantity: item.quantity,
-      unit_price: item.unit_price,
-      style: item.style,
-      size: item.size
-    }))
+    // Validate pricing for each item - SECURITY CRITICAL
+    for (const item of items) {
+      const { data: isValid, error: validationError } = await supabase
+        .rpc('validate_purchase_pricing', {
+          p_batch_id: item.batch_id,
+          p_quantity: item.quantity,
+          p_size: item.size,
+          p_unit_price: item.unit_price
+        })
 
-    // Call the atomic purchase function
-    const { data: result, error } = await supabase.rpc(
-      'process_qr_purchase',
-      {
-        p_business_id: user.id,
-        p_items: dbItems,
-        p_subtotal: subtotal,
-        p_tax: tax,
-        p_shipping: shipping,
-        p_total: total,
-        p_shipping_address: shipping_address,
-        p_order_type: 'purchase'
+      if (validationError) {
+        console.error('Price validation error:', validationError)
+        return NextResponse.json(
+          { error: 'Price validation failed. Please refresh and try again.' },
+          { status: 400 }
+        )
       }
-    )
 
-    if (error) {
-      console.error('Purchase function error:', error)
-      return NextResponse.json(
-        { error: 'Database error during purchase' },
-        { status: 500 }
-      )
+      if (!isValid) {
+        return NextResponse.json(
+          { error: `Invalid pricing for item. Please refresh and try again.` },
+          { status: 400 }
+        )
+      }
     }
 
-    if (!result?.success) {
+    // Check inventory availability before creating order
+    for (const item of items) {
+      const { data: batch } = await supabase
+        .from('qr_code_batches')
+        .select('quantity_available')
+        .eq('id', item.batch_id)
+        .single()
+
+      if (!batch || batch.quantity_available < item.quantity) {
+        return NextResponse.json(
+          { error: `Insufficient inventory for one or more items. Please refresh and try again.` },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Generate order number
+    const now = new Date()
+    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
+    const randomStr = nanoid(8).toUpperCase()
+    const order_number = `ORD-${dateStr}-${randomStr}`
+
+    // Create order WITHOUT allocating codes (codes will be allocated after payment succeeds)
+    const { data: order, error: orderError } = await supabase
+      .from('purchase_orders')
+      .insert({
+        business_id: user.id,
+        order_number,
+        order_type: 'purchase',
+        items,
+        subtotal,
+        tax,
+        shipping,
+        total,
+        shipping_address,
+        status: 'pending',
+        payment_status: 'pending',
+      })
+      .select('id, order_number')
+      .single()
+
+    if (orderError || !order) {
+      console.error('Error creating order:', orderError)
       return NextResponse.json(
-        { error: result?.error || 'Purchase failed' },
-        { status: 400 }
+        { error: 'Failed to create order' },
+        { status: 500 }
       )
     }
 
     return NextResponse.json({
       success: true,
-      order_id: result.order_id,
-      order_number: result.order_number,
-      codes_allocated: result.codes_allocated
+      order_id: order.id,
+      order_number: order.order_number,
+      requires_payment: true,
     })
 
   } catch (error) {
