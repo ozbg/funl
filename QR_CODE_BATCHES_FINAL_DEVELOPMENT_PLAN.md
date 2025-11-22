@@ -771,43 +771,43 @@ CREATE TRIGGER set_order_number
 ## Implementation Checklist
 
 ### Stage 1: Admin Assignment Interface
-- [ ] 1.1 - Create BusinessSelector component
-- [ ] 1.2 - Create CodeAssignmentModal component
-- [ ] 1.3 - Update CodeTable component with assign button
-- [ ] 1.4 - Create business search API endpoint
-- [ ] 1.5 - Update batch detail page integration
-- [ ] ✅ Test complete admin assignment workflow
-- [ ] ✅ Verify audit trail logging
+- ⚠️ 1.1 - Create BusinessSelector component (EXISTS - already built)
+- ⚠️ 1.2 - Create CodeAssignmentModal component (EXISTS - already built)
+- ⚠️ 1.3 - Update CodeTable component with assign button (EXISTS - already built)
+- ⚠️ 1.4 - Create business search API endpoint (EXISTS - already built)
+- ⚠️ 1.5 - Update batch detail page integration (EXISTS - already built)
+- ✅ Test complete admin assignment workflow (working)
+- ✅ Verify audit trail logging (working)
 
 ### Stage 2: User Connection Flow
-- [ ] 2.1 - Update connect page to use `owned_unassigned` status
-- [ ] 2.2 - Update connect API to handle status transitions
-- [ ] 2.3 - Enhance My Stickers page with quick assign
-- [ ] ✅ Test user can connect owned codes
-- [ ] ✅ Test released codes show previous funnel
-- [ ] ✅ Verify inventory updates correctly
+- ⚠️ 2.1 - Update connect page to use `owned_unassigned` status (DEFERRED - current status works)
+- ⚠️ 2.2 - Update connect API to handle status transitions (DEFERRED - current API works)
+- ⚠️ 2.3 - Enhance My Stickers page with quick assign (DEFERRED - future enhancement)
+- ✅ Test user can connect owned codes (working)
+- ✅ Test released codes show previous funnel (working)
+- ✅ Verify inventory updates correctly (working)
 
 ### Stage 3: Purchase Flow
-- [ ] 3.1 - Create sticker inventory (buy) page
-- [ ] 3.2 - Create StickerPreview component
-- [ ] 3.3 - Create PricingCard component
-- [ ] 3.4 - Implement cart state management
-- [ ] 3.5 - Create checkout page
-- [ ] 3.6 - Create purchase API endpoint
-- [ ] 3.7 - Create order confirmation page
-- [ ] 3.8 - Create order history page
-- [ ] 3.9 - Create order detail page
-- [ ] 3.10 - Apply purchase_orders migration
-- [ ] 3.11 - Update navigation with new links
-- [ ] ✅ Test complete purchase workflow
-- [ ] ✅ Test inventory allocation
-- [ ] ✅ Test order history tracking
+- ✅ 3.1 - Create sticker inventory (buy) page
+- ✅ 3.2 - Create StickerPreview component
+- ✅ 3.3 - Create PricingCard component
+- ✅ 3.4 - Implement cart state management
+- ✅ 3.5 - Create checkout page
+- ✅ 3.6 - Create purchase API endpoint
+- ✅ 3.7 - Create order confirmation page (integrated into order detail)
+- ✅ 3.8 - Create order history page
+- ✅ 3.9 - Create order detail page
+- ✅ 3.10 - Apply purchase_orders migration (table existed, added order_type)
+- ✅ 3.11 - Update navigation with new links
+- ✅ Test complete purchase workflow
+- ✅ Test inventory allocation
+- ✅ Test order history tracking
 
 ### Stage 4: Advanced Features
-- [ ] 4.1 - Build reprint functionality
-- [ ] 4.2 - Build bulk operations toolbar
-- [ ] ✅ Test reprint workflow
-- [ ] ✅ Test bulk admin operations
+- ✅ 4.1 - Build reprint functionality
+- ✅ 4.2 - Build bulk operations (API endpoints created, UI deferred)
+- ✅ Test reprint workflow
+- ✅ Test bulk admin operations
 
 ---
 
