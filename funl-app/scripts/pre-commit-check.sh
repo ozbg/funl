@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pre-commit validation script
-# Runs TypeScript type checking before allowing commits
+# Runs TypeScript type checking and linting before allowing commits
 
 set -e
 
@@ -15,6 +15,10 @@ echo "✓ Running TypeScript type check..."
 npm run typecheck
 echo ""
 
+echo "✓ Running ESLint..."
+npm run lint
+echo ""
+
 echo "========================"
-echo "✅ Type check passed!"
+echo "✅ All checks passed!"
 echo "========================"

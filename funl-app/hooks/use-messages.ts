@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useMessageStore } from '@/stores/message-store';
-import type { MessageFilters } from '@/lib/messaging';
+import type { MessageFilters, Message } from '@/lib/messaging';
 
 // API client functions (simplified - you'd implement these based on your API setup)
 const messageApi = {
@@ -94,7 +94,7 @@ const messageApi = {
     return response.json();
   },
 
-  async createMessage(messageData: any, businessId: string) {
+  async createMessage(messageData: Partial<Message>, businessId: string) {
     const response = await fetch('/api/messages', {
       method: 'POST',
       headers: {
@@ -212,7 +212,7 @@ export function useMessages(businessId: string) {
   }, [businessId, removeMessage, setError]);
 
   // Create message (for testing or manual creation)
-  const createMessage = useCallback(async (messageData: any) => {
+  const createMessage = useCallback(async (messageData: Partial<Message>) => {
     if (!businessId) return;
     
     try {

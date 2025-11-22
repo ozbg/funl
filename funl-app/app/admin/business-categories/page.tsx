@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
-import { Button } from '@/components/ui/button'
 import { BusinessCategoriesTable } from '@/components/admin/BusinessCategoriesTable'
 import { CreateCategoryDialog } from '@/components/admin/CreateCategoryDialog'
 

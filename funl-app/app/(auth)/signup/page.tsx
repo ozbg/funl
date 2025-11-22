@@ -36,6 +36,7 @@ export default function SignupPage() {
     }
 
     fetchCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSignup = async (e: React.FormEvent) => {

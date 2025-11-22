@@ -10,7 +10,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, admin } = await requireAdmin()
+  const { user: _user, admin: _admin } = await requireAdmin()
 
   return (
     <Box minHeight="100vh" bg="bg.muted">

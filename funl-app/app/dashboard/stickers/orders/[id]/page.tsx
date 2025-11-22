@@ -36,8 +36,28 @@ export default async function OrderDetailPage({ params, searchParams }: {
     .select('id, code, status')
     .eq('purchase_order_id', id)
 
-  const items = order.items as any[]
-  const shipping = order.shipping_address as any
+  const items = order.items as Array<{
+    batch_id: string
+    quantity: number
+    unit_price: number
+    size: string
+    style: {
+      id?: string
+      name?: string
+      template?: string
+      preview_url?: string
+    }
+  }>
+  const shipping = order.shipping_address as {
+    full_name: string
+    address_line1: string
+    address_line2?: string
+    city: string
+    state: string
+    postal_code: string
+    country: string
+    phone?: string
+  }
 
   const statusColors: Record<string, string> = {
     pending: 'gray',
@@ -69,7 +89,7 @@ export default async function OrderDetailPage({ params, searchParams }: {
                 Order Confirmed!
               </p>
               <p className={css({ fontSize: 'sm', color: 'green.text', mt: 1 })}>
-                Your order has been placed successfully. We'll send you tracking information once it ships.
+                Your order has been placed successfully. We&apos;ll send you tracking information once it ships.
               </p>
             </Box>
           </Flex>
@@ -154,10 +174,10 @@ export default async function OrderDetailPage({ params, searchParams }: {
                   </Box>
                   <Box textAlign="right">
                     <p className={css({ fontSize: 'sm', fontWeight: 'medium' })}>
-                      ${((item.quantity || 1) * (item.unit_price || item.price || 0)).toFixed(2)}
+                      ${((item.quantity || 1) * (item.unit_price || 0)).toFixed(2)}
                     </p>
                     <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
-                      ${(item.unit_price || item.price || 0).toFixed(2)} each
+                      ${(item.unit_price || 0).toFixed(2)} each
                     </p>
                   </Box>
                 </Flex>
