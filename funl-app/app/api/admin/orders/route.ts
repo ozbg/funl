@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 /**
@@ -6,16 +6,16 @@ import { NextResponse } from 'next/server'
  * Fetch all orders with business and batch details
  */
 export async function GET() {
-  const supabase = await createClient()
+  // Use regular client to check auth
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
 
-  // Check admin auth
-  const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Fetch admin status
-  const { data: business } = await supabase
+  // Check admin status
+  const { data: business } = await authClient
     .from('businesses')
     .select('is_admin')
     .eq('id', user.id)
@@ -25,8 +25,9 @@ export async function GET() {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // Fetch orders with business details
-  const { data: orders, error } = await supabase
+  // Use service client to bypass RLS for fetching all orders
+  const serviceClient = await createServiceClient()
+  const { data: orders, error } = await serviceClient
     .from('purchase_orders')
     .select(`
       *,

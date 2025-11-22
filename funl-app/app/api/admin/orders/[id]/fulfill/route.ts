@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
@@ -10,15 +10,16 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params
-  const supabase = await createClient()
 
-  // Check admin auth
-  const { data: { user } } = await supabase.auth.getUser()
+  // Use regular client to check auth
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data: business } = await supabase
+  const { data: business } = await authClient
     .from('businesses')
     .select('is_admin')
     .eq('id', user.id)
@@ -50,7 +51,9 @@ export async function POST(
 
   if (notes) updates.notes = notes
 
-  const { data: order, error } = await supabase
+  // Use service client to bypass RLS for updating orders
+  const serviceClient = await createServiceClient()
+  const { data: order, error } = await serviceClient
     .from('purchase_orders')
     .update(updates)
     .eq('id', id)
