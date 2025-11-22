@@ -10,10 +10,9 @@ import type {
   Business,
   FunnelContent,
   ApplePassJson,
-  PassField,
-  PropertyPassData
+  PassField
 } from '../types'
-import { PASS_TYPES, DEFAULT_PASS_FIELDS, type PassType } from './config'
+import { PASS_TYPES, type PassType } from './config'
 
 export interface PassContentMapper {
   mapFunnelToPassData(funnel: Funnel, business: Business): Promise<Partial<ApplePassJson>>
@@ -413,7 +412,7 @@ export class PassContentMapperImpl implements PassContentMapper {
   /**
    * Creates location data for properties (if address available)
    */
-  createPropertyLocation(address?: string): { latitude: number; longitude: number } | undefined {
+  createPropertyLocation(_address?: string): { latitude: number; longitude: number } | undefined {
     // In production, this would geocode the address
     // For now, return undefined to skip location features
     return undefined
@@ -422,7 +421,7 @@ export class PassContentMapperImpl implements PassContentMapper {
   /**
    * Generates relevant date for pass (e.g., open house times)
    */
-  generateRelevantDate(content: FunnelContent): string | undefined {
+  generateRelevantDate(_content: FunnelContent): string | undefined {
     // In production, this could parse open house times or other relevant dates
     return undefined
   }

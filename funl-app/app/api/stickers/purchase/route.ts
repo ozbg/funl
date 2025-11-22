@@ -24,7 +24,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Transform items for the database function
-    const dbItems = items.map((item: any) => ({
+    const dbItems = items.map((item: {
+      batch_id: string
+      quantity: number
+      unit_price: number
+      style: Record<string, unknown>
+      size: string
+    }) => ({
       batch_id: item.batch_id,
       quantity: item.quantity,
       unit_price: item.unit_price,

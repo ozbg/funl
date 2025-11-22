@@ -4,7 +4,6 @@ import type {
   AllocatedCode,
   ReserveCodeRequest,
   ReserveCodeResponse,
-  ReservedCode,
   CodeAllocation
 } from '@/lib/types/qr-reservation'
 

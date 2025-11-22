@@ -508,7 +508,7 @@ export class PDFExportService {
   /**
    * Get export progress (for future progress tracking)
    */
-  async getExportProgress(exportId: string): Promise<ExportProgress | null> {
+  async getExportProgress(_exportId: string): Promise<ExportProgress | null> {
     // This would be implemented with a progress tracking system
     // For now, return null
     return null

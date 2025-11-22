@@ -46,7 +46,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Update codes
-    const updateData: any = {
+    const updateData: {
+      status: string
+      business_id: string
+      updated_at: string
+      funnel_id?: string
+      assigned_at?: string
+    } = {
       status: funnel_id ? 'assigned' : 'owned_unassigned',
       business_id,
       updated_at: new Date().toISOString()

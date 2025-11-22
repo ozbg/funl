@@ -154,7 +154,7 @@ export default async function OrdersPage() {
 
             {/* Table Body */}
             {orders.map((order) => {
-              const items = order.items as any[]
+              const items = order.items as Array<{ quantity?: number }>
               const totalItems = items.reduce((sum, item) => sum + (item.quantity || 0), 0)
               const orderDate = new Date(order.created_at).toLocaleDateString('en-AU', {
                 day: 'numeric',

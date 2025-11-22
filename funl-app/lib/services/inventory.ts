@@ -1,7 +1,6 @@
 import type {
   InventoryOverview,
-  CodeInventory,
-  QRCodeBatch
+  CodeInventory
 } from '@/lib/types/qr-reservation'
 import type { SupabaseClient } from '@supabase/supabase-js'
 

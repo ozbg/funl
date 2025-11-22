@@ -11,7 +11,6 @@ import crypto from 'crypto'
 import { getPassKitConfig, type PassKitConfig } from './config'
 import { loadCertificates } from './certificates'
 import type {
-  ApplePassJson,
   PassGenerationRequest,
   PassGenerationResponse
 } from '../types'
@@ -34,7 +33,7 @@ export class PassKitServiceImpl implements PassKitService {
     try {
       // Generate unique identifiers
       const serialNumber = this.generateSerialNumber()
-      const authenticationToken = this.generateAuthenticationToken()
+      // const authenticationToken = this.generateAuthenticationToken() // TODO: Use when web service is implemented
 
       // Load certificates (from env vars in production, files in dev)
       const certData = await loadCertificates(this.config)

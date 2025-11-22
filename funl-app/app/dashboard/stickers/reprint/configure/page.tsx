@@ -19,7 +19,7 @@ export default function ConfigureReprintPage() {
   const searchParams = useSearchParams()
   const codeId = searchParams.get('code_id')
 
-  const [code, setCode] = useState<any>(null)
+  const [code, setCode] = useState<{ id: string; code: string } | null>(null)
   const [styles, setStyles] = useState<Style[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
@@ -45,6 +45,7 @@ export default function ConfigureReprintPage() {
       return
     }
     fetchCodeAndStyles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeId])
 
   const fetchCodeAndStyles = async () => {
