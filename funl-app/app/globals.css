@@ -139,10 +139,6 @@
     color: var(--colors-fg-default);
   }
 
-  a {
-    text-decoration: none;
-  }
-
   @keyframes pulse {
     0%, 100% {
       opacity: 1;

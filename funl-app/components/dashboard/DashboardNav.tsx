@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { css } from '@/styled-system/css';
 import { Flex } from '@/styled-system/jsx';
 import { NotificationBadge } from '@/components/messaging';
@@ -12,6 +11,7 @@ interface DashboardNavProps {
 }
 
 export function DashboardNav({ businessId }: DashboardNavProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const unreadCount = useUnreadMessageCount();
 
@@ -54,11 +54,12 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
   return (
     <Flex gap="8" display={{ base: 'none', sm: 'flex' }}>
       {navItems.map((item) => (
-        <Link
+        <button
           key={item.href}
-          href={item.href}
-          style={{ textDecoration: 'none' }}
+          onClick={() => router.push(item.href)}
           className={css({
+            background: 'transparent',
+            border: 'none',
             borderBottom: '2px solid',
             borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'transparent',
             color: isActive(item.href, item.exact) ? 'fg.default' : 'fg.muted',
@@ -70,6 +71,7 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
             fontSize: 'sm',
             fontWeight: 'medium',
             position: 'relative',
+            cursor: 'pointer',
             _hover: {
               borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'border.default',
               color: 'fg.default',
@@ -80,7 +82,7 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
           {item.badge !== undefined && item.badge > 0 && (
             <NotificationBadge count={item.badge} size="sm" />
           )}
-        </Link>
+        </button>
       ))}
     </Flex>
   );
