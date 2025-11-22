@@ -60,7 +60,7 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
           className={css({
             background: 'transparent',
             border: 'none',
-            borderBottom: '2px solid',
+            borderBottom: isActive(item.href, item.exact) ? '2px solid' : 'none',
             borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'transparent',
             color: isActive(item.href, item.exact) ? 'fg.default' : 'fg.muted',
             display: 'inline-flex',
@@ -73,7 +73,6 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
             position: 'relative',
             cursor: 'pointer',
             _hover: {
-              borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'border.default',
               color: 'fg.default',
             },
           })}
