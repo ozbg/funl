@@ -13,12 +13,14 @@ export default async function AdminOverviewPage() {
     { count: categoryCount },
     { count: funnelTypeCount },
     { count: qrPresetCount },
+    { count: qrBatchCount },
     { count: totalFunnelsCount }
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
     supabase.from('business_categories').select('*', { count: 'exact', head: true }),
     supabase.from('funnel_types').select('*', { count: 'exact', head: true }),
     supabase.from('qr_code_presets').select('*', { count: 'exact', head: true }),
+    supabase.from('qr_code_batches').select('*', { count: 'exact', head: true }),
     supabase.from('funnels').select('*', { count: 'exact', head: true })
   ])
 
@@ -43,6 +45,13 @@ export default async function AdminOverviewPage() {
       count: qrPresetCount || 0,
       href: '/admin/qr-presets',
       color: 'purple'
+    },
+    {
+      title: 'QR Batches',
+      description: 'Manage QR code batches and inventory',
+      count: qrBatchCount || 0,
+      href: '/admin/qr-batches',
+      color: 'cyan'
     },
     {
       title: 'Users',
@@ -127,7 +136,7 @@ export default async function AdminOverviewPage() {
           </Box>
           <Box textAlign="center">
             <div className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' })}>
-              {(categoryCount || 0) + (funnelTypeCount || 0) + (qrPresetCount || 0)}
+              {(categoryCount || 0) + (funnelTypeCount || 0) + (qrPresetCount || 0) + (qrBatchCount || 0)}
             </div>
             <div className={css({ fontSize: 'sm', color: 'fg.muted' })}>
               Configuration Items
