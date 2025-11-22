@@ -59,9 +59,6 @@ export default async function AdminOverviewPage() {
         <h1 className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>
           Admin Dashboard
         </h1>
-        <p className={css({ mt: 2, color: 'fg.muted', fontSize: 'lg' })}>
-          Manage your FunL platform configuration and users
-        </p>
       </Box>
 
       {/* Quick Stats */}

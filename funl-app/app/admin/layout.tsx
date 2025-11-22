@@ -31,22 +31,21 @@ export default async function AdminLayout({
               <AdminNav />
             </Flex>
             <Flex align="center" gap="4">
-              <Link 
-                href="/dashboard"
-                className={css({
-                  fontSize: 'sm',
-                  color: 'accent.default',
-                  textDecoration: 'underline',
-                  _hover: {
-                    color: 'accent.emphasized',
-                  },
-                })}
-              >
-                Back to Dashboard
-              </Link>
-              <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>
-                {admin?.name} ({admin?.role})
-              </span>
+              <form action="/dashboard" method="get">
+                <button
+                  type="submit"
+                  className={css({
+                    fontSize: 'sm',
+                    color: 'fg.muted',
+                    cursor: 'pointer',
+                    _hover: {
+                      color: 'fg.default',
+                    },
+                  })}
+                >
+                  Dashboard
+                </button>
+              </form>
               <form action="/api/auth/logout" method="post">
                 <button
                   type="submit"
@@ -67,7 +66,7 @@ export default async function AdminLayout({
           </Flex>
         </Container>
       </nav>
-      <main className={css({ maxW: '7xl', py: 6, px: { base: 4, sm: 6, lg: 8 }, mx: 'auto' })}>
+      <main className={css({ maxW: 'full', py: 6, px: { base: 4, sm: 6, lg: 8 }, mx: 'auto' })}>
         {children}
       </main>
     </Box>
