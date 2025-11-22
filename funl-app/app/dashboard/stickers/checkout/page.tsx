@@ -6,12 +6,22 @@ import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
 import { useCartStore } from '@/store/cartStore'
 import Link from 'next/link'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe, Stripe, StripeElementsOptions } from '@stripe/stripe-js'
+import { PaymentForm } from '@/components/stickers/PaymentForm'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+
+type CheckoutStep = 'shipping' | 'payment'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const cart = useCartStore()
+  const [step, setStep] = useState<CheckoutStep>('shipping')
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [orderId, setOrderId] = useState<string | null>(null)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
 
   const [shippingForm, setShippingForm] = useState({
     full_name: '',
@@ -28,7 +38,7 @@ export default function CheckoutPage() {
     setShippingForm(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleCheckout = async () => {
+  const handleContinueToPayment = async () => {
     // Validation
     if (!shippingForm.full_name || !shippingForm.address_line1 || !shippingForm.city ||
         !shippingForm.state || !shippingForm.postal_code) {
@@ -48,8 +58,8 @@ export default function CheckoutPage() {
       // Save shipping address to cart
       cart.setShippingAddress(shippingForm)
 
-      // Process the purchase
-      const response = await fetch('/api/stickers/purchase', {
+      // Step 1: Create pending order
+      const orderResponse = await fetch('/api/stickers/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,24 +72,50 @@ export default function CheckoutPage() {
         })
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Purchase failed')
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json()
+        throw new Error(errorData.error || 'Failed to create order')
       }
 
-      const { order_id, order_number } = await response.json()
+      const { order_id } = await orderResponse.json()
+      setOrderId(order_id)
 
-      // Clear cart
-      cart.clearCart()
+      // Step 2: Create Payment Intent
+      const paymentResponse = await fetch('/api/stripe/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id,
+          amount: cart.getTotal()
+        })
+      })
 
-      // Redirect to confirmation
-      router.push(`/dashboard/stickers/orders/${order_id}?confirmed=true`)
+      if (!paymentResponse.ok) {
+        const errorData = await paymentResponse.json()
+        throw new Error(errorData.error || 'Failed to initialize payment')
+      }
+
+      const { client_secret } = await paymentResponse.json()
+      setClientSecret(client_secret)
+
+      // Move to payment step
+      setStep('payment')
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Purchase failed')
+      setError(err instanceof Error ? err.message : 'Failed to proceed to payment')
     } finally {
       setProcessing(false)
     }
+  }
+
+  const handlePaymentSuccess = () => {
+    // Clear cart and redirect to order confirmation
+    cart.clearCart()
+    router.push(`/dashboard/stickers/orders/${orderId}?confirmed=true`)
+  }
+
+  const handlePaymentError = (errorMessage: string) => {
+    setError(errorMessage)
   }
 
   if (cart.items.length === 0) {
@@ -115,6 +151,45 @@ export default function CheckoutPage() {
         Checkout
       </h1>
 
+      {/* Progress Indicator */}
+      <Flex mb={8} gap={4} align="center">
+        <Flex align="center" gap={2} flex="1">
+          <Box
+            w={8}
+            h={8}
+            rounded="full"
+            bg={step === 'shipping' ? 'accent.default' : 'accent.emphasized'}
+            color="white"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="sm"
+            fontWeight="semibold"
+          >
+            1
+          </Box>
+          <span className={css({ fontSize: 'sm', fontWeight: 'semibold' })}>Shipping</span>
+        </Flex>
+        <Box flex="1" h="2px" bg={step === 'payment' ? 'accent.emphasized' : 'border.default'} />
+        <Flex align="center" gap={2} flex="1">
+          <Box
+            w={8}
+            h={8}
+            rounded="full"
+            bg={step === 'payment' ? 'accent.default' : 'border.default'}
+            color={step === 'payment' ? 'white' : 'fg.muted'}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="sm"
+            fontWeight="semibold"
+          >
+            2
+          </Box>
+          <span className={css({ fontSize: 'sm', fontWeight: step === 'payment' ? 'semibold' : 'normal', color: step === 'payment' ? 'fg.default' : 'fg.muted' })}>Payment</span>
+        </Flex>
+      </Flex>
+
       {error && (
         <Box mb={6} p={4} bg="red.subtle" borderWidth="1px" borderColor="red.default" rounded="md">
           <p className={css({ color: 'red.text', fontSize: 'sm' })}>{error}</p>
@@ -122,14 +197,15 @@ export default function CheckoutPage() {
       )}
 
       <Grid gridTemplateColumns={{ base: '1', lg: '3fr 2fr' }} gap={8}>
-        {/* Left Column - Shipping Form */}
+        {/* Left Column - Shipping Form or Payment */}
         <Box>
-          <Box mb={8}>
-            <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', mb: 6 })}>
-              Shipping Information
-            </h2>
+          {step === 'shipping' && (
+            <Box mb={8}>
+              <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', mb: 6 })}>
+                Shipping Information
+              </h2>
 
-            <form onSubmit={(e) => { e.preventDefault(); handleCheckout() }}>
+              <form onSubmit={(e) => { e.preventDefault(); handleContinueToPayment() }}>
               {/* Full Name */}
               <Box mb={4}>
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>
@@ -315,8 +391,48 @@ export default function CheckoutPage() {
                   placeholder="For delivery updates (optional)"
                 />
               </Box>
-            </form>
-          </Box>
+              </form>
+            </Box>
+          )}
+
+          {step === 'payment' && clientSecret && (
+            <Box mb={8}>
+              <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', mb: 6 })}>
+                Payment Information
+              </h2>
+
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: {
+                    theme: 'stripe',
+                  },
+                }}
+              >
+                <PaymentForm
+                  orderId={orderId!}
+                  amount={cart.getTotal()}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                />
+              </Elements>
+
+              <button
+                onClick={() => setStep('shipping')}
+                className={css({
+                  mt: 4,
+                  fontSize: 'sm',
+                  color: 'accent.default',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  _hover: { color: 'accent.emphasized' }
+                })}
+              >
+                ← Back to shipping
+              </button>
+            </Box>
+          )}
         </Box>
 
         {/* Right Column - Order Summary */}
@@ -383,31 +499,28 @@ export default function CheckoutPage() {
               </Flex>
             </Box>
 
-            {/* Checkout Button */}
-            <button
-              onClick={handleCheckout}
-              disabled={processing}
-              className={css({
-                w: 'full',
-                px: 6,
-                py: 3,
-                bg: 'accent.default',
-                color: 'white',
-                rounded: 'md',
-                fontSize: 'md',
-                fontWeight: 'semibold',
-                cursor: 'pointer',
-                mb: 3,
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
-            >
-              {processing ? 'Processing...' : `Pay $${cart.getTotal().toFixed(2)}`}
-            </button>
-
-            <p className={css({ fontSize: 'xs', color: 'fg.muted', textAlign: 'center' })}>
-              Payment processing placeholder - Stripe integration coming soon
-            </p>
+            {/* Continue to Payment Button (only show on shipping step) */}
+            {step === 'shipping' && (
+              <button
+                onClick={handleContinueToPayment}
+                disabled={processing}
+                className={css({
+                  w: 'full',
+                  px: 6,
+                  py: 3,
+                  bg: 'accent.default',
+                  color: 'white',
+                  rounded: 'md',
+                  fontSize: 'md',
+                  fontWeight: 'semibold',
+                  cursor: 'pointer',
+                  _hover: { bg: 'accent.emphasized' },
+                  _disabled: { opacity: 0.5, cursor: 'not-allowed' }
+                })}
+              >
+                {processing ? 'Processing...' : 'Continue to Payment'}
+              </button>
+            )}
           </Box>
         </Box>
       </Grid>
