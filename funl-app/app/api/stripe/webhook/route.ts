@@ -1,10 +1,10 @@
-import { stripe } from '@/lib/stripe/stripe-client'
+import { requireStripe } from '@/lib/stripe/stripe-client'
 import { createClient } from '@supabase/supabase-js'
 import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 // Create Supabase client with service role (bypasses RLS)
 function getServiceClient() {
@@ -30,9 +30,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 })
   }
 
+  if (!webhookSecret) {
+    console.error('STRIPE_WEBHOOK_SECRET not configured')
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+  }
+
   let event: Stripe.Event
 
   try {
+    const stripe = requireStripe()
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err) {
     console.error('Webhook signature verification failed:', err)

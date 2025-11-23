@@ -1,9 +1,10 @@
-import { stripe } from '@/lib/stripe/stripe-client'
+import { requireStripe } from '@/lib/stripe/stripe-client'
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = requireStripe()
     const supabase = await createClient()
 
     // Check admin auth

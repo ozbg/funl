@@ -1,21 +1,31 @@
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in environment variables')
-}
-
 /**
  * Server-side Stripe client
  * Used for creating Payment Intents, managing products, and processing webhooks
+ * Returns null if STRIPE_SECRET_KEY is not configured
  */
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
-  typescript: true,
-  appInfo: {
-    name: 'FunL QR Stickers',
-    version: '1.0.0',
-  },
-})
+export const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16',
+      typescript: true,
+      appInfo: {
+        name: 'FunL QR Stickers',
+        version: '1.0.0',
+      },
+    })
+  : null
+
+/**
+ * Helper to ensure Stripe is configured
+ * Throws error if used when Stripe is not initialized
+ */
+export function requireStripe(): Stripe {
+  if (!stripe) {
+    throw new Error('Stripe is not configured. Set STRIPE_SECRET_KEY environment variable.')
+  }
+  return stripe
+}
 
 /**
  * Stripe configuration constants
