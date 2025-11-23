@@ -3,6 +3,9 @@ import { css } from '@/styled-system/css'
 import { Box, Grid, Flex } from '@/styled-system/jsx'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { RevenueMetrics } from '@/components/admin/RevenueMetrics'
+import { SubscriptionMetrics } from '@/components/admin/SubscriptionMetrics'
+import { InventoryAlertsPanel } from '@/components/admin/InventoryAlertsPanel'
 
 export default async function AdminOverviewPage() {
   const supabase = await createClient()
@@ -23,6 +26,15 @@ export default async function AdminOverviewPage() {
     supabase.from('qr_code_batches').select('*', { count: 'exact', head: true }),
     supabase.from('funnels').select('*', { count: 'exact', head: true })
   ])
+
+  // Fetch analytics data
+  const [revenueRes, subscriptionRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/analytics/revenue?period=30`, { cache: 'no-store' }),
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/analytics/subscriptions?period=30`, { cache: 'no-store' })
+  ])
+
+  const revenueData = revenueRes.ok ? await revenueRes.json() : null
+  const subscriptionData = subscriptionRes.ok ? await subscriptionRes.json() : null
 
   const adminCards = [
     {
@@ -68,6 +80,20 @@ export default async function AdminOverviewPage() {
         <h1 className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>
           Admin Dashboard
         </h1>
+      </Box>
+
+      {/* Revenue & Subscription Analytics */}
+      <Grid columns={{ base: 1, lg: 2 }} gap={6} mb={8}>
+        <RevenueMetrics data={revenueData} />
+        <SubscriptionMetrics data={subscriptionData} />
+      </Grid>
+
+      {/* Inventory Alerts */}
+      <Box mb={8} bg="bg.default" p={6} rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default">
+        <h2 className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default', mb: 4 })}>
+          Inventory Alerts
+        </h2>
+        <InventoryAlertsPanel />
       </Box>
 
       {/* Quick Stats */}

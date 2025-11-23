@@ -25,6 +25,22 @@ export function AdminNav() {
       label: 'Orders'
     },
     {
+      href: '/admin/subscriptions',
+      label: 'Subscriptions'
+    },
+    {
+      href: '/admin/plans',
+      label: 'Plans'
+    },
+    {
+      href: '/admin/products',
+      label: 'Products'
+    },
+    {
+      href: '/admin/qr-batches',
+      label: 'QR Batches'
+    },
+    {
       href: '/admin/business-categories',
       label: 'Business Categories'
     },
@@ -35,10 +51,6 @@ export function AdminNav() {
     {
       href: '/admin/qr-presets',
       label: 'QR Presets'
-    },
-    {
-      href: '/admin/qr-batches',
-      label: 'QR Batches'
     },
     {
       href: '/admin/users',
