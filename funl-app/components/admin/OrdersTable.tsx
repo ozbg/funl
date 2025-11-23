@@ -41,7 +41,7 @@ interface Order {
   }
   business: {
     id: string
-    business_name: string
+    name: string
     email: string
   }
 }
@@ -131,7 +131,7 @@ export function OrdersTable({ orders, onSelectOrder }: OrdersTableProps) {
               </td>
               <td className={css({ px: 4, py: 3 })}>
                 <Box>
-                  <p className={css({ fontWeight: 'medium' })}>{order.business.business_name}</p>
+                  <p className={css({ fontWeight: 'medium' })}>{order.business.name}</p>
                   <p className={css({ fontSize: 'xs', color: 'fg.muted' })}>{order.business.email}</p>
                 </Box>
               </td>

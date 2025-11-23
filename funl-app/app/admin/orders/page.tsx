@@ -44,7 +44,7 @@ interface Order {
   }
   business: {
     id: string
-    business_name: string
+    name: string
     email: string
   }
 }
@@ -62,7 +62,11 @@ export default function AdminOrdersPage() {
   const fetchOrders = async () => {
     try {
       const response = await fetch('/api/admin/orders')
-      if (!response.ok) throw new Error('Failed to fetch orders')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API Error:', response.status, errorData)
+        throw new Error(`Failed to fetch orders: ${errorData.error || response.statusText}`)
+      }
       const data = await response.json()
       setOrders(data.orders)
     } catch (error) {

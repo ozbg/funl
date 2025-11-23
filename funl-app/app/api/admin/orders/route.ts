@@ -31,7 +31,7 @@ export async function GET() {
     .from('purchase_orders')
     .select(`
       *,
-      business:businesses(id, business_name, email)
+      business:businesses(id, name, email)
     `)
     .order('created_at', { ascending: false })
 

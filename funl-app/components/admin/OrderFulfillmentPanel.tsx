@@ -42,7 +42,7 @@ interface Order {
   }
   business: {
     id: string
-    business_name: string
+    name: string
     email: string
   }
 }
@@ -174,7 +174,7 @@ export function OrderFulfillmentPanel({ order, onClose, onSuccess }: OrderFulfil
         <Box mb={6}>
           <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', mb: 3 })}>Customer</h3>
           <Box p={4} bg="bg.subtle" rounded="md">
-            <p className={css({ fontWeight: 'medium' })}>{order.business.business_name}</p>
+            <p className={css({ fontWeight: 'medium' })}>{order.business.name}</p>
             <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>{order.business.email}</p>
           </Box>
         </Box>
