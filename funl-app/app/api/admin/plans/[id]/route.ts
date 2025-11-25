@@ -64,6 +64,9 @@ export async function GET(
 /**
  * PUT /api/admin/plans/[id]
  * Update a subscription plan
+ *
+ * Note: billing_period is the default billing frequency for this plan.
+ * Customers can choose their preferred billing frequency (monthly/weekly) at checkout.
  */
 export async function PUT(
   request: NextRequest,
@@ -116,8 +119,6 @@ export async function PUT(
     trial_period_days,
     funnel_limit,
     features,
-    addon_funnel_price_monthly,
-    addon_funnel_price_weekly,
     is_active,
     is_default,
     featured,
@@ -150,8 +151,6 @@ export async function PUT(
     updateData.funnel_limit = funnel_limit
   }
   if (features !== undefined) updateData.features = features
-  if (addon_funnel_price_monthly !== undefined) updateData.addon_funnel_price_monthly = addon_funnel_price_monthly
-  if (addon_funnel_price_weekly !== undefined) updateData.addon_funnel_price_weekly = addon_funnel_price_weekly
   if (is_active !== undefined) updateData.is_active = is_active
   if (is_default !== undefined) updateData.is_default = is_default
   if (featured !== undefined) updateData.featured = featured

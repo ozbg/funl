@@ -5,6 +5,7 @@ import { css } from '@/styled-system/css'
 interface Product {
   id: string
   name: string
+  slug: string
 }
 
 interface EditProductDialogProps {
@@ -14,8 +15,8 @@ interface EditProductDialogProps {
 
 export function EditProductDialog({ product, onSuccess: _onSuccess }: EditProductDialogProps) {
   const handleEdit = () => {
-    // Navigate to edit page or open edit modal
-    window.location.href = `/admin/products/${product.id}/edit`
+    // Navigate to product detail page (editing is inline on the Details tab)
+    window.location.href = `/admin/products/${product.slug}`
   }
 
   return (

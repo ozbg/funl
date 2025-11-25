@@ -10,23 +10,23 @@ interface ProductTypeBadgeProps {
 const typeConfig: Record<ProductType, { label: string; color: string; bg: string }> = {
   qr_stickers: {
     label: 'QR Stickers',
-    color: 'purple.700',
-    bg: 'purple.100'
+    color: 'purple.600',
+    bg: 'bg.subtle'
   },
   physical_product: {
     label: 'Physical',
-    color: 'blue.700',
-    bg: 'blue.100'
+    color: 'blue.600',
+    bg: 'bg.subtle'
   },
   digital_product: {
     label: 'Digital',
-    color: 'cyan.700',
-    bg: 'cyan.100'
+    color: 'cyan.600',
+    bg: 'bg.subtle'
   },
   service: {
     label: 'Service',
-    color: 'pink.700',
-    bg: 'pink.100'
+    color: 'pink.600',
+    bg: 'bg.subtle'
   }
 }
 
@@ -44,9 +44,7 @@ export function ProductTypeBadge({ productType, size = 'md' }: ProductTypeBadgeP
         fontWeight: 'medium',
         rounded: 'md',
         color: config.color,
-        bg: config.bg,
-        borderWidth: '1px',
-        borderColor: `${config.color.split('.')[0]}.200` as never
+        bg: config.bg
       })}
     >
       {config.label}

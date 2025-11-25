@@ -37,17 +37,17 @@ export function StockBadge({ current, lowThreshold, tracksInventory, size = 'md'
   const isLowStock = lowThreshold !== null && lowThreshold !== undefined && current <= lowThreshold
   const isOutOfStock = current === 0
 
-  let color = 'green.700'
-  let bg = 'green.100'
+  let color = 'fg.default'
+  let bg = 'bg.subtle'
   let label = `${current} in stock`
 
   if (isOutOfStock) {
-    color = 'red.700'
-    bg = 'red.100'
+    color = 'red.600'
+    bg = 'bg.subtle'
     label = 'Out of stock'
   } else if (isLowStock) {
-    color = 'orange.700'
-    bg = 'orange.100'
+    color = 'orange.600'
+    bg = 'bg.subtle'
     label = `${current} (Low stock)`
   }
 

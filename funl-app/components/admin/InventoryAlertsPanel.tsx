@@ -52,13 +52,13 @@ export function InventoryAlertsPanel() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return { bg: 'red.50', border: 'red.200', text: 'red.700', icon: '🔴' }
+        return { bg: 'bg.default', border: 'border.default', text: 'red.600', icon: '🔴' }
       case 'warning':
-        return { bg: 'orange.50', border: 'orange.200', text: 'orange.700', icon: '⚠️' }
+        return { bg: 'bg.default', border: 'border.default', text: 'orange.600', icon: '⚠️' }
       case 'info':
-        return { bg: 'blue.50', border: 'blue.200', text: 'blue.700', icon: 'ℹ️' }
+        return { bg: 'bg.default', border: 'border.default', text: 'blue.600', icon: 'ℹ️' }
       default:
-        return { bg: 'gray.50', border: 'gray.200', text: 'gray.700', icon: '•' }
+        return { bg: 'bg.default', border: 'border.default', text: 'fg.default', icon: '•' }
     }
   }
 
@@ -74,27 +74,27 @@ export function InventoryAlertsPanel() {
     <Box>
       {/* Summary Stats */}
       <Flex gap={4} mb={6}>
-        <Box flex={1} p={4} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-          <p className={css({ fontSize: 'xs', color: 'red.700', mb: 1 })}>Critical</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'red.700' })}>
+        <Box flex={1} p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" rounded="md">
+          <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 1 })}>Critical</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: summary.critical > 0 ? 'red.600' : 'fg.default' })}>
             {summary.critical}
           </p>
         </Box>
-        <Box flex={1} p={4} bg="orange.50" borderWidth="1px" borderColor="orange.200" rounded="md">
-          <p className={css({ fontSize: 'xs', color: 'orange.700', mb: 1 })}>Warning</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'orange.700' })}>
+        <Box flex={1} p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" rounded="md">
+          <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 1 })}>Warning</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: summary.warning > 0 ? 'orange.600' : 'fg.default' })}>
             {summary.warning}
           </p>
         </Box>
-        <Box flex={1} p={4} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-          <p className={css({ fontSize: 'xs', color: 'blue.700', mb: 1 })}>Info</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'blue.700' })}>
+        <Box flex={1} p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" rounded="md">
+          <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 1 })}>Info</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: summary.info > 0 ? 'blue.600' : 'fg.default' })}>
             {summary.info}
           </p>
         </Box>
-        <Box flex={1} p={4} bg="gray.50" borderWidth="1px" borderColor="gray.200" rounded="md">
-          <p className={css({ fontSize: 'xs', color: 'gray.700', mb: 1 })}>Total</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'gray.700' })}>
+        <Box flex={1} p={4} bg="bg.default" borderWidth="1px" borderColor="border.default" rounded="md">
+          <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 1 })}>Total</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>
             {summary.total}
           </p>
         </Box>
@@ -135,11 +135,11 @@ export function InventoryAlertsPanel() {
 
       {/* Alerts List */}
       {alerts.length === 0 ? (
-        <Box p={8} textAlign="center" bg="green.50" borderWidth="1px" borderColor="green.200" rounded="md">
-          <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'green.700' })}>
+        <Box p={8} textAlign="center" bg="bg.default" borderWidth="1px" borderColor="border.default" rounded="md">
+          <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'green.600' })}>
             ✓ No inventory alerts
           </p>
-          <p className={css({ fontSize: 'sm', color: 'green.600', mt: 1 })}>
+          <p className={css({ fontSize: 'sm', color: 'fg.muted', mt: 1 })}>
             All products are well-stocked
           </p>
         </Box>
@@ -170,8 +170,8 @@ export function InventoryAlertsPanel() {
                         fontSize: 'xs',
                         fontWeight: 'medium',
                         rounded: 'md',
-                        color: colors.text,
-                        bg: 'white',
+                        color: 'fg.muted',
+                        bg: 'bg.subtle',
                         textTransform: 'uppercase'
                       })}>
                         {alert.type.replace('_', ' ')}

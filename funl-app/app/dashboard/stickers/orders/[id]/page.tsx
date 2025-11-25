@@ -89,7 +89,7 @@ export default async function OrderDetailPage({ params, searchParams }: {
                 Order Confirmed!
               </p>
               <p className={css({ fontSize: 'sm', color: 'green.text', mt: 1 })}>
-                Your order has been placed successfully. We&apos;ll send you tracking information once it ships.
+                Your order has been placed successfully. We'll send you tracking information once it ships.
               </p>
             </Box>
           </Flex>

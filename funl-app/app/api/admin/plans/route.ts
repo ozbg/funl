@@ -88,6 +88,9 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/admin/plans
  * Create a new subscription plan
+ *
+ * Note: billing_period is the default billing frequency for this plan.
+ * Customers can choose their preferred billing frequency (monthly/weekly) at checkout.
  */
 export async function POST(request: NextRequest) {
   // Verify admin authentication
@@ -122,8 +125,6 @@ export async function POST(request: NextRequest) {
     trial_period_days,
     funnel_limit,
     features,
-    addon_funnel_price_monthly,
-    addon_funnel_price_weekly,
     is_default,
     featured,
     display_order,
@@ -169,8 +170,6 @@ export async function POST(request: NextRequest) {
       trial_period_days: trial_period_days || 0,
       funnel_limit,
       features: features || null,
-      addon_funnel_price_monthly: addon_funnel_price_monthly || null,
-      addon_funnel_price_weekly: addon_funnel_price_weekly || null,
       is_active: true,
       is_default: is_default || false,
       featured: featured || false,

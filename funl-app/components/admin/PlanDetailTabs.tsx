@@ -10,12 +10,11 @@ interface Plan {
   slug: string
   price_monthly: number
   price_weekly: number
+  billing_period: 'monthly' | 'weekly'
   funnel_limit: number
   trial_period_days: number
   description: string | null
   features: string[]
-  addon_funnel_price_monthly: number
-  addon_funnel_price_weekly: number
 }
 
 interface PlanDetailTabsProps {
@@ -140,6 +139,19 @@ export function PlanDetailTabs({ plan }: PlanDetailTabsProps) {
                 </p>
               </Box>
 
+              {/* Billing Period */}
+              <Box>
+                <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2 })}>
+                  Default Billing Period
+                </h3>
+                <p className={css({ fontSize: 'lg', fontWeight: 'semibold', textTransform: 'capitalize' })}>
+                  {plan.billing_period}
+                </p>
+                <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+                  Customers can choose at checkout
+                </p>
+              </Box>
+
               {/* Features */}
               <Box>
                 <h3 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2 })}>
@@ -180,30 +192,6 @@ export function PlanDetailTabs({ plan }: PlanDetailTabsProps) {
               </Box>
             )}
 
-            {/* Addon Pricing */}
-            <Box pt={6} borderTopWidth="1px" borderColor="border.default">
-              <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold', mb: 4 })}>
-                Addon Funnel Pricing
-              </h3>
-              <Grid columns={2} gap={6}>
-                <Box>
-                  <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2 })}>
-                    Monthly (per funnel)
-                  </h4>
-                  <p className={css({ fontSize: 'lg', fontWeight: 'semibold' })}>
-                    {formatCurrency(plan.addon_funnel_price_monthly)}
-                  </p>
-                </Box>
-                <Box>
-                  <h4 className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 2 })}>
-                    Weekly (per funnel)
-                  </h4>
-                  <p className={css({ fontSize: 'lg', fontWeight: 'semibold' })}>
-                    {formatCurrency(plan.addon_funnel_price_weekly)}
-                  </p>
-                </Box>
-              </Grid>
-            </Box>
           </Box>
         )}
 

@@ -3,22 +3,23 @@ import { css } from '@/styled-system/css'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { SubscriptionsTable } from '@/components/admin/SubscriptionsTable'
 import { AssignSubscriptionDialog } from '@/components/admin/AssignSubscriptionDialog'
+import { getSubscriptionsWithStats } from '@/lib/admin/analytics'
 
 export default async function SubscriptionsPage() {
   const supabase = await createClient()
 
-  // Fetch subscription plans for the assign dialog
-  const { data: plans } = await supabase
-    .from('subscription_plans')
-    .select('*')
-    .eq('is_active', true)
-    .order('price_monthly', { ascending: true })
-
-  // Fetch initial subscriptions data (client component will handle filtering)
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/subscriptions`, {
-    cache: 'no-store'
-  })
-  const { subscriptions, stats } = await response.json()
+  // Fetch subscription plans and subscriptions data in parallel
+  const [
+    { data: plans },
+    { subscriptions, stats }
+  ] = await Promise.all([
+    supabase
+      .from('subscription_plans')
+      .select('*')
+      .eq('is_active', true)
+      .order('price_monthly', { ascending: true }),
+    getSubscriptionsWithStats()
+  ])
 
   return (
     <Box>

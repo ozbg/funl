@@ -21,6 +21,10 @@ export function AdminNav() {
       exact: true
     },
     {
+      href: '/admin/businesses',
+      label: 'Businesses'
+    },
+    {
       href: '/admin/orders',
       label: 'Orders'
     },

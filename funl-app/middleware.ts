@@ -52,9 +52,40 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protected routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/account')) {
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Check if user has confirmed email
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('email_confirmed_at, onboarding_completed')
+      .eq('id', user.id)
+      .single()
+
+    // If email not confirmed, redirect to confirm-email page
+    if (!business?.email_confirmed_at && request.nextUrl.pathname !== '/confirm-email') {
+      return NextResponse.redirect(new URL('/confirm-email', request.url))
+    }
+
+    // If email confirmed but onboarding not completed, redirect to appropriate step
+    if (business?.email_confirmed_at && !business?.onboarding_completed) {
+      // Check if they have a subscription
+      const { data: subscription } = await supabase
+        .from('subscription_history')
+        .select('id')
+        .eq('business_id', user.id)
+        .in('status', ['active', 'trialing'])
+        .single()
+
+      if (!subscription && !['/select-plan', '/onboarding'].includes(request.nextUrl.pathname)) {
+        // No subscription, redirect to plan selection
+        return NextResponse.redirect(new URL('/select-plan', request.url))
+      } else if (subscription && request.nextUrl.pathname !== '/onboarding') {
+        // Has subscription but onboarding not complete
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      }
     }
   }
 

@@ -77,11 +77,8 @@ export default function SignupPage() {
         throw new Error(data.error || 'Signup failed')
       }
 
-      // Refresh the session
-      await supabase.auth.getSession()
-      
-      router.push('/dashboard')
-      router.refresh()
+      // Redirect to email confirmation page
+      router.push(`/confirm-email?email=${encodeURIComponent(formData.email)}`)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {

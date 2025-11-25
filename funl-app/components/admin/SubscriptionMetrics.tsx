@@ -5,18 +5,20 @@ import { css } from '@/styled-system/css'
 
 interface SubscriptionData {
   total_subscriptions: number
-  active_subscriptions: number
-  trialing_subscriptions: number
-  canceled_subscriptions: number
-  expired_subscriptions: number
-  churn_rate: number
-  trial_conversion_rate: number
-  plan_distribution: Array<{
-    plan_name: string
-    count: number
-    percentage: number
-  }>
+  status_breakdown: {
+    active: number
+    trialing: number
+    canceled: number
+    past_due: number
+  }
   new_subscriptions: number
+  canceled_subscriptions: number
+  churn_rate_percent: number
+  trial_conversion_rate_percent: number
+  trials_started: number
+  trials_converted: number
+  plan_distribution: Record<string, { count: number; name: string }>
+  period_days: number
 }
 
 interface SubscriptionMetricsProps {
@@ -37,9 +39,19 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
     )
   }
 
-  const formatPercent = (value: number) => {
+  const formatPercent = (value: number | undefined) => {
+    if (value === undefined || value === null) return 'N/A'
     return `${value.toFixed(1)}%`
   }
+
+  // Convert plan_distribution object to array with percentages
+  const planDistArray = Object.entries(data.plan_distribution).map(([id, info]) => ({
+    plan_name: info.name,
+    count: info.count,
+    percentage: data.status_breakdown.active + data.status_breakdown.trialing > 0
+      ? (info.count / (data.status_breakdown.active + data.status_breakdown.trialing)) * 100
+      : 0
+  }))
 
   return (
     <Box bg="bg.default" p={6} rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default">
@@ -54,7 +66,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
             Active Subscriptions
           </p>
           <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'green.600' })}>
-            {data.active_subscriptions}
+            {data.status_breakdown.active}
           </p>
         </Box>
 
@@ -64,14 +76,14 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
             In Trial
           </p>
           <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'blue.600' })}>
-            {data.trialing_subscriptions}
+            {data.status_breakdown.trialing}
           </p>
         </Box>
 
         {/* New Subscriptions */}
         <Box>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
-            New (30d)
+            New ({data.period_days}d)
           </p>
           <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
             {data.new_subscriptions}
@@ -81,7 +93,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
         {/* Canceled */}
         <Box>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
-            Canceled (30d)
+            Canceled ({data.period_days}d)
           </p>
           <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'red.600' })}>
             {data.canceled_subscriptions}
@@ -97,9 +109,9 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
             <p className={css({
               fontSize: 'xl',
               fontWeight: 'semibold',
-              color: data.churn_rate > 5 ? 'red.600' : data.churn_rate > 2 ? 'yellow.600' : 'green.600'
+              color: data.churn_rate_percent > 5 ? 'red.600' : data.churn_rate_percent > 2 ? 'yellow.600' : 'green.600'
             })}>
-              {formatPercent(data.churn_rate)}
+              {formatPercent(data.churn_rate_percent)}
             </p>
           </Flex>
         </Box>
@@ -112,21 +124,24 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
           <p className={css({
             fontSize: 'xl',
             fontWeight: 'semibold',
-            color: data.trial_conversion_rate > 50 ? 'green.600' : data.trial_conversion_rate > 30 ? 'yellow.600' : 'red.600'
+            color: data.trial_conversion_rate_percent > 50 ? 'green.600' : data.trial_conversion_rate_percent > 30 ? 'yellow.600' : 'red.600'
           })}>
-            {formatPercent(data.trial_conversion_rate)}
+            {formatPercent(data.trial_conversion_rate_percent)}
+          </p>
+          <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
+            {data.trials_converted} of {data.trials_started}
           </p>
         </Box>
       </Grid>
 
       {/* Plan Distribution */}
-      {data.plan_distribution && data.plan_distribution.length > 0 && (
+      {planDistArray.length > 0 && (
         <Box mt={6} pt={6} borderTopWidth="1px" borderColor="border.default">
           <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 3 })}>
             Plan Distribution
           </p>
           <Box>
-            {data.plan_distribution.map((plan) => (
+            {planDistArray.map((plan) => (
               <Flex key={plan.plan_name} justify="space-between" align="center" mb={3}>
                 <Box flex="1">
                   <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}>

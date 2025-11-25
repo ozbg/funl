@@ -7,12 +7,11 @@ interface RevenueData {
   mrr: number
   arr: number
   total_revenue: number
-  revenue_by_period: Array<{
-    date: string
-    revenue: number
-  }>
-  growth_rate: number
-  average_revenue_per_user: number
+  monthly_revenue: number
+  weekly_recurring_revenue: number
+  mrr_growth_percent?: number
+  active_subscriptions: number
+  period_days: number
 }
 
 interface RevenueMetricsProps {
@@ -42,7 +41,8 @@ export function RevenueMetrics({ data }: RevenueMetricsProps) {
     }).format(amount)
   }
 
-  const formatPercent = (value: number) => {
+  const formatPercent = (value: number | undefined) => {
+    if (value === undefined || value === null) return 'N/A'
     return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`
   }
 
@@ -61,6 +61,15 @@ export function RevenueMetrics({ data }: RevenueMetricsProps) {
           <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' })}>
             {formatCurrency(data.mrr)}
           </p>
+          {data.mrr_growth_percent !== undefined && (
+            <p className={css({
+              fontSize: 'sm',
+              color: data.mrr_growth_percent >= 0 ? 'green.600' : 'red.600',
+              mt: 1
+            })}>
+              {formatPercent(data.mrr_growth_percent)} vs {data.period_days}d ago
+            </p>
+          )}
         </Box>
 
         {/* ARR */}
@@ -76,60 +85,43 @@ export function RevenueMetrics({ data }: RevenueMetricsProps) {
         {/* Total Revenue */}
         <Box>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
-            Total Revenue (30d)
+            Total Revenue
           </p>
           <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
             {formatCurrency(data.total_revenue)}
           </p>
         </Box>
 
-        {/* Growth Rate */}
+        {/* Monthly Revenue */}
         <Box>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
-            Growth Rate
-          </p>
-          <Flex align="center" gap={2}>
-            <p className={css({
-              fontSize: 'xl',
-              fontWeight: 'semibold',
-              color: data.growth_rate >= 0 ? 'green.600' : 'red.600'
-            })}>
-              {formatPercent(data.growth_rate)}
-            </p>
-          </Flex>
-        </Box>
-
-        {/* ARPU */}
-        <Box gridColumn="span 2">
-          <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
-            Average Revenue Per User
+            This Month
           </p>
           <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
-            {formatCurrency(data.average_revenue_per_user)}
+            {formatCurrency(data.monthly_revenue)}
+          </p>
+        </Box>
+
+        {/* Active Subscriptions */}
+        <Box>
+          <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
+            Active Subscriptions
+          </p>
+          <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
+            {data.active_subscriptions}
+          </p>
+        </Box>
+
+        {/* Weekly Revenue */}
+        <Box>
+          <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
+            Weekly Recurring
+          </p>
+          <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
+            {formatCurrency(data.weekly_recurring_revenue)}
           </p>
         </Box>
       </Grid>
-
-      {/* Revenue Chart Placeholder */}
-      {data.revenue_by_period && data.revenue_by_period.length > 0 && (
-        <Box mt={6} pt={6} borderTopWidth="1px" borderColor="border.default">
-          <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.muted', mb: 3 })}>
-            Revenue Trend (Last 30 Days)
-          </p>
-          <Box
-            h="120px"
-            bg="bg.muted"
-            rounded="md"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>
-              Chart visualization (implement with charting library)
-            </p>
-          </Box>
-        </Box>
-      )}
     </Box>
   )
 }

@@ -12,8 +12,7 @@ export function CreatePlanDialog() {
   const [funnelLimit, setFunnelLimit] = useState(3)
   const [priceMonthly, setPriceMonthly] = useState(0)
   const [priceWeekly, setPriceWeekly] = useState(0)
-  const [addonFunnelPriceMonthly, setAddonFunnelPriceMonthly] = useState(0)
-  const [addonFunnelPriceWeekly, setAddonFunnelPriceWeekly] = useState(0)
+  const [defaultBillingPeriod, setDefaultBillingPeriod] = useState<'monthly' | 'weekly'>('monthly')
   const [trialPeriodDays, setTrialPeriodDays] = useState(14)
   const [features, setFeatures] = useState<string[]>([''])
   const [isDefault, setIsDefault] = useState(false)
@@ -22,6 +21,7 @@ export function CreatePlanDialog() {
   const [notes, setNotes] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [showReasonTooltip, setShowReasonTooltip] = useState(false)
 
   const handleNameChange = (value: string) => {
     setName(value)
@@ -72,8 +72,7 @@ export function CreatePlanDialog() {
           funnel_limit: funnelLimit,
           price_monthly: Math.round(priceMonthly * 100),
           price_weekly: Math.round(priceWeekly * 100),
-          addon_funnel_price_monthly: Math.round(addonFunnelPriceMonthly * 100),
-          addon_funnel_price_weekly: Math.round(addonFunnelPriceWeekly * 100),
+          billing_period: defaultBillingPeriod, // Default - customers can choose at checkout
           trial_period_days: trialPeriodDays,
           features: cleanFeatures,
           is_default: isDefault,
@@ -105,8 +104,7 @@ export function CreatePlanDialog() {
     setFunnelLimit(3)
     setPriceMonthly(0)
     setPriceWeekly(0)
-    setAddonFunnelPriceMonthly(0)
-    setAddonFunnelPriceWeekly(0)
+    setDefaultBillingPeriod('monthly')
     setTrialPeriodDays(14)
     setFeatures([''])
     setIsDefault(false)
@@ -180,8 +178,11 @@ export function CreatePlanDialog() {
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.subtle" borderWidth="1px" borderColor="red.600" borderLeftWidth="3px" rounded="md">
+                <Flex gap={2} align="start">
+                  <span className={css({ color: 'red.600', fontSize: 'sm', fontWeight: 'semibold' })}>⚠</span>
+                  <p className={css({ fontSize: 'sm', color: 'fg.default', flex: 1 })}>{error}</p>
+                </Flex>
               </Box>
             )}
 
@@ -244,21 +245,6 @@ export function CreatePlanDialog() {
 
             <Flex gap={4} mb={4}>
               <Box flex={1}>
-                <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>Addon Funnel Monthly ($)</label>
-                <input type="number" value={addonFunnelPriceMonthly} onChange={(e) => setAddonFunnelPriceMonthly(parseFloat(e.target.value) || 0)} step="0.01" min="0"
-                  className={css({ w: 'full', px: 3, py: 2, fontSize: 'sm', bg: 'bg.default', borderWidth: '1px', borderColor: 'border.default', rounded: 'md', outline: 'none', _focus: { borderColor: 'accent.default', ring: '2px', ringColor: 'accent.default', ringOffset: '0' } })}
-                />
-              </Box>
-              <Box flex={1}>
-                <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>Addon Funnel Weekly ($)</label>
-                <input type="number" value={addonFunnelPriceWeekly} onChange={(e) => setAddonFunnelPriceWeekly(parseFloat(e.target.value) || 0)} step="0.01" min="0"
-                  className={css({ w: 'full', px: 3, py: 2, fontSize: 'sm', bg: 'bg.default', borderWidth: '1px', borderColor: 'border.default', rounded: 'md', outline: 'none', _focus: { borderColor: 'accent.default', ring: '2px', ringColor: 'accent.default', ringOffset: '0' } })}
-                />
-              </Box>
-            </Flex>
-
-            <Flex gap={4} mb={4}>
-              <Box flex={1}>
                 <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>Funnel Limit *</label>
                 <input type="number" value={funnelLimit} onChange={(e) => setFunnelLimit(parseInt(e.target.value) || 1)} min="1"
                   className={css({ w: 'full', px: 3, py: 2, fontSize: 'sm', bg: 'bg.default', borderWidth: '1px', borderColor: 'border.default', rounded: 'md', outline: 'none', _focus: { borderColor: 'accent.default', ring: '2px', ringColor: 'accent.default', ringOffset: '0' } })}
@@ -271,6 +257,28 @@ export function CreatePlanDialog() {
                 />
               </Box>
             </Flex>
+
+            <Box mb={4}>
+              <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>
+                Default Billing Period *
+              </label>
+              <p className={css({ fontSize: 'xs', color: 'fg.muted', mb: 2 })}>
+                Customers can choose their preferred billing frequency at checkout
+              </p>
+              <select
+                value={defaultBillingPeriod}
+                onChange={(e) => setDefaultBillingPeriod(e.target.value as 'monthly' | 'weekly')}
+                className={css({
+                  w: 'full', px: 3, py: 2, fontSize: 'sm', bg: 'bg.default',
+                  borderWidth: '1px', borderColor: 'border.default', rounded: 'md', outline: 'none',
+                  cursor: 'pointer',
+                  _focus: { borderColor: 'accent.default', ring: '2px', ringColor: 'accent.default', ringOffset: '0' }
+                })}
+              >
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </Box>
 
             <Flex gap={6} mb={4}>
               <label className={css({ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' })}>
@@ -303,8 +311,60 @@ export function CreatePlanDialog() {
             </Box>
 
             <Box mb={4}>
-              <label className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', mb: 2 })}>Reason * (min 10 characters)</label>
+              <Flex align="center" gap={2} mb={2}>
+                <label className={css({ fontSize: 'sm', fontWeight: 'medium' })}>Reason * (min 10 characters)</label>
+                <Box position="relative">
+                  <span
+                    onMouseEnter={() => setShowReasonTooltip(true)}
+                    onMouseLeave={() => setShowReasonTooltip(false)}
+                    className={css({
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      w: 5,
+                      h: 5,
+                      borderRadius: '50%',
+                      bg: 'gray.400',
+                      color: 'white',
+                      fontSize: 'sm',
+                      fontWeight: 'bold',
+                      cursor: 'help',
+                      _hover: { bg: 'gray.500' }
+                    })}
+                  >
+                    ?
+                  </span>
+                  {showReasonTooltip && (
+                    <Box
+                      position="absolute"
+                      left="0"
+                      top="100%"
+                      mt={2}
+                      w="96"
+                      maxW="500px"
+                      bg="gray.900"
+                      color="white"
+                      rounded="md"
+                      p={4}
+                      fontSize="sm"
+                      boxShadow="lg"
+                      zIndex={100}
+                    >
+                      <p className={css({ fontWeight: 'semibold', mb: 2, fontSize: 'md' })}>Audit trail for billing changes</p>
+                      <p className={css({ mb: 2, color: 'gray.300' })}>Examples:</p>
+                      <ul className={css({ listStyle: 'disc', pl: 5, lineHeight: '1.6', color: 'gray.300' })}>
+                        <li>Initial plan setup for launch</li>
+                        <li>Price increase based on competitor analysis</li>
+                        <li>Holiday promotion - December 2024</li>
+                        <li>Fixed funnel limit per customer feedback</li>
+                        <li>A/B test variant - testing higher price point</li>
+                      </ul>
+                    </Box>
+                  )}
+                </Box>
+              </Flex>
               <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2}
+                placeholder="e.g., Initial plan setup for launch"
                 className={css({ w: 'full', px: 3, py: 2, fontSize: 'sm', bg: 'bg.default', borderWidth: '1px', borderColor: 'border.default', rounded: 'md', outline: 'none', resize: 'vertical', _focus: { borderColor: 'accent.default', ring: '2px', ringColor: 'accent.default', ringOffset: '0' } })}
               />
               <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>{reason.length} / 10 characters minimum</p>

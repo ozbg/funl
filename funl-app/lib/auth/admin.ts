@@ -50,8 +50,12 @@ export async function checkAdminStatus(userEmail: string) {
 export async function isUserAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) return false
-  
+
   return checkAdminStatus(user.email!)
+}
+
+export async function isAdmin() {
+  return isUserAdmin()
 }

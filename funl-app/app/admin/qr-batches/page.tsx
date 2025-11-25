@@ -45,29 +45,29 @@ export default async function QRBatchesPage() {
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Available</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'green.600' })}>{inventory.availableCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>{inventory.availableCodes.toLocaleString()}</p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Assigned</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'blue.600' })}>{inventory.assignedCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>{inventory.assignedCodes.toLocaleString()}</p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Reserved</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'orange.600' })}>{inventory.reservedCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>{inventory.reservedCodes.toLocaleString()}</p>
         </Box>
       </Grid>
 
       {/* Low Stock Alerts */}
       {inventory.lowStockAlerts.length > 0 && (
-        <Box bg="orange.50" rounded="lg" borderWidth="1px" borderColor="orange.200" p={4} mb={6}>
-          <p className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'orange.800', mb: 2 })}>
+        <Box bg="bg.default" rounded="lg" borderWidth="1px" borderColor="border.default" p={4} mb={6}>
+          <p className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'orange.600', mb: 2 })}>
             Low Stock Alerts ({inventory.lowStockAlerts.length})
           </p>
           <Box>
             {inventory.lowStockAlerts.map((alert) => (
-              <p key={alert.batchId} className={css({ fontSize: 'sm', color: 'orange.700' })}>
+              <p key={alert.batchId} className={css({ fontSize: 'sm', color: 'orange.600' })}>
                 {alert.batchNumber} ({alert.size}): {alert.available} remaining
               </p>
             ))}

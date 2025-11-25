@@ -6,35 +6,31 @@ import { Button } from '@/components/ui/button'
 import { RevenueMetrics } from '@/components/admin/RevenueMetrics'
 import { SubscriptionMetrics } from '@/components/admin/SubscriptionMetrics'
 import { InventoryAlertsPanel } from '@/components/admin/InventoryAlertsPanel'
+import { getRevenueAnalytics, getSubscriptionAnalytics } from '@/lib/admin/analytics'
 
 export default async function AdminOverviewPage() {
   const supabase = await createClient()
 
-  // Get quick stats
+  // Get quick stats and analytics data in parallel
   const [
     { count: businessCount },
     { count: categoryCount },
     { count: funnelTypeCount },
     { count: qrPresetCount },
     { count: qrBatchCount },
-    { count: totalFunnelsCount }
+    { count: totalFunnelsCount },
+    revenueData,
+    subscriptionData
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
     supabase.from('business_categories').select('*', { count: 'exact', head: true }),
     supabase.from('funnel_types').select('*', { count: 'exact', head: true }),
     supabase.from('qr_code_presets').select('*', { count: 'exact', head: true }),
     supabase.from('qr_code_batches').select('*', { count: 'exact', head: true }),
-    supabase.from('funnels').select('*', { count: 'exact', head: true })
+    supabase.from('funnels').select('*', { count: 'exact', head: true }),
+    getRevenueAnalytics(30),
+    getSubscriptionAnalytics(30)
   ])
-
-  // Fetch analytics data
-  const [revenueRes, subscriptionRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/analytics/revenue?period=30`, { cache: 'no-store' }),
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/analytics/subscriptions?period=30`, { cache: 'no-store' })
-  ])
-
-  const revenueData = revenueRes.ok ? await revenueRes.json() : null
-  const subscriptionData = subscriptionRes.ok ? await subscriptionRes.json() : null
 
   const adminCards = [
     {

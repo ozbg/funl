@@ -104,7 +104,7 @@ export default async function FunnelDetailPage({ params }: PageProps) {
                   QR Code Locked
                 </h3>
                 <p className={css({ fontSize: 'sm', color: 'amber.800', mb: 2 })}>
-                  This funnel&apos;s sticker has been downloaded and potentially distributed. The QR code cannot be changed to prevent invalidating printed stickers in circulation.
+                  This funnel's sticker has been downloaded and potentially distributed. The QR code cannot be changed to prevent invalidating printed stickers in circulation.
                 </p>
                 <Flex gap={4} fontSize="xs" color="amber.700">
                   <span>First downloaded: {new Date(funnelWithCode.sticker_downloaded_at).toLocaleDateString()}</span>

@@ -135,8 +135,8 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                   <span className={css({
                     px: 2,
                     py: 1,
-                    bg: 'blue.100',
-                    color: 'blue.800',
+                    bg: 'bg.subtle',
+                    color: 'blue.600',
                     rounded: 'sm',
                     fontSize: 'xs',
                     fontWeight: 'medium',
@@ -160,8 +160,8 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                 <span className={css({
                   px: 2,
                   py: 1,
-                  bg: getStatusColor(batch.status) === 'green' ? 'green.100' : 'gray.100',
-                  color: getStatusColor(batch.status) === 'green' ? 'green.800' : 'gray.800',
+                  bg: 'bg.subtle',
+                  color: getStatusColor(batch.status) === 'green' ? 'green.600' : 'fg.muted',
                   rounded: 'sm',
                   fontSize: 'xs'
                 })}>
@@ -182,11 +182,12 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                     className={css({
                       px: 2,
                       py: 1,
-                      bg: 'green.600',
-                      color: 'white',
+                      bg: 'bg.subtle',
+                      color: 'accent.default',
                       rounded: 'sm',
                       fontSize: 'xs',
-                      fontWeight: 'medium'
+                      fontWeight: 'medium',
+                      _hover: { bg: 'bg.muted' }
                     })}
                     onClick={() => router.push(`/admin/qr-batches/${batch.id}`)}
                   >
@@ -200,7 +201,8 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                       border: '1px solid',
                       borderColor: 'border.default',
                       rounded: 'sm',
-                      fontSize: 'xs'
+                      fontSize: 'xs',
+                      _hover: { bg: 'bg.muted' }
                     })}
                     onClick={() => window.open(`/api/admin/qr-codes/batches/${batch.id}/export`, '_blank')}
                   >
@@ -211,10 +213,11 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                     className={css({
                       px: 2,
                       py: 1,
-                      bg: 'blue.600',
-                      color: 'white',
+                      bg: 'bg.subtle',
+                      color: 'blue.600',
                       rounded: 'sm',
-                      fontSize: 'xs'
+                      fontSize: 'xs',
+                      _hover: { bg: 'bg.muted' }
                     })}
                     onClick={() => setExportDialogBatch(batch)}
                   >

@@ -12,7 +12,8 @@ interface Plan {
   slug: string
   description: string | null
   price_monthly: number
-  billing_period: string
+  price_weekly: number
+  billing_period: 'monthly' | 'weekly'
   funnel_limit: number
   trial_period_days: number
   is_active: boolean
@@ -139,12 +140,12 @@ export function PlansTable({ initialPlans }: PlansTableProps) {
                   )}
                   <Flex gap={2} mt={1}>
                     {plan.is_default && (
-                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'blue.100', color: 'blue.700', rounded: 'md' })}>
+                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.subtle', color: 'blue.600', rounded: 'md', fontWeight: 'medium' })}>
                         Default
                       </span>
                     )}
                     {plan.featured && (
-                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'yellow.100', color: 'yellow.700', rounded: 'md' })}>
+                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.subtle', color: 'orange.600', rounded: 'md', fontWeight: 'medium' })}>
                         Featured
                       </span>
                     )}
@@ -172,8 +173,8 @@ export function PlansTable({ initialPlans }: PlansTableProps) {
                     fontSize: 'xs',
                     fontWeight: 'medium',
                     rounded: 'full',
-                    color: plan.is_active ? 'green.700' : 'gray.700',
-                    bg: plan.is_active ? 'green.100' : 'gray.100'
+                    color: plan.is_active ? 'green.600' : 'fg.muted',
+                    bg: 'bg.subtle'
                   })}>
                     {plan.is_active ? 'Active' : 'Inactive'}
                   </span>

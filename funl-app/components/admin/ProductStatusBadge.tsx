@@ -16,8 +16,8 @@ export function ProductStatusBadge({ isActive, size = 'md' }: ProductStatusBadge
         fontSize: size === 'sm' ? 'xs' : 'sm',
         fontWeight: 'medium',
         rounded: 'full',
-        color: isActive ? 'green.700' : 'gray.700',
-        bg: isActive ? 'green.100' : 'gray.100'
+        color: isActive ? 'green.600' : 'fg.muted',
+        bg: 'bg.subtle'
       })}
     >
       {isActive ? 'Active' : 'Inactive'}

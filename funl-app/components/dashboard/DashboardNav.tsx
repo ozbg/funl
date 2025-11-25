@@ -53,6 +53,10 @@ export function DashboardNav({ businessId }: DashboardNavProps) {
       label: 'Analytics'
     },
     {
+      href: '/account/subscription',
+      label: 'Subscription'
+    },
+    {
       href: '/dashboard/settings',
       label: 'Settings'
     }

@@ -286,7 +286,7 @@ export default function ConnectStickerPage() {
           ) : purchasedStickers.length === 0 ? (
             <Box textAlign="center" py={8}>
               <p className={css({ color: 'fg.muted', mb: 4 })}>
-                You don&apos;t have any purchased stickers yet.
+                You don't have any purchased stickers yet.
               </p>
               <button
                 onClick={() => router.push(`/dashboard/stickers/buy?funnelId=${funnelId}`)}
@@ -371,7 +371,7 @@ export default function ConnectStickerPage() {
               QR Scanner Coming Soon
             </p>
             <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>
-              This feature will allow you to scan your sticker&apos;s QR code directly
+              This feature will allow you to scan your sticker's QR code directly
             </p>
           </Box>
 
@@ -430,7 +430,7 @@ export default function ConnectStickerPage() {
 
             <Box p={4} bg="amber.subtle" borderWidth="1px" borderColor="amber.default">
               <p className={css({ fontSize: 'sm', color: 'amber.text' })}>
-                <strong>Security Check:</strong> For your protection, we&apos;ll send a verification
+                <strong>Security Check:</strong> For your protection, we'll send a verification
                 code to your email after validating this sticker belongs to you.
               </p>
             </Box>
@@ -464,7 +464,7 @@ export default function ConnectStickerPage() {
                 Check Your Email
               </h3>
               <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>
-                We&apos;ve sent a 6-digit verification code to your email address.
+                We've sent a 6-digit verification code to your email address.
               </p>
             </Box>
 
