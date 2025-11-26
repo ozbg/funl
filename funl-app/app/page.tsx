@@ -9,7 +9,19 @@ export default async function Home() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    redirect('/dashboard')
+    // Check if user is an admin
+    const { data: admin } = await supabase
+      .from('admins')
+      .select('is_active')
+      .eq('email', user.email!)
+      .eq('is_active', true)
+      .single()
+
+    if (admin) {
+      redirect('/admin')
+    } else {
+      redirect('/dashboard')
+    }
   }
 
   return (

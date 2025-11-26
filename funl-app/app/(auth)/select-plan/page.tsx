@@ -126,13 +126,13 @@ export default function SelectPlanPage() {
   }
 
   return (
-    <Box bg="bg.default" py={12} px={4} minH="100vh">
-      <Box mx="auto" maxW="6xl">
-        <Box textAlign="center" mb={12}>
-          <h1 className={css({ fontSize: '4xl', fontWeight: 'bold', color: 'fg.default', mb: 4 })}>
+    <Box bg="bg.default" py={{ base: 8, md: 12 }} px={4} minH="100vh">
+      <Box mx="auto" maxW="7xl" w="full">
+        <Box textAlign="center" mb={{ base: 8, md: 12 }}>
+          <h1 className={css({ fontSize: { base: '3xl', md: '4xl', lg: '5xl' }, fontWeight: 'bold', color: 'fg.default', mb: 4 })}>
             Choose your plan
           </h1>
-          <p className={css({ fontSize: 'lg', color: 'fg.muted', mb: 6 })}>
+          <p className={css({ fontSize: { base: 'md', md: 'lg' }, color: 'fg.muted', mb: 6, maxW: '2xl', mx: 'auto' })}>
             Start with a free trial. No credit card required.
           </p>
 
@@ -141,16 +141,18 @@ export default function SelectPlanPage() {
             <button
               onClick={() => setSelectedBillingPeriod('monthly')}
               className={css({
-                px: 6,
-                py: 2,
-                fontSize: 'sm',
+                px: { base: 4, md: 6 },
+                py: { base: 2, md: 3 },
+                fontSize: { base: 'sm', md: 'md' },
                 fontWeight: 'medium',
-                rounded: 'md',
+                rounded: 'lg',
                 bg: selectedBillingPeriod === 'monthly' ? 'accent.default' : 'bg.subtle',
                 color: selectedBillingPeriod === 'monthly' ? 'white' : 'fg.default',
                 cursor: 'pointer',
+                transition: 'all 0.2s',
                 _hover: {
                   bg: selectedBillingPeriod === 'monthly' ? 'accent.emphasized' : 'bg.muted',
+                  transform: 'translateY(-1px)',
                 },
               })}
             >
@@ -159,16 +161,18 @@ export default function SelectPlanPage() {
             <button
               onClick={() => setSelectedBillingPeriod('weekly')}
               className={css({
-                px: 6,
-                py: 2,
-                fontSize: 'sm',
+                px: { base: 4, md: 6 },
+                py: { base: 2, md: 3 },
+                fontSize: { base: 'sm', md: 'md' },
                 fontWeight: 'medium',
-                rounded: 'md',
+                rounded: 'lg',
                 bg: selectedBillingPeriod === 'weekly' ? 'accent.default' : 'bg.subtle',
                 color: selectedBillingPeriod === 'weekly' ? 'white' : 'fg.default',
                 cursor: 'pointer',
+                transition: 'all 0.2s',
                 _hover: {
                   bg: selectedBillingPeriod === 'weekly' ? 'accent.emphasized' : 'bg.muted',
+                  transform: 'translateY(-1px)',
                 },
               })}
             >
@@ -177,59 +181,72 @@ export default function SelectPlanPage() {
           </Flex>
         </Box>
 
-        <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
+        <Grid
+          columns={{ base: 1, md: 2, lg: 3 }}
+          gap={{ base: 6, md: 8 }}
+          w="full"
+          maxW="100%"
+        >
           {plans.map((plan) => (
             <Box
               key={plan.id}
               bg="bg.default"
               borderWidth="2px"
               borderColor={plan.featured ? 'accent.default' : 'border.default'}
-              rounded="lg"
-              p={6}
+              rounded="xl"
+              p={{ base: 6, md: 8 }}
               position="relative"
+              transition="all 0.3s"
+              boxShadow={plan.featured ? 'lg' : 'md'}
+              w="full"
               className={css({
-                _hover: { borderColor: 'accent.default' },
+                _hover: {
+                  borderColor: 'accent.default',
+                  transform: 'translateY(-4px)',
+                  boxShadow: 'xl',
+                },
               })}
             >
               {plan.featured && (
                 <Box
                   position="absolute"
-                  top="-3"
+                  top={{ base: '-3', md: '-4' }}
                   left="50%"
                   transform="translateX(-50%)"
                   bg="accent.default"
                   color="white"
-                  px={3}
-                  py={1}
+                  px={{ base: 3, md: 4 }}
+                  py={{ base: 1, md: 1.5 }}
                   rounded="full"
-                  fontSize="xs"
-                  fontWeight="medium"
+                  fontSize={{ base: 'xs', md: 'sm' }}
+                  fontWeight="semibold"
+                  boxShadow="md"
                 >
                   Popular
                 </Box>
               )}
 
-              <Box mb={4}>
-                <h3 className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default', mb: 2 })}>
+              <Box mb={6}>
+                <h3 className={css({ fontSize: { base: 'xl', md: '2xl' }, fontWeight: 'bold', color: 'fg.default', mb: 2 })}>
                   {plan.name}
                 </h3>
                 {plan.description && (
-                  <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 4 })}>
+                  <p className={css({ fontSize: { base: 'xs', md: 'sm' }, color: 'fg.muted', mb: 4, minH: '2.5rem' })}>
                     {plan.description}
                   </p>
                 )}
 
                 <Box mb={4}>
                   <Flex align="baseline" gap={1}>
-                    <span className={css({ fontSize: '4xl', fontWeight: 'bold', color: 'fg.default' })}>
+                    <span className={css({ fontSize: { base: '3xl', md: '4xl', lg: '5xl' }, fontWeight: 'bold', color: 'fg.default' })}>
                       {formatPrice(getPrice(plan))}
                     </span>
-                    <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>
+                    <span className={css({ fontSize: { base: 'xs', md: 'sm' }, color: 'fg.muted' })}>
                       /{selectedBillingPeriod === 'monthly' ? 'month' : 'week'}
                     </span>
                   </Flex>
                   {plan.trial_period_days > 0 && (
-                    <p className={css({ fontSize: 'sm', color: 'green.600', fontWeight: 'medium', mt: 2 })}>
+                    <p className={css({ fontSize: { base: 'xs', md: 'sm' }, color: 'green.600', fontWeight: 'semibold', mt: 2 })}>
                       {plan.trial_period_days} day free trial
                     </p>
                   )}
@@ -237,17 +254,17 @@ export default function SelectPlanPage() {
               </Box>
 
               <Box mb={6}>
-                <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', mb: 3 })}>
+                <p className={css({ fontSize: { base: 'xs', md: 'sm' }, fontWeight: 'semibold', color: 'fg.default', mb: 3 })}>
                   Features:
                 </p>
-                <ul className={css({ fontSize: 'sm', color: 'fg.muted', lineHeight: '2' })}>
-                  <li className={css({ display: 'flex', gap: 2 })}>
-                    <span className={css({ color: 'green.600' })}>✓</span>
+                <ul className={css({ fontSize: { base: 'xs', md: 'sm' }, color: 'fg.muted', lineHeight: '2' })}>
+                  <li className={css({ display: 'flex', gap: 2, alignItems: 'flex-start' })}>
+                    <span className={css({ color: 'green.600', fontWeight: 'bold', fontSize: 'lg' })}>✓</span>
                     <span>Up to {plan.funnel_limit} funnels</span>
                   </li>
                   {plan.features && plan.features.map((feature, idx) => (
-                    <li key={idx} className={css({ display: 'flex', gap: 2 })}>
-                      <span className={css({ color: 'green.600' })}>✓</span>
+                    <li key={idx} className={css({ display: 'flex', gap: 2, alignItems: 'flex-start' })}>
+                      <span className={css({ color: 'green.600', fontWeight: 'bold', fontSize: 'lg' })}>✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -259,18 +276,21 @@ export default function SelectPlanPage() {
                 disabled={processingPlanId === plan.id}
                 className={css({
                   w: 'full',
-                  py: 3,
+                  py: { base: 3, md: 4 },
                   px: 4,
                   bg: plan.featured ? 'accent.default' : 'bg.subtle',
                   color: plan.featured ? 'white' : 'fg.default',
-                  fontSize: 'sm',
-                  fontWeight: 'medium',
-                  rounded: 'md',
+                  fontSize: { base: 'sm', md: 'md' },
+                  fontWeight: 'semibold',
+                  rounded: 'lg',
                   cursor: 'pointer',
-                  borderWidth: '1px',
+                  borderWidth: '2px',
                   borderColor: plan.featured ? 'accent.default' : 'border.default',
+                  transition: 'all 0.2s',
                   _hover: {
                     bg: plan.featured ? 'accent.emphasized' : 'bg.muted',
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'md',
                   },
                   _disabled: {
                     opacity: 0.5,
@@ -284,8 +304,8 @@ export default function SelectPlanPage() {
           ))}
         </Grid>
 
-        <Box textAlign="center" mt={12}>
-          <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>
+        <Box textAlign="center" mt={{ base: 8, md: 12 }}>
+          <p className={css({ fontSize: { base: 'xs', md: 'sm' }, color: 'fg.muted' })}>
             All plans include unlimited QR codes and analytics
           </p>
         </Box>

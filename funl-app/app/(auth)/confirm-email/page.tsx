@@ -1,13 +1,24 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { createClient } from '@/lib/supabase/client'
+import { useState } from 'react'
 
 export default function ConfirmEmailPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const email = searchParams.get('email')
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   return (
     <Box bg="bg.default" py={12} px={4}>
@@ -82,17 +93,37 @@ export default function ConfirmEmailPage() {
           </p>
         </Box>
 
-        <Link
-          href="/login"
-          className={css({
-            display: 'inline-block',
-            fontSize: 'sm',
-            color: 'accent.default',
-            _hover: { color: 'accent.emphasized' }
-          })}
-        >
-          ← Back to login
-        </Link>
+        <Flex direction="column" gap={3} align="center">
+          <button
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+            className={css({
+              px: 6,
+              py: 2,
+              bg: 'accent.default',
+              color: 'white',
+              fontWeight: 'semibold',
+              fontSize: 'sm',
+              rounded: 'md',
+              _hover: { bg: 'accent.emphasized' },
+              _disabled: { opacity: 0.5, cursor: 'not-allowed' },
+              transition: 'colors',
+            })}
+          >
+            {isSigningOut ? 'Signing out...' : 'Sign out and try again'}
+          </button>
+          <Link
+            href="/login"
+            className={css({
+              display: 'inline-block',
+              fontSize: 'sm',
+              color: 'accent.default',
+              _hover: { color: 'accent.emphasized' }
+            })}
+          >
+            ← Back to login
+          </Link>
+        </Flex>
       </Box>
     </Box>
   )

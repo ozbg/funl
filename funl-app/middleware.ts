@@ -32,13 +32,9 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Admin routes - require admin privileges
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-
-    // Check if user is a platform admin
+  // Check if user is a platform admin (needed for both admin routes and protected routes)
+  let isAdmin = false
+  if (user) {
     const { data: admin } = await supabase
       .from('admins')
       .select('is_active')
@@ -46,15 +42,32 @@ export async function middleware(request: NextRequest) {
       .eq('is_active', true)
       .single()
 
-    if (!admin) {
+    isAdmin = !!admin
+  }
+
+  // Admin routes - require admin privileges
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    if (!isAdmin) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
+
+    // Admins can access admin routes without onboarding checks
+    return response
   }
 
   // Protected routes
   if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/account')) {
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Skip onboarding checks for admins - they can access dashboard directly
+    if (isAdmin) {
+      return response
     }
 
     // Check if user has confirmed email
@@ -65,7 +78,7 @@ export async function middleware(request: NextRequest) {
       .single()
 
     // If email not confirmed, redirect to confirm-email page
-    if (!business?.email_confirmed_at && request.nextUrl.pathname !== '/confirm-email') {
+    if (!business?.email_confirmed_at) {
       return NextResponse.redirect(new URL('/confirm-email', request.url))
     }
 
@@ -89,10 +102,26 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Auth routes - redirect if already logged in
+  // Auth routes - redirect logged-in users to appropriate dashboard
   if (['/login', '/signup'].includes(request.nextUrl.pathname)) {
     if (user) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      // Admins go straight to admin dashboard
+      if (isAdmin) {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      }
+
+      // Check if email is confirmed before redirecting to dashboard
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('email_confirmed_at')
+        .eq('id', user.id)
+        .single()
+
+      // Only redirect to dashboard if email is confirmed
+      if (business?.email_confirmed_at) {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
+      // If email not confirmed, let them access login/signup to sign out
     }
   }
 

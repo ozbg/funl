@@ -16,6 +16,7 @@ interface BusinessCategory {
 interface User {
   id: string
   email: string
+  email_confirmed_at: string | null
   business_name: string
   type: 'individual' | 'agency'
   phone: string | null
@@ -69,16 +70,16 @@ export function UsersTable({ users: initialUsers, categories }: UsersTableProps)
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          business_category_id: categoryId 
+        body: JSON.stringify({
+          business_category_id: categoryId
         })
       })
 
       if (response.ok) {
         const selectedCategory = categoryId ? categories.find(c => c.id === categoryId) : null
-        setUsers(prev => prev.map(user => 
-          user.id === userId ? { 
-            ...user, 
+        setUsers(prev => prev.map(user =>
+          user.id === userId ? {
+            ...user,
             business_category_id: categoryId,
             business_categories: selectedCategory || null
           } : user
@@ -86,6 +87,30 @@ export function UsersTable({ users: initialUsers, categories }: UsersTableProps)
       }
     } catch (error) {
       console.error('Error updating user category:', error)
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleValidateEmail = async (userId: string) => {
+    setLoading(userId)
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/validate-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      if (response.ok) {
+        const { user: updatedUser } = await response.json()
+        setUsers(prev => prev.map(user =>
+          user.id === userId ? {
+            ...user,
+            email_confirmed_at: updatedUser.email_confirmed_at
+          } : user
+        ))
+      }
+    } catch (error) {
+      console.error('Error validating user email:', error)
     } finally {
       setLoading(null)
     }
@@ -117,6 +142,7 @@ export function UsersTable({ users: initialUsers, categories }: UsersTableProps)
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>User</th>
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Type</th>
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Category</th>
+            <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Email</th>
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Subscription</th>
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Admin</th>
             <th className={css({ px: 4, py: 3, textAlign: 'left', fontWeight: 'medium', color: 'fg.default' })}>Contact</th>
@@ -168,6 +194,30 @@ export function UsersTable({ users: initialUsers, categories }: UsersTableProps)
                     </option>
                   ))}
                 </select>
+              </td>
+              <td className={css({ px: 4, py: 3 })}>
+                {user.email_confirmed_at ? (
+                  <span className={css({
+                    fontSize: 'xs',
+                    px: 2,
+                    py: 1,
+                    bg: 'green.subtle',
+                    color: 'green.fg',
+                    rounded: 'sm'
+                  })}>
+                    ✓ Verified
+                  </span>
+                ) : (
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    colorPalette="orange"
+                    disabled={loading === user.id}
+                    onClick={() => handleValidateEmail(user.id)}
+                  >
+                    {loading === user.id ? '...' : 'Verify'}
+                  </Button>
+                )}
               </td>
               <td className={css({ px: 4, py: 3 })}>
                 <Flex gap={2} align="center">
