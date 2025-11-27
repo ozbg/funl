@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
   const isActive = searchParams.get('is_active')
   const tracksInventory = searchParams.get('tracks_inventory')
   const search = searchParams.get('search')
+  const showDeleted = searchParams.get('show_deleted') === 'true'
   const page = parseInt(searchParams.get('page') || '1')
   const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
   const offset = (page - 1) * limit
@@ -40,7 +41,13 @@ export async function GET(request: NextRequest) {
   let query = serviceClient
     .from('sellable_products')
     .select('*', { count: 'exact' })
-    .is('deleted_at', null)
+
+  // Filter deleted products (default: hide deleted)
+  if (!showDeleted) {
+    query = query.is('deleted_at', null)
+  } else {
+    query = query.not('deleted_at', 'is', null)
+  }
 
   // Apply filters
   if (productType) {
@@ -102,18 +109,21 @@ export async function GET(request: NextRequest) {
   // Calculate stats
   const allProducts = await serviceClient
     .from('sellable_products')
-    .select('is_active, tracks_inventory, current_stock')
-    .is('deleted_at', null)
+    .select('is_active, tracks_inventory, current_stock, deleted_at')
+
+  const activeProducts = allProducts.data?.filter(p => !p.deleted_at) || []
+  const deletedProducts = allProducts.data?.filter(p => p.deleted_at) || []
 
   const stats = {
-    total_products: allProducts.data?.length || 0,
-    active_products: allProducts.data?.filter(p => p.is_active).length || 0,
-    inactive_products: allProducts.data?.filter(p => !p.is_active).length || 0,
-    low_stock_count: allProducts.data?.filter(p =>
+    total_products: activeProducts.length,
+    active_products: activeProducts.filter(p => p.is_active).length,
+    inactive_products: activeProducts.filter(p => !p.is_active).length,
+    deleted_products: deletedProducts.length,
+    low_stock_count: activeProducts.filter(p =>
       p.tracks_inventory &&
       p.current_stock !== null &&
       p.current_stock <= 10
-    ).length || 0
+    ).length
   }
 
   return NextResponse.json({

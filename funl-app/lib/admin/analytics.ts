@@ -381,11 +381,18 @@ export async function getProductsWithStats() {
     })
   )
 
+  // Get deleted products count
+  const { count: deletedCount } = await serviceClient
+    .from('sellable_products')
+    .select('*', { count: 'exact', head: true })
+    .not('deleted_at', 'is', null)
+
   // Calculate stats
   const stats = {
     total_products: productsWithInventory.length,
     active_products: productsWithInventory.filter(p => p.is_active).length,
     inactive_products: productsWithInventory.filter(p => !p.is_active).length,
+    deleted_products: deletedCount || 0,
     low_stock_count: productsWithInventory.filter(p =>
       p.tracks_inventory &&
       p.current_stock !== null &&

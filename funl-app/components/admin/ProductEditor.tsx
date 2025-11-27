@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { Button } from '@/components/ui/button'
+import { DeleteProductDialog } from './DeleteProductDialog'
 
 interface PricingTier {
   min_quantity: number
@@ -40,6 +41,7 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
   const [isEditing, setIsEditing] = useState(!productId)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const [name, setName] = useState(initialData?.name || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
@@ -353,38 +355,65 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
       </Flex>
 
       {/* Actions */}
-      <Flex gap={3} mt={6}>
-        {isEditing ? (
-          <>
+      <Flex gap={3} mt={6} justify="space-between">
+        <Flex gap={3}>
+          {isEditing ? (
+            <>
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                variant="solid"
+                size="sm"
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </Button>
+              {productId && (
+                <Button
+                  onClick={() => setIsEditing(false)}
+                  disabled={isSaving}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+              )}
+            </>
+          ) : (
             <Button
-              onClick={handleSave}
-              disabled={isSaving}
+              onClick={() => setIsEditing(true)}
               variant="solid"
               size="sm"
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              Edit
             </Button>
-            {productId && (
-              <Button
-                onClick={() => setIsEditing(false)}
-                disabled={isSaving}
-                variant="outline"
-                size="sm"
-              >
-                Cancel
-              </Button>
-            )}
-          </>
-        ) : (
+          )}
+        </Flex>
+
+        {/* Delete Button (only show for existing products) */}
+        {productId && !isEditing && (
           <Button
-            onClick={() => setIsEditing(true)}
-            variant="solid"
+            onClick={() => setShowDeleteDialog(true)}
+            variant="outline"
             size="sm"
           >
-            Edit
+            Delete Product
           </Button>
         )}
       </Flex>
+
+      {/* Delete Dialog */}
+      {productId && showDeleteDialog && (
+        <DeleteProductDialog
+          isOpen={showDeleteDialog}
+          onClose={() => setShowDeleteDialog(false)}
+          productId={productId}
+          productName={name}
+          onSuccess={() => {
+            // Redirect to products list after successful deletion
+            window.location.href = '/admin/products'
+          }}
+        />
+      )}
     </Box>
   )
 }

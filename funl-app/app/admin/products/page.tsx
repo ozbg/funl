@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
 import { ProductsTable } from '@/components/admin/ProductsTable'
@@ -23,7 +24,7 @@ export default async function AdminProductsPage() {
       </Flex>
 
       {/* Stats Cards */}
-      <Grid columns={{ base: 1, md: 2, lg: 4 }} gap={6} mb={8}>
+      <Grid columns={{ base: 1, md: 2, lg: 5 }} gap={6} mb={8}>
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Total Products</p>
           <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>
@@ -51,6 +52,24 @@ export default async function AdminProductsPage() {
             {stats?.low_stock_count || 0}
           </p>
         </Box>
+
+        <Link href="/admin/products/deleted">
+          <Box
+            bg="bg.default"
+            rounded="lg"
+            boxShadow="sm"
+            borderWidth="1px"
+            borderColor="border.default"
+            p={6}
+            cursor="pointer"
+            _hover={{ borderColor: 'accent.default' }}
+          >
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Deleted Products</p>
+            <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.muted' })}>
+              {stats?.deleted_products || 0}
+            </p>
+          </Box>
+        </Link>
       </Grid>
 
       {/* Products Table */}

@@ -206,7 +206,7 @@ export async function PUT(
 
 /**
  * DELETE /api/admin/products/[id]
- * Soft delete a product
+ * Soft delete a product with safeguard checks
  */
 export async function DELETE(
   request: NextRequest,
@@ -255,10 +255,42 @@ export async function DELETE(
     return NextResponse.json({ error: 'Product not found' }, { status: 404 })
   }
 
-  // Soft delete (set deleted_at timestamp)
+  // SAFEGUARD CHECKS - gather impact data
+  const checks = {
+    hasOrders: false,
+    orderCount: 0,
+    hasLinkedBatches: false,
+    linkedBatchCount: 0,
+    currentStock: oldProduct.current_stock || 0,
+    productName: oldProduct.name,
+  }
+
+  // Check for orders (any status except cancelled)
+  const { count: orderCount } = await serviceClient
+    .from('purchase_orders')
+    .select('id', { count: 'exact' })
+    .eq('product_id', id)
+    .neq('status', 'cancelled')
+
+  checks.hasOrders = (orderCount || 0) > 0
+  checks.orderCount = orderCount || 0
+
+  // Check for linked batches
+  const { count: batchCount } = await serviceClient
+    .from('product_batch_inventory')
+    .select('id', { count: 'exact' })
+    .eq('product_id', id)
+
+  checks.hasLinkedBatches = (batchCount || 0) > 0
+  checks.linkedBatchCount = batchCount || 0
+
+  // Soft delete (set deleted_at timestamp and deactivate)
   const { data: product, error: deleteError } = await serviceClient
     .from('sellable_products')
-    .update({ deleted_at: new Date().toISOString() })
+    .update({
+      deleted_at: new Date().toISOString(),
+      is_active: false,
+    })
     .eq('id', id)
     .select()
     .single()
@@ -285,5 +317,9 @@ export async function DELETE(
     console.error('Failed to log admin action:', logError)
   }
 
-  return NextResponse.json({ success: true, product })
+  return NextResponse.json({
+    success: true,
+    product,
+    checks, // Return check results to frontend for confirmation UI
+  })
 }
