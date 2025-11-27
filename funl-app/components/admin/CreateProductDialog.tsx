@@ -180,8 +180,8 @@ export function CreateProductDialog() {
           {/* Body */}
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
@@ -410,7 +410,7 @@ export function CreateProductDialog() {
                         px: 2,
                         py: 1,
                         fontSize: 'xs',
-                        color: 'red.600',
+                        color: 'fg.default',
                         cursor: 'pointer',
                         _hover: { textDecoration: 'underline' }
                       })}

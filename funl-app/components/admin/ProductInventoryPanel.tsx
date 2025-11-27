@@ -60,8 +60,8 @@ export function ProductInventoryPanel({ productId: _productId, inventory }: Prod
               fontSize: 'xs',
               fontWeight: 'medium',
               rounded: 'md',
-              color: item.quantity_remaining > 0 ? 'green.700' : 'gray.700',
-              bg: item.quantity_remaining > 0 ? 'green.100' : 'gray.100'
+              color: item.quantity_remaining > 0 ? 'accent.default' : 'fg.muted',
+              bg: 'bg.muted'
             })}>
               {item.quantity_remaining} / {item.quantity_allocated}
             </span>

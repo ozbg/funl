@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { QRPreview } from '@/components/QRPreview'
 import { loadQRPresetsForBusiness, type QRPreset } from '@/lib/qr-generation'
 import { createClient } from '@/lib/supabase/client'
@@ -164,16 +165,9 @@ export function BatchExportDialog({ batch, isOpen, onClose }: BatchExportDialogP
           <h2 className={css({ fontSize: 'xl', fontWeight: 'bold' })}>
             Export QR Code Batch
           </h2>
-          <button
-            onClick={onClose}
-            className={css({
-              p: 1,
-              rounded: 'md',
-              _hover: { bg: 'bg.muted' }
-            })}
-          >
+          <Button onClick={onClose} variant="ghost" size="sm">
             ✕
-          </button>
+          </Button>
         </Flex>
 
         <Flex gap={6}>
@@ -360,37 +354,12 @@ export function BatchExportDialog({ batch, isOpen, onClose }: BatchExportDialogP
 
         {/* Actions */}
         <Flex justify="flex-end" gap={3} mt={6} pt={4} borderTop="1px solid" borderColor="border.default">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className={css({
-              px: 4,
-              py: 2,
-              border: '1px solid',
-              borderColor: 'border.default',
-              rounded: 'md',
-              fontSize: 'sm'
-            })}
-          >
+          <Button type="button" onClick={onClose} disabled={loading} variant="outline" size="sm">
             Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleExport}
-            disabled={loading}
-            className={css({
-              px: 4,
-              py: 2,
-              bg: 'accent.default',
-              color: 'white',
-              rounded: 'md',
-              fontSize: 'sm',
-              opacity: loading ? 0.5 : 1
-            })}
-          >
+          </Button>
+          <Button type="button" onClick={handleExport} disabled={loading} variant="solid" size="sm">
             {loading ? 'Generating PDFs...' : `Export ${batch.quantity} PDFs`}
-          </button>
+          </Button>
         </Flex>
       </Box>
     </div>

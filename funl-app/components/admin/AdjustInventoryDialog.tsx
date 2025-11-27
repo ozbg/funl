@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Box, Flex } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
+import { Button } from '@/components/ui/button'
 
 interface AdjustInventoryDialogProps {
   isOpen: boolean
@@ -167,57 +168,30 @@ export function AdjustInventoryDialog({
             Adjustment Type
           </label>
           <Flex gap={2}>
-            <button
+            <Button
               onClick={() => setAdjustmentType('add')}
-              className={css({
-                flex: 1,
-                py: 2,
-                px: 3,
-                rounded: 'md',
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                bg: adjustmentType === 'add' ? 'green.500' : 'bg.muted',
-                color: adjustmentType === 'add' ? 'white' : 'fg.default',
-                cursor: 'pointer',
-                _hover: { opacity: 0.9 },
-              })}
+              variant={adjustmentType === 'add' ? 'solid' : 'outline'}
+              size="sm"
+              className={css({ flex: 1 })}
             >
               Add Stock
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setAdjustmentType('remove')}
-              className={css({
-                flex: 1,
-                py: 2,
-                px: 3,
-                rounded: 'md',
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                bg: adjustmentType === 'remove' ? 'red.500' : 'bg.muted',
-                color: adjustmentType === 'remove' ? 'white' : 'fg.default',
-                cursor: 'pointer',
-                _hover: { opacity: 0.9 },
-              })}
+              variant={adjustmentType === 'remove' ? 'solid' : 'outline'}
+              size="sm"
+              className={css({ flex: 1 })}
             >
               Remove Stock
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setAdjustmentType('set')}
-              className={css({
-                flex: 1,
-                py: 2,
-                px: 3,
-                rounded: 'md',
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                bg: adjustmentType === 'set' ? 'blue.500' : 'bg.muted',
-                color: adjustmentType === 'set' ? 'white' : 'fg.default',
-                cursor: 'pointer',
-                _hover: { opacity: 0.9 },
-              })}
+              variant={adjustmentType === 'set' ? 'solid' : 'outline'}
+              size="sm"
+              className={css({ flex: 1 })}
             >
               Set Stock
-            </button>
+            </Button>
           </Flex>
         </Box>
 
@@ -245,14 +219,14 @@ export function AdjustInventoryDialog({
 
         {/* Preview */}
         {quantity > 0 && (
-          <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
+          <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
             <p className={css({ fontSize: 'sm', fontWeight: 'medium', mb: 1 })}>
               Preview:
             </p>
             <p className={css({ fontSize: 'sm' })}>
               Current: {currentStock} → New: {newStock}
               {quantityChange !== 0 && (
-                <span className={css({ fontWeight: 'semibold', color: quantityChange > 0 ? 'green.600' : 'red.600', ml: 2 })}>
+                <span className={css({ fontWeight: 'semibold', color: quantityChange > 0 ? 'accent.default' : 'fg.muted', ml: 2 })}>
                   ({quantityChange > 0 ? '+' : ''}{quantityChange})
                 </span>
               )}
@@ -262,8 +236,8 @@ export function AdjustInventoryDialog({
 
         {/* Warning for low or zero stock */}
         {newStock === 0 && (
-          <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-            <p className={css({ fontSize: 'sm', color: 'red.700', fontWeight: 'medium' })}>
+          <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+            <p className={css({ fontSize: 'sm', color: 'fg.muted', fontWeight: 'medium' })}>
               ⚠️ Warning: This will set stock to 0 (out of stock)
             </p>
           </Box>
@@ -345,49 +319,29 @@ export function AdjustInventoryDialog({
 
         {/* Error */}
         {error && (
-          <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-            <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+          <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+            <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
           </Box>
         )}
 
         {/* Actions */}
         <Flex gap={3} justify="flex-end">
-          <button
+          <Button
             onClick={handleClose}
             disabled={isSubmitting}
-            className={css({
-              px: 4,
-              py: 2,
-              rounded: 'md',
-              fontSize: 'sm',
-              fontWeight: 'medium',
-              bg: 'bg.muted',
-              color: 'fg.default',
-              cursor: 'pointer',
-              _hover: { bg: 'bg.subtle' },
-              _disabled: { opacity: 0.5, cursor: 'not-allowed' },
-            })}
+            variant="outline"
+            size="sm"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={css({
-              px: 4,
-              py: 2,
-              rounded: 'md',
-              fontSize: 'sm',
-              fontWeight: 'medium',
-              bg: 'accent.default',
-              color: 'white',
-              cursor: 'pointer',
-              _hover: { opacity: 0.9 },
-              _disabled: { opacity: 0.5, cursor: 'not-allowed' },
-            })}
+            variant="solid"
+            size="sm"
           >
             {isSubmitting ? 'Adjusting...' : 'Adjust Inventory'}
-          </button>
+          </Button>
         </Flex>
       </Box>
     </Box>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
+import { Button } from '@/components/ui/button'
 import { PricingTiersEditor } from './PricingTiersEditor'
 
 interface PricingTier {
@@ -87,21 +88,9 @@ export function BatchPricingEditor({ batchId, currentPricing }: BatchPricingEdit
           <h3 className={css({ fontSize: 'lg', fontWeight: 'semibold' })}>
             Pricing & Availability
           </h3>
-          <button
-            onClick={() => setEditing(true)}
-            className={css({
-              px: 4,
-              py: 2,
-              bg: 'accent.default',
-              color: 'white',
-              rounded: 'md',
-              fontSize: 'sm',
-              fontWeight: 'semibold',
-              _hover: { bg: 'accent.emphasized' }
-            })}
-          >
+          <Button onClick={() => setEditing(true)} variant="solid" size="sm">
             Edit Pricing
-          </button>
+          </Button>
         </Flex>
 
         {/* Current Pricing Display */}
@@ -259,44 +248,21 @@ export function BatchPricingEditor({ batchId, currentPricing }: BatchPricingEdit
       </Grid>
 
       <Flex gap={3}>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className={css({
-            px: 6,
-            py: 2,
-            bg: 'accent.default',
-            color: 'white',
-            rounded: 'md',
-            fontSize: 'sm',
-            fontWeight: 'semibold',
-            _hover: { bg: 'accent.emphasized' },
-            _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-          })}
-        >
+        <Button onClick={handleSave} disabled={saving} variant="solid" size="sm">
           {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             setFormData(currentPricing)
             setEditing(false)
             setError(null)
           }}
           disabled={saving}
-          className={css({
-            px: 6,
-            py: 2,
-            bg: 'bg.subtle',
-            color: 'fg.default',
-            rounded: 'md',
-            fontSize: 'sm',
-            fontWeight: 'semibold',
-            _hover: { bg: 'bg.muted' },
-            _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-          })}
+          variant="outline"
+          size="sm"
         >
           Cancel
-        </button>
+        </Button>
       </Flex>
     </Box>
   )

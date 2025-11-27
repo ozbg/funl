@@ -27,7 +27,7 @@ export function EditProductDialog({ product, onSuccess: _onSuccess }: EditProduc
         py: 1,
         fontSize: 'xs',
         fontWeight: 'medium',
-        color: 'blue.600',
+        color: 'accent.default',
         cursor: 'pointer',
         _hover: { textDecoration: 'underline' }
       })}

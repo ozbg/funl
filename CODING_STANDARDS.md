@@ -209,59 +209,88 @@ CREATE POLICY "Users can only update own funnels" ON funnels
 
 ## 🎨 Styling Standards
 
-### Tailwind Classes
+**CRITICAL: We use Park UI with Panda CSS - NEVER write custom button CSS!**
+
+### Park UI Design System
 ```tsx
-// ✅ GOOD: Organized classes with cn()
-import { cn } from '@/lib/utils';
+// ✅ ALWAYS USE: Park UI components from @/components/ui
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog } from '@/components/ui/dialog'
 
-<div 
-  className={cn(
-    // Layout
-    'flex flex-col gap-4',
-    // Styling
-    'bg-white rounded-lg shadow-md',
-    // Spacing
-    'p-4 md:p-6',
-    // States
-    'hover:shadow-lg transition-shadow',
-    // Conditional
-    isActive && 'ring-2 ring-blue-500'
-  )}
-/>
+// Primary action button (green accent)
+<Button variant="solid">Save Changes</Button>
 
-// ❌ BAD: Long unorganized string
-<div className="flex flex-col gap-4 bg-white rounded-lg shadow-md p-4 md:p-6 hover:shadow-lg transition-shadow" />
+// Secondary button (muted)
+<Button variant="outline">Cancel</Button>
+
+// Subtle button
+<Button variant="ghost">View Details</Button>
+
+// Sizes
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>  // default
+<Button size="lg">Large</Button>
+
+// ❌ NEVER DO THIS: Custom button CSS
+<button className={css({
+  bg: 'blue.600',  // WRONG - not our design system
+  color: 'white',
+  px: 4,
+  py: 2
+})}>
+  Save
+</button>
+
+// ❌ NEVER DO THIS: Raw HTML buttons with custom styles
+<button className="px-4 py-2 bg-blue-500">Save</button>
 ```
 
-### Component Variants
+### Panda CSS Tokens (When NOT using Park UI components)
 ```tsx
-// ✅ GOOD: Use CVA for variants
-import { cva, type VariantProps } from 'class-variance-authority';
+// ✅ GOOD: Use design tokens for custom layouts
+import { css } from '@/styled-system/css'
+import { Box, Flex, Grid } from '@/styled-system/jsx'
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md font-medium',
-  {
-    variants: {
-      variant: {
-        primary: 'bg-blue-500 text-white hover:bg-blue-600',
-        secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
-      },
-      size: {
-        sm: 'h-8 px-3 text-sm',
-        md: 'h-10 px-4',
-        lg: 'h-12 px-6 text-lg',
-      },
-    },
-    defaultVariants: {
-      variant: 'primary',
-      size: 'md',
-    },
-  }
-);
+<Box bg="bg.default" borderColor="border.default">
+  <Flex gap={4}>
+    <span className={css({ color: 'accent.default' })}>Active</span>
+    <span className={css({ color: 'fg.muted' })}>Inactive</span>
+  </Flex>
+</Box>
 
-interface ButtonProps extends VariantProps<typeof buttonVariants> {
-  children: React.ReactNode;
-}
+// Our color tokens (Park UI preset with mint accent):
+// - accent.default     (green - primary actions)
+// - accent.emphasized  (darker green - hover states)
+// - accent.subtle      (light green - backgrounds)
+// - bg.default         (main background)
+// - bg.muted           (muted background)
+// - bg.subtle          (subtle background)
+// - fg.default         (main text)
+// - fg.muted           (muted text)
+// - border.default     (borders)
+
+// ❌ BAD: Hardcoded colors
+<div className={css({ bg: 'blue.600' })} />    // WRONG
+<div className={css({ bg: 'green.100' })} />   // WRONG
+<div className={css({ color: 'red.500' })} />  // WRONG
+```
+
+### Layout with Panda CSS
+```tsx
+// ✅ GOOD: Use Panda JSX components for layout
+import { Box, Flex, Grid, Stack } from '@/styled-system/jsx'
+
+<Grid columns={{ base: 1, md: 2 }} gap={6}>
+  <Box p={4} bg="bg.default" rounded="lg">
+    Content
+  </Box>
+</Grid>
+
+<Flex justify="space-between" align="center" gap={4}>
+  <span>Left</span>
+  <span>Right</span>
+</Flex>
 ```
 
 ---

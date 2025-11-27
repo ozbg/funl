@@ -247,8 +247,8 @@ export default function AdminBusinessesPage() {
                         <span className={css({
                           px: 2,
                           py: 0.5,
-                          bg: 'green.100',
-                          color: 'green.700',
+                          bg: 'bg.muted',
+                          color: 'accent.default',
                           rounded: 'md',
                           fontSize: 'xs',
                           fontWeight: 'medium',
@@ -260,8 +260,8 @@ export default function AdminBusinessesPage() {
                         <span className={css({
                           px: 2,
                           py: 0.5,
-                          bg: 'blue.100',
-                          color: 'blue.700',
+                          bg: 'bg.muted',
+                          color: 'fg.default',
                           rounded: 'md',
                           fontSize: 'xs',
                           fontWeight: 'medium',

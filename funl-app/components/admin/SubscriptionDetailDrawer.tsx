@@ -2,6 +2,7 @@
 
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { SubscriptionStatusBadge } from './SubscriptionStatusBadge'
 import { PlanBadge } from './PlanBadge'
 import { FunnelUsageBar } from './FunnelUsageBar'
@@ -89,17 +90,16 @@ export function SubscriptionDetailDrawer({
           <h2 className={css({ fontSize: 'xl', fontWeight: 'bold', color: 'fg.default' })}>
             Subscription Details
           </h2>
-          <button
+          <Button
             onClick={onClose}
+            variant="ghost"
+            size="sm"
             className={css({
-              color: 'fg.muted',
-              cursor: 'pointer',
-              fontSize: 'xl',
-              _hover: { color: 'fg.default' }
+              fontSize: 'xl'
             })}
           >
             ✕
-          </button>
+          </Button>
         </Flex>
 
         {/* Content */}
@@ -160,7 +160,7 @@ export function SubscriptionDetailDrawer({
             {subscription.trial_end && (
               <Flex justify="space-between" align="center" mb={3}>
                 <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>Trial Ends</span>
-                <span className={css({ fontSize: 'sm', color: 'blue.600', fontWeight: 'medium' })}>
+                <span className={css({ fontSize: 'sm', color: 'fg.default', fontWeight: 'medium' })}>
                   {new Date(subscription.trial_end).toLocaleDateString()}
                 </span>
               </Flex>
@@ -169,7 +169,7 @@ export function SubscriptionDetailDrawer({
             {subscription.cancel_at_period_end && (
               <Flex justify="space-between" align="center" mb={3}>
                 <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>Cancels At</span>
-                <span className={css({ fontSize: 'sm', color: 'orange.600', fontWeight: 'medium' })}>
+                <span className={css({ fontSize: 'sm', color: 'fg.default', fontWeight: 'medium' })}>
                   {new Date(subscription.current_period_end).toLocaleDateString()}
                 </span>
               </Flex>
@@ -178,7 +178,7 @@ export function SubscriptionDetailDrawer({
             {subscription.canceled_at && (
               <Flex justify="space-between" align="center" mb={3}>
                 <span className={css({ fontSize: 'sm', color: 'fg.muted' })}>Canceled On</span>
-                <span className={css({ fontSize: 'sm', color: 'red.600', fontWeight: 'medium' })}>
+                <span className={css({ fontSize: 'sm', color: 'fg.muted', fontWeight: 'medium' })}>
                   {new Date(subscription.canceled_at).toLocaleDateString()}
                 </span>
               </Flex>

@@ -145,7 +145,7 @@ export function OrdersTable({ orders, onSelectOrder }: OrdersTableProps) {
                   rounded: 'md',
                   fontSize: 'xs',
                   fontWeight: 'medium',
-                  bg: order.payment_status === 'paid' ? 'green.subtle' : 'yellow.subtle',
+                  bg: 'bg.muted',
                   color: getPaymentStatusColor(order.payment_status)
                 })}>
                   {order.payment_status}

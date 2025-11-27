@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { BusinessAutocomplete } from './BusinessAutocomplete'
 import { BillingPeriodToggle } from './BillingPeriodToggle'
 
@@ -97,24 +98,9 @@ export function AssignSubscriptionDialog({ plans }: AssignSubscriptionDialogProp
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className={css({
-          px: 4,
-          py: 2,
-          bg: 'accent.default',
-          color: 'white',
-          fontSize: 'sm',
-          fontWeight: 'medium',
-          rounded: 'md',
-          cursor: 'pointer',
-          _hover: {
-            bg: 'accent.emphasized'
-          }
-        })}
-      >
+      <Button onClick={() => setIsOpen(true)} variant="solid" size="sm">
         Assign Subscription
-      </button>
+      </Button>
     )
   }
 
@@ -153,24 +139,16 @@ export function AssignSubscriptionDialog({ plans }: AssignSubscriptionDialogProp
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Assign Subscription
             </h2>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className={css({
-                color: 'fg.muted',
-                cursor: 'pointer',
-                _hover: { color: 'fg.default' }
-              })}
-            >
+            <Button type="button" onClick={() => setIsOpen(false)} variant="ghost" size="sm">
               ✕
-            </button>
+            </Button>
           </Flex>
 
           {/* Body */}
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
@@ -315,43 +293,12 @@ export function AssignSubscriptionDialog({ plans }: AssignSubscriptionDialogProp
 
           {/* Footer */}
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              disabled={isSubmitting}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'fg.default',
-                bg: 'bg.muted',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'bg.default' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
-            >
+            <Button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting} variant="outline" size="sm">
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || !selectedBusiness || !selectedPlanId || reason.length < 10}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'white',
-                bg: 'accent.default',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
-            >
+            </Button>
+            <Button type="submit" disabled={isSubmitting || !selectedBusiness || !selectedPlanId || reason.length < 10} variant="solid" size="sm">
               {isSubmitting ? 'Assigning...' : 'Assign Subscription'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

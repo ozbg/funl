@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { BillingPeriodToggle } from './BillingPeriodToggle'
 
 interface Subscription {
@@ -90,20 +91,9 @@ export function AddAddonFunnelsDialog({ subscription, onSuccess }: AddAddonFunne
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className={css({
-          px: 3,
-          py: 1,
-          fontSize: 'xs',
-          fontWeight: 'medium',
-          color: 'green.600',
-          cursor: 'pointer',
-          _hover: { textDecoration: 'underline' }
-        })}
-      >
+      <Button onClick={() => setIsOpen(true)} variant="ghost" size="sm">
         Add Funnels
-      </button>
+      </Button>
     )
   }
 
@@ -139,24 +129,20 @@ export function AddAddonFunnelsDialog({ subscription, onSuccess }: AddAddonFunne
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Add Addon Funnels
             </h2>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className={css({ color: 'fg.muted', cursor: 'pointer', _hover: { color: 'fg.default' } })}
-            >
+            <Button type="button" onClick={() => setIsOpen(false)} variant="ghost" size="sm">
               ✕
-            </button>
+            </Button>
           </Flex>
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
-            <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-              <p className={css({ fontSize: 'sm', color: 'blue.700' })}>
+            <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+              <p className={css({ fontSize: 'sm', color: 'fg.default' })}>
                 Adding addon funnels for: <strong>{subscription.business.name}</strong>
               </p>
             </Box>
@@ -305,43 +291,12 @@ export function AddAddonFunnelsDialog({ subscription, onSuccess }: AddAddonFunne
           </Box>
 
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              disabled={isSubmitting}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'fg.default',
-                bg: 'bg.muted',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'bg.default' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
-            >
+            <Button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting} variant="outline" size="sm">
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || !quantity || reason.length < 10}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'white',
-                bg: 'accent.default',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
-            >
+            </Button>
+            <Button type="submit" disabled={isSubmitting || !quantity || reason.length < 10} variant="solid" size="sm">
               {isSubmitting ? 'Adding...' : 'Add Addon Funnels'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

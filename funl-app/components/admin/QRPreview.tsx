@@ -123,18 +123,18 @@ export function QRPreview({ style_config, size = 100, url = 'funl.au' }: QRPrevi
 
   if (error) {
     return (
-      <Box 
-        width={size} 
-        height={size} 
-        bg="red.50" 
-        display="flex" 
-        alignItems="center" 
+      <Box
+        width={size}
+        height={size}
+        bg="bg.muted"
+        display="flex"
+        alignItems="center"
         justifyContent="center"
         rounded="md"
         borderWidth="1px"
-        borderColor="red.200"
+        borderColor="border.default"
       >
-        <span className={css({ fontSize: 'xs', color: 'red.600' })}>Error</span>
+        <span className={css({ fontSize: 'xs', color: 'fg.muted' })}>Error</span>
       </Box>
     )
   }

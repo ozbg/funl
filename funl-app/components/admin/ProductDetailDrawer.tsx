@@ -145,8 +145,8 @@ export function ProductDetailDrawer({
                 fontSize: 'sm',
                 fontWeight: 'medium',
                 rounded: 'md',
-                color: 'yellow.700',
-                bg: 'yellow.100'
+                color: 'accent.default',
+                bg: 'bg.muted'
               })}>
                 ⭐ Featured
               </span>

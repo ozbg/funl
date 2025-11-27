@@ -54,11 +54,11 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return { bg: 'green.100', color: 'green.800' }
-      case 'draft': return { bg: 'gray.100', color: 'gray.800' }
-      case 'paused': return { bg: 'orange.100', color: 'orange.800' }
-      case 'archived': return { bg: 'red.100', color: 'red.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'active': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'draft': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'paused': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'archived': return { bg: 'bg.muted', color: 'fg.muted' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 
@@ -111,19 +111,19 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
 
   if (error) {
     return (
-      <Box p={4} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-        <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
+      <Box p={4} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+        <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>{error}</p>
         <button
           onClick={loadFunnels}
           className={css({
             mt: 2,
             px: 3,
             py: 1,
-            bg: 'red.600',
-            color: 'white',
+            bg: 'bg.muted',
+            color: 'fg.default',
             rounded: 'sm',
             fontSize: 'xs',
-            _hover: { bg: 'red.700' }
+            _hover: { bg: 'bg.subtle' }
           })}
         >
           Retry
@@ -273,8 +273,8 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
                             <span className={css({
                               px: 2,
                               py: 1,
-                              bg: 'orange.100',
-                              color: 'orange.800',
+                              bg: 'bg.muted',
+                              color: 'fg.default',
                               rounded: 'sm',
                               fontSize: 'xs',
                               fontWeight: 'medium'
@@ -291,8 +291,8 @@ export function FunnelSelector({ businessId, selectedFunnel, onSelect }: FunnelS
                           <span className={css({
                             px: 2,
                             py: 1,
-                            bg: 'green.100',
-                            color: 'green.800',
+                            bg: 'bg.muted',
+                            color: 'accent.default',
                             rounded: 'sm',
                             fontSize: 'xs',
                             fontWeight: 'medium'

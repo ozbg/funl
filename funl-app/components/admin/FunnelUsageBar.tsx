@@ -25,9 +25,9 @@ export function FunnelUsageBar({
   }
 
   const getColor = () => {
-    if (isAtLimit) return 'red.500'
-    if (isNearLimit) return 'orange.500'
-    return 'green.500'
+    if (isAtLimit) return 'fg.muted'
+    if (isNearLimit) return 'fg.default'
+    return 'accent.default'
   }
 
   return (
@@ -39,7 +39,7 @@ export function FunnelUsageBar({
           </span>
           <span className={css({
             fontSize: 'sm',
-            color: isAtLimit ? 'red.600' : 'fg.muted',
+            color: isAtLimit ? 'fg.muted' : 'fg.muted',
             fontWeight: isAtLimit ? 'semibold' : 'normal'
           })}>
             {current} / {limit}

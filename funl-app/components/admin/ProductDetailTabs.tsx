@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
+import { Button } from '@/components/ui/button'
 import { ProductEditor } from './ProductEditor'
 import { PricingTiersEditor } from './PricingTiersEditor'
 import { ProductInventoryPanel } from './ProductInventoryPanel'
@@ -127,22 +128,13 @@ export function ProductDetailTabs({ product, linkedBatches }: ProductDetailTabsP
                   </p>
                   {product.tracks_inventory && (
                     <Flex gap={2} mt={4}>
-                      <button
+                      <Button
                         onClick={() => setShowAdjustInventory(true)}
-                        className={css({
-                          px: 3,
-                          py: 2,
-                          bg: 'accent.default',
-                          color: 'white',
-                          rounded: 'md',
-                          fontSize: 'sm',
-                          fontWeight: 'medium',
-                          cursor: 'pointer',
-                          _hover: { opacity: 0.9 },
-                        })}
+                        variant="solid"
+                        size="sm"
                       >
                         Adjust Inventory
-                      </button>
+                      </Button>
                     </Flex>
                   )}
                 </Box>
@@ -153,19 +145,19 @@ export function ProductDetailTabs({ product, linkedBatches }: ProductDetailTabsP
                     Stock Status
                   </p>
                   {!product.tracks_inventory ? (
-                    <p className={css({ fontSize: 'lg', fontWeight: 'medium' })}>
+                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.muted' })}>
                       Not Tracking Inventory
                     </p>
                   ) : product.current_stock === 0 ? (
-                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'red.600' })}>
+                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.muted' })}>
                       Out of Stock
                     </p>
                   ) : product.current_stock <= product.low_stock_threshold ? (
-                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'orange.600' })}>
+                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'fg.default' })}>
                       Low Stock
                     </p>
                   ) : (
-                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'green.600' })}>
+                    <p className={css({ fontSize: 'lg', fontWeight: 'medium', color: 'accent.default' })}>
                       In Stock
                     </p>
                   )}

@@ -213,7 +213,7 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
                 <label className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'fg.default' })}>
                   Admin Status
                 </label>
-                <p className={css({ mt: 1, fontSize: 'sm', color: user.is_admin ? 'green.600' : 'fg.muted' })}>
+                <p className={css({ mt: 1, fontSize: 'sm', color: user.is_admin ? 'accent.default' : 'fg.muted' })}>
                   {user.is_admin ? '✅ Admin User' : '👤 Regular User'}
                 </p>
               </Box>

@@ -65,7 +65,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
             Active Subscriptions
           </p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'green.600' })}>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' })}>
             {data.status_breakdown.active}
           </p>
         </Box>
@@ -75,7 +75,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
             In Trial
           </p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'blue.600' })}>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>
             {data.status_breakdown.trialing}
           </p>
         </Box>
@@ -95,7 +95,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>
             Canceled ({data.period_days}d)
           </p>
-          <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'red.600' })}>
+          <p className={css({ fontSize: 'xl', fontWeight: 'semibold', color: 'fg.default' })}>
             {data.canceled_subscriptions}
           </p>
         </Box>
@@ -109,7 +109,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
             <p className={css({
               fontSize: 'xl',
               fontWeight: 'semibold',
-              color: data.churn_rate_percent > 5 ? 'red.600' : data.churn_rate_percent > 2 ? 'yellow.600' : 'green.600'
+              color: data.churn_rate_percent > 5 ? 'fg.default' : 'accent.default'
             })}>
               {formatPercent(data.churn_rate_percent)}
             </p>
@@ -124,7 +124,7 @@ export function SubscriptionMetrics({ data }: SubscriptionMetricsProps) {
           <p className={css({
             fontSize: 'xl',
             fontWeight: 'semibold',
-            color: data.trial_conversion_rate_percent > 50 ? 'green.600' : data.trial_conversion_rate_percent > 30 ? 'yellow.600' : 'red.600'
+            color: data.trial_conversion_rate_percent > 50 ? 'accent.default' : 'fg.default'
           })}>
             {formatPercent(data.trial_conversion_rate_percent)}
           </p>

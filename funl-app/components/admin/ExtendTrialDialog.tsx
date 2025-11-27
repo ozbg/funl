@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 
 interface Subscription {
   id: string
@@ -78,20 +79,17 @@ export function ExtendTrialDialog({ subscription, onSuccess }: ExtendTrialDialog
 
   if (!isOpen) {
     return (
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
+        variant="ghost"
+        size="sm"
         className={css({
-          px: 3,
-          py: 1,
-          fontSize: 'xs',
-          fontWeight: 'medium',
-          color: 'purple.600',
-          cursor: 'pointer',
+          color: 'accent.default',
           _hover: { textDecoration: 'underline' }
         })}
       >
         Extend Trial
-      </button>
+      </Button>
     )
   }
 
@@ -127,25 +125,26 @@ export function ExtendTrialDialog({ subscription, onSuccess }: ExtendTrialDialog
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Extend Trial Period
             </h2>
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
-              className={css({ color: 'fg.muted', cursor: 'pointer', _hover: { color: 'fg.default' } })}
+              variant="ghost"
+              size="sm"
             >
               ✕
-            </button>
+            </Button>
           </Flex>
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
             {currentTrialEnd && (
-              <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'blue.700' })}>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>
                   Current trial ends: <strong>{currentTrialEnd.toLocaleDateString()}</strong>
                 </p>
               </Box>
@@ -246,43 +245,23 @@ export function ExtendTrialDialog({ subscription, onSuccess }: ExtendTrialDialog
           </Box>
 
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
               disabled={isSubmitting}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'fg.default',
-                bg: 'bg.muted',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'bg.default' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="outline"
+              size="sm"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={isSubmitting || !newTrialEnd || reason.length < 10}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'white',
-                bg: 'accent.default',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="solid"
+              size="sm"
             >
               {isSubmitting ? 'Extending...' : 'Extend Trial'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

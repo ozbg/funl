@@ -18,10 +18,10 @@ export function PlanBadge({ planName, billingPeriod, size = 'md' }: PlanBadgePro
           fontSize: size === 'sm' ? 'xs' : 'sm',
           fontWeight: 'semibold',
           rounded: 'md',
-          color: 'purple.700',
-          bg: 'purple.100',
+          color: 'accent.default',
+          bg: 'bg.muted',
           borderWidth: '1px',
-          borderColor: 'purple.200'
+          borderColor: 'border.default'
         })}
       >
         {planName}

@@ -56,22 +56,22 @@ export function CodeTable({ codes, batchId, pagination, filters }: CodeTableProp
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return { bg: 'green.100', color: 'green.800' }
-      case 'assigned': return { bg: 'blue.100', color: 'blue.800' }
-      case 'reserved': return { bg: 'orange.100', color: 'orange.800' }
-      case 'damaged': return { bg: 'red.100', color: 'red.800' }
-      case 'lost': return { bg: 'red.100', color: 'red.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'available': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'assigned': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'reserved': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'damaged': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'lost': return { bg: 'bg.muted', color: 'fg.muted' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 
   const getFunnelStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return { bg: 'green.100', color: 'green.800' }
-      case 'draft': return { bg: 'gray.100', color: 'gray.800' }
-      case 'paused': return { bg: 'orange.100', color: 'orange.800' }
-      case 'archived': return { bg: 'red.100', color: 'red.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'active': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'draft': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'paused': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'archived': return { bg: 'bg.muted', color: 'fg.muted' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 

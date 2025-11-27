@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 
 interface Product {
   id: string
@@ -125,20 +126,17 @@ export function TransferInventoryDialog({
 
   if (!isOpen) {
     return (
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
+        variant="ghost"
+        size="sm"
         className={css({
-          px: 3,
-          py: 1,
-          fontSize: 'xs',
-          fontWeight: 'medium',
-          color: 'purple.600',
-          cursor: 'pointer',
+          color: 'accent.default',
           _hover: { textDecoration: 'underline' }
         })}
       >
         Transfer
-      </button>
+      </Button>
     )
   }
 
@@ -176,24 +174,25 @@ export function TransferInventoryDialog({
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Transfer Inventory
             </h2>
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
-              className={css({ color: 'fg.muted', cursor: 'pointer', _hover: { color: 'fg.default' } })}
+              variant="ghost"
+              size="sm"
             >
               ✕
-            </button>
+            </Button>
           </Flex>
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
-            <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-              <p className={css({ fontSize: 'sm', color: 'blue.700' })}>
+            <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+              <p className={css({ fontSize: 'sm', color: 'fg.default' })}>
                 Transferring from: <strong>{fromProductName}</strong>
               </p>
             </Box>
@@ -377,43 +376,23 @@ export function TransferInventoryDialog({
           </Box>
 
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
               disabled={isSubmitting}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'fg.default',
-                bg: 'bg.muted',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'bg.default' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="outline"
+              size="sm"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={isSubmitting || !toProductId || !batchId || !quantity || reason.length < 10 || isLoading}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'white',
-                bg: 'accent.default',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="solid"
+              size="sm"
             >
               {isSubmitting ? 'Transferring...' : 'Transfer Inventory'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { BatchExportDialog } from './BatchExportDialog'
 import type { QRCodeBatch } from '@/lib/types/qr-reservation'
 
@@ -37,15 +38,15 @@ export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'generated': return { bg: 'gray.100', color: 'gray.800' }
-      case 'exporting': return { bg: 'blue.100', color: 'blue.800' }
-      case 'printing': return { bg: 'orange.100', color: 'orange.800' }
-      case 'printed': return { bg: 'green.100', color: 'green.800' }
-      case 'shipped': return { bg: 'purple.100', color: 'purple.800' }
-      case 'received': return { bg: 'green.100', color: 'green.800' }
-      case 'active': return { bg: 'green.100', color: 'green.800' }
-      case 'depleted': return { bg: 'red.100', color: 'red.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'generated': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'exporting': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'printing': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'printed': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'shipped': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'received': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'active': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'depleted': return { bg: 'bg.muted', color: 'fg.muted' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 
@@ -132,37 +133,13 @@ export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
 
         {/* Action Buttons */}
         <Flex gap={2}>
-          <button
-            className={css({
-              px: 4,
-              py: 2,
-              border: '1px solid',
-              borderColor: 'border.default',
-              rounded: 'md',
-              fontSize: 'sm',
-              bg: 'bg.default',
-              color: 'fg.default',
-              _hover: { bg: 'bg.subtle' }
-            })}
-            onClick={() => window.open(`/api/admin/qr-codes/batches/${batch.id}/export`, '_blank')}
-          >
+          <Button variant="outline" size="sm" onClick={() => window.open(`/api/admin/qr-codes/batches/${batch.id}/export`, '_blank')}>
             Export CSV
-          </button>
+          </Button>
 
-          <button
-            className={css({
-              px: 4,
-              py: 2,
-              bg: 'accent.default',
-              color: 'white',
-              rounded: 'md',
-              fontSize: 'sm',
-              _hover: { bg: 'accent.emphasized' }
-            })}
-            onClick={() => setExportDialogOpen(true)}
-          >
+          <Button variant="solid" size="sm" onClick={() => setExportDialogOpen(true)}>
             Export PDFs
-          </button>
+          </Button>
         </Flex>
       </Flex>
 
@@ -202,12 +179,12 @@ export function BatchDetailHeader({ batch }: BatchDetailHeaderProps) {
               {batch.assignedCodes} assigned, {batch.availableCodes} available
             </span>
             {batch.reservedCodes > 0 && (
-              <span className={css({ color: 'orange.600', ml: 2 })}>
+              <span className={css({ color: 'fg.muted', ml: 2 })}>
                 ({batch.reservedCodes} reserved)
               </span>
             )}
             {batch.damagedCodes > 0 && (
-              <span className={css({ color: 'red.600', ml: 2 })}>
+              <span className={css({ color: 'fg.muted', ml: 2 })}>
                 ({batch.damagedCodes} damaged/lost)
               </span>
             )}

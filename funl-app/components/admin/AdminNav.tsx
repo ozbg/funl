@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { css } from '@/styled-system/css'
 import { Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 
 export function AdminNav() {
   const router = useRouter()
@@ -73,29 +74,20 @@ export function AdminNav() {
   return (
     <Flex gap="8" display={{ base: 'none', sm: 'flex' }}>
       {navItems.map((item) => (
-        <button
+        <Button
           key={item.href}
           onClick={() => router.push(item.href)}
+          variant="ghost"
+          size="sm"
           className={css({
-            background: 'transparent',
-            border: 'none',
             borderBottom: isActive(item.href, item.exact) ? '2px solid' : 'none',
             borderColor: isActive(item.href, item.exact) ? 'accent.default' : 'transparent',
             color: isActive(item.href, item.exact) ? 'fg.default' : 'fg.muted',
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: '1',
-            pt: '1',
-            fontSize: 'sm',
-            fontWeight: 'medium',
-            cursor: 'pointer',
-            _hover: {
-              color: 'fg.default',
-            },
+            borderRadius: 0,
           })}
         >
           {item.label}
-        </button>
+        </Button>
       ))}
     </Flex>
   )

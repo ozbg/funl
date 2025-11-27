@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { BillingPeriodToggle } from './BillingPeriodToggle'
 
 interface Plan {
@@ -150,20 +151,17 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
 
   if (!isOpen) {
     return (
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
+        variant="ghost"
+        size="sm"
         className={css({
-          px: 3,
-          py: 1,
-          fontSize: 'xs',
-          fontWeight: 'medium',
-          color: 'blue.600',
-          cursor: 'pointer',
+          color: 'accent.default',
           _hover: { textDecoration: 'underline' }
         })}
       >
         Change Plan
-      </button>
+      </Button>
     )
   }
 
@@ -201,24 +199,25 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Change Subscription Plan
             </h2>
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
-              className={css({ color: 'fg.muted', cursor: 'pointer', _hover: { color: 'fg.default' } })}
+              variant="ghost"
+              size="sm"
             >
               ✕
-            </button>
+            </Button>
           </Flex>
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
-            <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-              <p className={css({ fontSize: 'sm', color: 'blue.700' })}>
+            <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+              <p className={css({ fontSize: 'sm', color: 'fg.default' })}>
                 Current plan: <strong>{subscription.subscription_plan.name}</strong> ({subscription.billing_period})
               </p>
             </Box>
@@ -321,11 +320,11 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
 
                 {/* Proration Calculation Display */}
                 {proration && (
-                  <Box mb={4} p={4} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-                    <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'blue.900', mb: 3 })}>
+                  <Box mb={4} p={4} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                    <h3 className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 3 })}>
                       Proration Calculation
                     </h3>
-                    <Box fontSize="xs" color="blue.800">
+                    <Box fontSize="xs" color="fg.default">
                       <Flex justify="space-between" mb={1}>
                         <span>Days remaining in period:</span>
                         <span className={css({ fontWeight: 'medium' })}>{proration.daysRemaining} days</span>
@@ -342,7 +341,7 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
                           +${(proration.newAmount / 100).toFixed(2)}
                         </span>
                       </Flex>
-                      <Box mt={2} pt={2} borderTopWidth="1px" borderColor="blue.300">
+                      <Box mt={2} pt={2} borderTopWidth="1px" borderColor="border.default">
                         <Flex justify="space-between">
                           <span className={css({ fontWeight: 'semibold' })}>
                             {proration.isCredit ? 'Credit:' : proration.isCharge ? 'Charge:' : 'No change:'}
@@ -350,7 +349,7 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
                           <span className={css({
                             fontWeight: 'bold',
                             fontSize: 'sm',
-                            color: proration.isCredit ? 'green.700' : proration.isCharge ? 'red.700' : 'blue.700'
+                            color: proration.isCredit ? 'accent.default' : 'fg.default'
                           })}>
                             {proration.proratedAmount >= 0 ? '+' : ''}${(proration.proratedAmount / 100).toFixed(2)}
                           </span>
@@ -427,43 +426,23 @@ export function ChangePlanDialog({ subscription, plans, onSuccess }: ChangePlanD
           </Box>
 
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
               disabled={isSubmitting}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'fg.default',
-                bg: 'bg.muted',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'bg.default' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="outline"
+              size="sm"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={isSubmitting || !selectedPlanId || reason.length < 10}
-              className={css({
-                px: 4,
-                py: 2,
-                fontSize: 'sm',
-                fontWeight: 'medium',
-                color: 'white',
-                bg: 'accent.default',
-                rounded: 'md',
-                cursor: 'pointer',
-                _hover: { bg: 'accent.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-              })}
+              variant="solid"
+              size="sm"
             >
               {isSubmitting ? 'Changing Plan...' : 'Change Plan'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

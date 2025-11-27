@@ -62,12 +62,12 @@ export default async function QRBatchesPage() {
       {/* Low Stock Alerts */}
       {inventory.lowStockAlerts.length > 0 && (
         <Box bg="bg.default" rounded="lg" borderWidth="1px" borderColor="border.default" p={4} mb={6}>
-          <p className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'orange.600', mb: 2 })}>
+          <p className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'fg.default', mb: 2 })}>
             Low Stock Alerts ({inventory.lowStockAlerts.length})
           </p>
           <Box>
             {inventory.lowStockAlerts.map((alert) => (
-              <p key={alert.batchId} className={css({ fontSize: 'sm', color: 'orange.600' })}>
+              <p key={alert.batchId} className={css({ fontSize: 'sm', color: 'fg.default' })}>
                 {alert.batchNumber} ({alert.size}): {alert.available} remaining
               </p>
             ))}

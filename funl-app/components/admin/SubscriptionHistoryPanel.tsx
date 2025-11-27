@@ -54,8 +54,8 @@ export function SubscriptionHistoryPanel({ businessId }: SubscriptionHistoryPane
 
   if (error) {
     return (
-      <Box p={6} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-        <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+      <Box p={6} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+        <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
       </Box>
     )
   }
@@ -95,7 +95,7 @@ export function SubscriptionHistoryPanel({ businessId }: SubscriptionHistoryPane
                 w: '3',
                 h: '3',
                 rounded: 'full',
-                bg: event.type === 'audit' ? 'blue.500' : 'green.500',
+                bg: event.type === 'audit' ? 'fg.muted' : 'accent.default',
                 borderWidth: '2px',
                 borderColor: 'bg.default'
               })}
@@ -108,7 +108,7 @@ export function SubscriptionHistoryPanel({ businessId }: SubscriptionHistoryPane
                   className={css({
                     fontSize: 'sm',
                     fontWeight: 'semibold',
-                    color: event.type === 'audit' ? 'blue.700' : 'green.700'
+                    color: event.type === 'audit' ? 'fg.default' : 'accent.default'
                   })}
                 >
                   {event.action || event.status}

@@ -47,7 +47,7 @@ export default async function AdminProductsPage() {
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Low Stock Alerts</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: (stats?.low_stock_count || 0) > 0 ? 'red.600' : 'fg.default' })}>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: (stats?.low_stock_count || 0) > 0 ? 'fg.default' : 'fg.default' })}>
             {stats?.low_stock_count || 0}
           </p>
         </Box>

@@ -87,14 +87,14 @@ export function LinkBatchDialog({ productId, productName, onSuccess }: LinkBatch
         className={css({
           px: 4,
           py: 2,
-          bg: 'green.600',
+          bg: 'accent.default',
           color: 'white',
           fontSize: 'sm',
           fontWeight: 'medium',
           rounded: 'md',
           cursor: 'pointer',
           _hover: {
-            bg: 'green.700'
+            bg: 'accent.emphasized'
           }
         })}
       >
@@ -148,13 +148,13 @@ export function LinkBatchDialog({ productId, productName, onSuccess }: LinkBatch
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-                <p className={css({ fontSize: 'sm', color: 'red.700' })}>{error}</p>
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+                <p className={css({ fontSize: 'sm', color: 'fg.default' })}>{error}</p>
               </Box>
             )}
 
-            <Box mb={4} p={3} bg="blue.50" borderWidth="1px" borderColor="blue.200" rounded="md">
-              <p className={css({ fontSize: 'sm', color: 'blue.700' })}>
+            <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+              <p className={css({ fontSize: 'sm', color: 'fg.default' })}>
                 Linking batch to: <strong>{productName}</strong>
               </p>
             </Box>

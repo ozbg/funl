@@ -39,28 +39,28 @@ export default async function SubscriptionsPage() {
       <Grid columns={{ base: 1, md: 2, lg: 4 }} gap={6} mb={8}>
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Active Subscriptions</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'green.600' })}>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'accent.default' })}>
             {stats?.total_active || 0}
           </p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Trial Subscriptions</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'blue.600' })}>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.default' })}>
             {stats?.total_trialing || 0}
           </p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Canceled</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'gray.600' })}>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'fg.muted' })}>
             {stats?.total_canceled || 0}
           </p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={6}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 2 })}>Monthly Recurring Revenue</p>
-          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'purple.600' })}>
+          <p className={css({ fontSize: '3xl', fontWeight: 'bold', color: 'accent.default' })}>
             ${((stats?.mrr || 0) / 100).toFixed(2)}
           </p>
         </Box>

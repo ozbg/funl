@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { SubscriptionStatusBadge } from './SubscriptionStatusBadge'
 import { PlanBadge } from './PlanBadge'
 import { FunnelUsageBar } from './FunnelUsageBar'
@@ -130,25 +131,13 @@ export function SubscriptionsTable({ initialSubscriptions, plans }: Subscription
           <option value="canceled">Canceled</option>
           <option value="past_due">Past Due</option>
         </select>
-        <button
+        <Button
           onClick={handleRefresh}
-          className={css({
-            px: 4,
-            py: 2,
-            fontSize: 'sm',
-            fontWeight: 'medium',
-            bg: 'bg.muted',
-            borderWidth: '1px',
-            borderColor: 'border.default',
-            rounded: 'md',
-            cursor: 'pointer',
-            _hover: {
-              bg: 'bg.default'
-            }
-          })}
+          variant="outline"
+          size="sm"
         >
           Refresh
-        </button>
+        </Button>
       </Flex>
 
       {/* Table */}
@@ -204,7 +193,7 @@ export function SubscriptionsTable({ initialSubscriptions, plans }: Subscription
                 <td className={css({ px: 4, py: 3 })}>
                   <SubscriptionStatusBadge status={subscription.status} size="sm" />
                   {subscription.cancel_at_period_end && (
-                    <p className={css({ fontSize: 'xs', color: 'orange.600', mt: 1 })}>
+                    <p className={css({ fontSize: 'xs', color: 'fg.muted', mt: 1 })}>
                       Cancels at period end
                     </p>
                   )}
@@ -227,20 +216,16 @@ export function SubscriptionsTable({ initialSubscriptions, plans }: Subscription
                 </td>
                 <td className={css({ px: 4, py: 3 })}>
                   <Flex gap={2} justify="flex-end">
-                    <button
+                    <Button
                       onClick={() => handleViewDetails(subscription)}
+                      variant="ghost"
+                      size="sm"
                       className={css({
-                        px: 3,
-                        py: 1,
-                        fontSize: 'xs',
-                        fontWeight: 'medium',
-                        color: 'accent.default',
-                        cursor: 'pointer',
                         _hover: { textDecoration: 'underline' }
                       })}
                     >
                       Details
-                    </button>
+                    </Button>
                     <ChangePlanDialog subscription={subscription} plans={plans} onSuccess={handleRefresh} />
                     {subscription.status === 'trialing' && (
                       <ExtendTrialDialog subscription={subscription} onSuccess={handleRefresh} />

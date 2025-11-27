@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { css } from '@/styled-system/css'
 import { Box } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { BatchExportDialog } from './BatchExportDialog'
 import type { QRCodeBatch } from '@/lib/types/qr-reservation'
 
@@ -135,8 +136,8 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                   <span className={css({
                     px: 2,
                     py: 1,
-                    bg: 'bg.subtle',
-                    color: 'blue.600',
+                    bg: 'bg.muted',
+                    color: 'fg.default',
                     rounded: 'sm',
                     fontSize: 'xs',
                     fontWeight: 'medium',
@@ -160,8 +161,8 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
                 <span className={css({
                   px: 2,
                   py: 1,
-                  bg: 'bg.subtle',
-                  color: getStatusColor(batch.status) === 'green' ? 'green.600' : 'fg.muted',
+                  bg: 'bg.muted',
+                  color: getStatusColor(batch.status) === 'green' ? 'accent.default' : 'fg.muted',
                   rounded: 'sm',
                   fontSize: 'xs'
                 })}>
@@ -170,7 +171,7 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
               </td>
               <td className={css({ p: 3 })}>{batch.quantity.toLocaleString()}</td>
               <td className={css({ p: 3 })}>
-                <span className={css({ color: batch.quantity_available > 0 ? 'green.600' : 'red.600' })}>
+                <span className={css({ color: batch.quantity_available > 0 ? 'accent.default' : 'fg.muted' })}>
                   {batch.quantity_available.toLocaleString()}
                 </span>
               </td>
@@ -178,68 +179,39 @@ export function QRBatchesTable({ batches }: QRBatchesTableProps) {
               <td className={css({ p: 3 })}>{formatDate(batch.created_at)}</td>
               <td className={css({ p: 3 })}>
                 <Box className={css({ display: 'flex', gap: '2', flexWrap: 'wrap' })}>
-                  <button
-                    className={css({
-                      px: 2,
-                      py: 1,
-                      bg: 'bg.subtle',
-                      color: 'accent.default',
-                      rounded: 'sm',
-                      fontSize: 'xs',
-                      fontWeight: 'medium',
-                      _hover: { bg: 'bg.muted' }
-                    })}
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => router.push(`/admin/qr-batches/${batch.id}`)}
                   >
                     View Details
-                  </button>
+                  </Button>
 
-                  <button
-                    className={css({
-                      px: 2,
-                      py: 1,
-                      border: '1px solid',
-                      borderColor: 'border.default',
-                      rounded: 'sm',
-                      fontSize: 'xs',
-                      _hover: { bg: 'bg.muted' }
-                    })}
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => window.open(`/api/admin/qr-codes/batches/${batch.id}/export`, '_blank')}
                   >
                     CSV
-                  </button>
+                  </Button>
 
-                  <button
-                    className={css({
-                      px: 2,
-                      py: 1,
-                      bg: 'bg.subtle',
-                      color: 'blue.600',
-                      rounded: 'sm',
-                      fontSize: 'xs',
-                      _hover: { bg: 'bg.muted' }
-                    })}
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setExportDialogBatch(batch)}
                   >
                     Export PDFs
-                  </button>
+                  </Button>
 
                   {getNextStatus(batch.status) && (
-                    <button
-                      className={css({
-                        px: 2,
-                        py: 1,
-                        bg: 'accent.default',
-                        color: 'white',
-                        rounded: 'sm',
-                        fontSize: 'xs',
-                        opacity: loadingBatch === batch.id ? 0.5 : 1
-                      })}
+                    <Button
+                      variant="solid"
+                      size="sm"
                       disabled={loadingBatch === batch.id}
                       onClick={() => handleStatusUpdate(batch.id, getNextStatus(batch.status)!)}
                     >
                       {getNextStatusLabel(batch.status)}
-                    </button>
+                    </Button>
                   )}
                 </Box>
               </td>

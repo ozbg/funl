@@ -75,22 +75,22 @@ export function CodeDetailModal({ code, isOpen, onClose }: CodeDetailModalProps)
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return { bg: 'green.100', color: 'green.800' }
-      case 'assigned': return { bg: 'blue.100', color: 'blue.800' }
-      case 'reserved': return { bg: 'orange.100', color: 'orange.800' }
-      case 'damaged': return { bg: 'red.100', color: 'red.800' }
-      case 'lost': return { bg: 'red.100', color: 'red.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'available': return { bg: 'bg.muted', color: 'accent.default' }
+      case 'assigned': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'reserved': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'damaged': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'lost': return { bg: 'bg.muted', color: 'fg.muted' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 
   const getActionColor = (action: string) => {
     switch (action) {
-      case 'assign': return { bg: 'blue.100', color: 'blue.800' }
-      case 'release': return { bg: 'orange.100', color: 'orange.800' }
-      case 'damage': return { bg: 'red.100', color: 'red.800' }
-      case 'repair': return { bg: 'green.100', color: 'green.800' }
-      default: return { bg: 'gray.100', color: 'gray.800' }
+      case 'assign': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'release': return { bg: 'bg.muted', color: 'fg.default' }
+      case 'damage': return { bg: 'bg.muted', color: 'fg.muted' }
+      case 'repair': return { bg: 'bg.muted', color: 'accent.default' }
+      default: return { bg: 'bg.muted', color: 'fg.muted' }
     }
   }
 
@@ -395,9 +395,9 @@ export function CodeDetailModal({ code, isOpen, onClose }: CodeDetailModalProps)
                           top="1"
                           w="6"
                           h="6"
-                          bg={entry.is_successful ? actionColors.bg : 'red.100'}
+                          bg={entry.is_successful ? actionColors.bg : 'bg.muted'}
                           borderWidth="2px"
-                          borderColor={entry.is_successful ? actionColors.color : 'red.600'}
+                          borderColor={entry.is_successful ? actionColors.color : 'fg.muted'}
                           rounded="full"
                         />
 
@@ -426,8 +426,8 @@ export function CodeDetailModal({ code, isOpen, onClose }: CodeDetailModalProps)
                                   <span className={css({
                                     px: 2,
                                     py: 1,
-                                    bg: 'red.100',
-                                    color: 'red.800',
+                                    bg: 'bg.muted',
+                                    color: 'fg.muted',
                                     rounded: 'sm',
                                     fontSize: 'xs'
                                   })}>

@@ -146,17 +146,17 @@ export default async function BatchDetailPage({ params, searchParams }: BatchDet
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={4}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>Available</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'green.600' })}>{availableCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'accent.default' })}>{availableCodes.toLocaleString()}</p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={4}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>Assigned</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'blue.600' })}>{assignedCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{assignedCodes.toLocaleString()}</p>
         </Box>
 
         <Box bg="bg.default" rounded="lg" boxShadow="sm" borderWidth="1px" borderColor="border.default" p={4}>
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 1 })}>Issues</p>
-          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'red.600' })}>{damagedCodes.toLocaleString()}</p>
+          <p className={css({ fontSize: '2xl', fontWeight: 'bold', color: 'fg.default' })}>{damagedCodes.toLocaleString()}</p>
         </Box>
       </Grid>
 

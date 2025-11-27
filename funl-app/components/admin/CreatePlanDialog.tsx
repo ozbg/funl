@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 
 export function CreatePlanDialog() {
   const [isOpen, setIsOpen] = useState(false)
@@ -116,22 +117,13 @@ export function CreatePlanDialog() {
 
   if (!isOpen) {
     return (
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className={css({
-          px: 4,
-          py: 2,
-          bg: 'accent.default',
-          color: 'white',
-          fontSize: 'sm',
-          fontWeight: 'medium',
-          rounded: 'md',
-          cursor: 'pointer',
-          _hover: { bg: 'accent.emphasized' }
-        })}
+        variant="solid"
+        size="sm"
       >
         Create Plan
-      </button>
+      </Button>
     )
   }
 
@@ -167,20 +159,21 @@ export function CreatePlanDialog() {
             <h2 className={css({ fontSize: 'lg', fontWeight: 'semibold', color: 'fg.default' })}>
               Create New Subscription Plan
             </h2>
-            <button
+            <Button
               type="button"
               onClick={() => setIsOpen(false)}
-              className={css({ color: 'fg.muted', cursor: 'pointer', _hover: { color: 'fg.default' } })}
+              variant="ghost"
+              size="sm"
             >
               ✕
-            </button>
+            </Button>
           </Flex>
 
           <Box p={6}>
             {error && (
-              <Box mb={4} p={3} bg="bg.subtle" borderWidth="1px" borderColor="red.600" borderLeftWidth="3px" rounded="md">
+              <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" borderLeftWidth="3px" rounded="md">
                 <Flex gap={2} align="start">
-                  <span className={css({ color: 'red.600', fontSize: 'sm', fontWeight: 'semibold' })}>⚠</span>
+                  <span className={css({ color: 'fg.default', fontSize: 'sm', fontWeight: 'semibold' })}>⚠</span>
                   <p className={css({ fontSize: 'sm', color: 'fg.default', flex: 1 })}>{error}</p>
                 </Flex>
               </Box>
@@ -294,7 +287,7 @@ export function CreatePlanDialog() {
             <Box mb={4}>
               <Flex justify="space-between" align="center" mb={2}>
                 <label className={css({ fontSize: 'sm', fontWeight: 'medium' })}>Features</label>
-                <button type="button" onClick={handleAddFeature} className={css({ px: 3, py: 1, fontSize: 'xs', fontWeight: 'medium', color: 'accent.default', cursor: 'pointer', _hover: { textDecoration: 'underline' } })}>+ Add Feature</button>
+                <Button type="button" onClick={handleAddFeature} variant="ghost" size="sm" className={css({ _hover: { textDecoration: 'underline' } })}>+ Add Feature</Button>
               </Flex>
               {features.map((feature, index) => (
                 <Flex key={index} gap={2} mb={2} align="center">
@@ -304,7 +297,7 @@ export function CreatePlanDialog() {
                     />
                   </Box>
                   {features.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveFeature(index)} className={css({ px: 2, py: 1, fontSize: 'xs', color: 'red.600', cursor: 'pointer', _hover: { textDecoration: 'underline' } })}>Remove</button>
+                    <Button type="button" onClick={() => handleRemoveFeature(index)} variant="ghost" size="sm" className={css({ color: 'fg.muted', _hover: { textDecoration: 'underline' } })}>Remove</Button>
                   )}
                 </Flex>
               ))}
@@ -324,12 +317,12 @@ export function CreatePlanDialog() {
                       w: 5,
                       h: 5,
                       borderRadius: '50%',
-                      bg: 'gray.400',
-                      color: 'white',
+                      bg: 'bg.muted',
+                      color: 'fg.default',
                       fontSize: 'sm',
                       fontWeight: 'bold',
                       cursor: 'help',
-                      _hover: { bg: 'gray.500' }
+                      _hover: { bg: 'bg.subtle' }
                     })}
                   >
                     ?
@@ -342,8 +335,10 @@ export function CreatePlanDialog() {
                       mt={2}
                       w="96"
                       maxW="500px"
-                      bg="gray.900"
-                      color="white"
+                      bg="bg.default"
+                      color="fg.default"
+                      borderWidth="1px"
+                      borderColor="border.default"
                       rounded="md"
                       p={4}
                       fontSize="sm"
@@ -351,8 +346,8 @@ export function CreatePlanDialog() {
                       zIndex={100}
                     >
                       <p className={css({ fontWeight: 'semibold', mb: 2, fontSize: 'md' })}>Audit trail for billing changes</p>
-                      <p className={css({ mb: 2, color: 'gray.300' })}>Examples:</p>
-                      <ul className={css({ listStyle: 'disc', pl: 5, lineHeight: '1.6', color: 'gray.300' })}>
+                      <p className={css({ mb: 2, color: 'fg.muted' })}>Examples:</p>
+                      <ul className={css({ listStyle: 'disc', pl: 5, lineHeight: '1.6', color: 'fg.muted' })}>
                         <li>Initial plan setup for launch</li>
                         <li>Price increase based on competitor analysis</li>
                         <li>Holiday promotion - December 2024</li>
@@ -379,16 +374,12 @@ export function CreatePlanDialog() {
           </Box>
 
           <Flex justify="flex-end" gap={3} p={6} borderTopWidth="1px" borderColor="border.default">
-            <button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting}
-              className={css({ px: 4, py: 2, fontSize: 'sm', fontWeight: 'medium', color: 'fg.default', bg: 'bg.muted', rounded: 'md', cursor: 'pointer', _hover: { bg: 'bg.default' }, _disabled: { opacity: 0.5, cursor: 'not-allowed' } })}
-            >
+            <Button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting} variant="outline" size="sm">
               Cancel
-            </button>
-            <button type="submit" disabled={isSubmitting || !name || !slug || reason.length < 10 || (priceMonthly <= 0 && priceWeekly <= 0)}
-              className={css({ px: 4, py: 2, fontSize: 'sm', fontWeight: 'medium', color: 'white', bg: 'accent.default', rounded: 'md', cursor: 'pointer', _hover: { bg: 'accent.emphasized' }, _disabled: { opacity: 0.5, cursor: 'not-allowed' } })}
-            >
+            </Button>
+            <Button type="submit" disabled={isSubmitting || !name || !slug || reason.length < 10 || (priceMonthly <= 0 && priceWeekly <= 0)} variant="solid" size="sm">
               {isSubmitting ? 'Creating...' : 'Create Plan'}
-            </button>
+            </Button>
           </Flex>
         </form>
       </Box>

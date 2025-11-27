@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { PriceDisplay } from './PriceDisplay'
 import { EditPlanDialog } from './EditPlanDialog'
 
@@ -72,23 +73,13 @@ export function PlansTable({ initialPlans }: PlansTableProps) {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <button
+        <Button
           onClick={handleRefresh}
-          className={css({
-            px: 4,
-            py: 2,
-            fontSize: 'sm',
-            fontWeight: 'medium',
-            bg: 'bg.muted',
-            borderWidth: '1px',
-            borderColor: 'border.default',
-            rounded: 'md',
-            cursor: 'pointer',
-            _hover: { bg: 'bg.default' }
-          })}
+          variant="outline"
+          size="sm"
         >
           Refresh
-        </button>
+        </Button>
       </Flex>
 
       {/* Table */}
@@ -140,12 +131,12 @@ export function PlansTable({ initialPlans }: PlansTableProps) {
                   )}
                   <Flex gap={2} mt={1}>
                     {plan.is_default && (
-                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.subtle', color: 'blue.600', rounded: 'md', fontWeight: 'medium' })}>
+                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.muted', color: 'fg.default', rounded: 'md', fontWeight: 'medium' })}>
                         Default
                       </span>
                     )}
                     {plan.featured && (
-                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.subtle', color: 'orange.600', rounded: 'md', fontWeight: 'medium' })}>
+                      <span className={css({ fontSize: 'xs', px: 2, py: 0.5, bg: 'bg.muted', color: 'fg.default', rounded: 'md', fontWeight: 'medium' })}>
                         Featured
                       </span>
                     )}
@@ -173,8 +164,8 @@ export function PlansTable({ initialPlans }: PlansTableProps) {
                     fontSize: 'xs',
                     fontWeight: 'medium',
                     rounded: 'full',
-                    color: plan.is_active ? 'green.600' : 'fg.muted',
-                    bg: 'bg.subtle'
+                    color: plan.is_active ? 'accent.default' : 'fg.muted',
+                    bg: 'bg.muted'
                   })}>
                     {plan.is_active ? 'Active' : 'Inactive'}
                   </span>

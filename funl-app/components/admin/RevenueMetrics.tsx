@@ -64,7 +64,7 @@ export function RevenueMetrics({ data }: RevenueMetricsProps) {
           {data.mrr_growth_percent !== undefined && (
             <p className={css({
               fontSize: 'sm',
-              color: data.mrr_growth_percent >= 0 ? 'green.600' : 'red.600',
+              color: data.mrr_growth_percent >= 0 ? 'accent.default' : 'fg.default',
               mt: 1
             })}>
               {formatPercent(data.mrr_growth_percent)} vs {data.period_days}d ago

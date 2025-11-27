@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Box, Flex } from '@/styled-system/jsx'
 import { css } from '@/styled-system/css'
+import { Button } from '@/components/ui/button'
 
 interface StripeSyncPanelProps {
   batchId: string
@@ -93,13 +94,13 @@ export function StripeSyncPanel({ batchId, stripeProductId, stripePriceId }: Str
             className={css({
               px: 3,
               py: 1,
-              bg: 'purple.subtle',
-              color: 'purple.text',
+              bg: 'bg.muted',
+              color: 'fg.default',
               rounded: 'md',
               fontSize: 'xs',
               fontWeight: 'medium',
               textDecoration: 'none',
-              _hover: { bg: 'purple.emphasized' }
+              _hover: { bg: 'bg.subtle' }
             })}
           >
             View in Stripe →
@@ -131,40 +132,31 @@ export function StripeSyncPanel({ batchId, stripeProductId, stripePriceId }: Str
             )}
           </Box>
           <Flex gap={2}>
-            <button
+            <Button
               onClick={handleSync}
               disabled={syncing}
+              variant="solid"
+              size="sm"
               className={css({
-                px: 4,
-                py: 2,
-                bg: 'blue.default',
-                color: 'white',
-                rounded: 'md',
-                fontSize: 'sm',
-                fontWeight: 'semibold',
-                _hover: { bg: 'blue.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
+                bg: 'accent.default',
+                _hover: { bg: 'accent.emphasized' }
               })}
             >
               {syncing ? 'Syncing...' : 'Re-sync to Stripe'}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleRemoveSync}
               disabled={syncing}
+              variant="outline"
+              size="sm"
               className={css({
-                px: 4,
-                py: 2,
-                bg: 'red.subtle',
                 color: 'red.text',
-                rounded: 'md',
-                fontSize: 'sm',
-                fontWeight: 'semibold',
-                _hover: { bg: 'red.emphasized' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' }
+                borderColor: 'red.default',
+                _hover: { bg: 'red.subtle' }
               })}
             >
               Remove Sync
-            </button>
+            </Button>
           </Flex>
         </Box>
       ) : (
@@ -172,23 +164,14 @@ export function StripeSyncPanel({ batchId, stripeProductId, stripePriceId }: Str
           <p className={css({ fontSize: 'sm', color: 'fg.muted', mb: 3 })}>
             This batch is not synced to Stripe. Sync it to enable payment processing.
           </p>
-          <button
+          <Button
             onClick={handleSync}
             disabled={syncing}
-            className={css({
-              px: 4,
-              py: 2,
-              bg: 'purple.default',
-              color: 'white',
-              rounded: 'md',
-              fontSize: 'sm',
-              fontWeight: 'semibold',
-              _hover: { bg: 'purple.emphasized' },
-              _disabled: { opacity: 0.5, cursor: 'not-allowed' }
-            })}
+            variant="solid"
+            size="sm"
           >
             {syncing ? 'Creating...' : 'Create Stripe Product'}
-          </button>
+          </Button>
         </Box>
       )}
 

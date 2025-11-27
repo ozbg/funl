@@ -10,23 +10,23 @@ interface ProductTypeBadgeProps {
 const typeConfig: Record<ProductType, { label: string; color: string; bg: string }> = {
   qr_stickers: {
     label: 'QR Stickers',
-    color: 'purple.600',
-    bg: 'bg.subtle'
+    color: 'fg.default',
+    bg: 'bg.muted'
   },
   physical_product: {
     label: 'Physical',
-    color: 'blue.600',
-    bg: 'bg.subtle'
+    color: 'fg.default',
+    bg: 'bg.muted'
   },
   digital_product: {
     label: 'Digital',
-    color: 'cyan.600',
-    bg: 'bg.subtle'
+    color: 'fg.default',
+    bg: 'bg.muted'
   },
   service: {
     label: 'Service',
-    color: 'pink.600',
-    bg: 'bg.subtle'
+    color: 'fg.default',
+    bg: 'bg.muted'
   }
 }
 

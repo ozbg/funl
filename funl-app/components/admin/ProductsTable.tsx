@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 import { ProductStatusBadge } from './ProductStatusBadge'
 import { ProductTypeBadge } from './ProductTypeBadge'
 import { StockBadge } from './StockBadge'
@@ -148,25 +149,13 @@ export function ProductsTable({ initialProducts }: ProductsTableProps) {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <button
+        <Button
           onClick={handleRefresh}
-          className={css({
-            px: 4,
-            py: 2,
-            fontSize: 'sm',
-            fontWeight: 'medium',
-            bg: 'bg.muted',
-            borderWidth: '1px',
-            borderColor: 'border.default',
-            rounded: 'md',
-            cursor: 'pointer',
-            _hover: {
-              bg: 'bg.default'
-            }
-          })}
+          variant="outline"
+          size="sm"
         >
           Refresh
-        </button>
+        </Button>
       </Flex>
 
       {/* Table */}
@@ -246,7 +235,7 @@ export function ProductsTable({ initialProducts }: ProductsTableProps) {
                 <td className={css({ px: 4, py: 3 })}>
                   <ProductStatusBadge isActive={product.is_active} size="sm" />
                   {product.featured && (
-                    <p className={css({ fontSize: 'xs', color: 'yellow.600', mt: 1 })}>⭐ Featured</p>
+                    <p className={css({ fontSize: 'xs', color: 'accent.default', mt: 1 })}>⭐ Featured</p>
                   )}
                 </td>
                 <td className={css({ px: 4, py: 3 })}>
@@ -275,20 +264,16 @@ export function ProductsTable({ initialProducts }: ProductsTableProps) {
                 </td>
                 <td className={css({ px: 4, py: 3 })}>
                   <Flex gap={2} justify="flex-end">
-                    <button
+                    <Button
                       onClick={() => handleViewDetails(product)}
+                      variant="ghost"
+                      size="sm"
                       className={css({
-                        px: 3,
-                        py: 1,
-                        fontSize: 'xs',
-                        fontWeight: 'medium',
-                        color: 'accent.default',
-                        cursor: 'pointer',
                         _hover: { textDecoration: 'underline' }
                       })}
                     >
                       Details
-                    </button>
+                    </Button>
                     <EditProductDialog product={product} onSuccess={handleRefresh} />
                   </Flex>
                 </td>

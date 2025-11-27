@@ -243,8 +243,8 @@ export function PlanDetailTabs({ plan }: PlanDetailTabsProps) {
                           <span className={css({
                             px: 2,
                             py: 1,
-                            bg: customer.subscription_status === 'active' ? 'green.100' : 'blue.100',
-                            color: customer.subscription_status === 'active' ? 'green.700' : 'blue.700',
+                            bg: 'bg.muted',
+                            color: customer.subscription_status === 'active' ? 'accent.default' : 'fg.muted',
                             rounded: 'md',
                             fontSize: 'xs',
                             fontWeight: 'medium'

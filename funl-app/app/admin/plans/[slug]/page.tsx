@@ -42,8 +42,8 @@ export default async function PlanDetailPage({
             <span className={css({
               px: 2,
               py: 1,
-              bg: plan.is_active ? 'green.100' : 'gray.100',
-              color: plan.is_active ? 'green.700' : 'gray.700',
+              bg: 'bg.muted',
+              color: plan.is_active ? 'accent.default' : 'fg.muted',
               rounded: 'md',
               fontSize: 'sm',
               fontWeight: 'medium'
@@ -54,8 +54,8 @@ export default async function PlanDetailPage({
               <span className={css({
                 px: 2,
                 py: 1,
-                bg: 'blue.100',
-                color: 'blue.700',
+                bg: 'bg.muted',
+                color: 'fg.default',
                 rounded: 'md',
                 fontSize: 'sm',
                 fontWeight: 'medium'
@@ -67,8 +67,8 @@ export default async function PlanDetailPage({
               <span className={css({
                 px: 2,
                 py: 1,
-                bg: 'yellow.100',
-                color: 'yellow.700',
+                bg: 'bg.muted',
+                color: 'fg.default',
                 rounded: 'md',
                 fontSize: 'sm',
                 fontWeight: 'medium'
@@ -79,8 +79,8 @@ export default async function PlanDetailPage({
             <span className={css({
               px: 2,
               py: 1,
-              bg: 'gray.100',
-              color: 'gray.700',
+              bg: 'bg.muted',
+              color: 'fg.default',
               rounded: 'md',
               fontSize: 'sm',
               fontWeight: 'medium'

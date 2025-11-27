@@ -53,8 +53,8 @@ export default async function ProductDetailPage({
             <span className={css({
               px: 2,
               py: 1,
-              bg: product.is_active ? 'green.100' : 'gray.100',
-              color: product.is_active ? 'green.700' : 'gray.700',
+              bg: 'bg.muted',
+              color: product.is_active ? 'accent.default' : 'fg.muted',
               rounded: 'md',
               fontSize: 'sm',
               fontWeight: 'medium'
@@ -65,8 +65,8 @@ export default async function ProductDetailPage({
               <span className={css({
                 px: 2,
                 py: 1,
-                bg: 'yellow.100',
-                color: 'yellow.700',
+                bg: 'bg.muted',
+                color: 'accent.default',
                 rounded: 'md',
                 fontSize: 'sm',
                 fontWeight: 'medium'

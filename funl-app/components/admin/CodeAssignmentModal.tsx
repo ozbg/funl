@@ -140,8 +140,8 @@ export function CodeAssignmentModal({ code, isOpen, onClose, onSuccess }: CodeAs
         {/* Content */}
         <Box p={6}>
           {error && (
-            <Box mb={4} p={3} bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md">
-              <p className={css({ fontSize: 'sm', color: 'red.800' })}>{error}</p>
+            <Box mb={4} p={3} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md">
+              <p className={css({ fontSize: 'sm', color: 'fg.muted' })}>{error}</p>
             </Box>
           )}
 
@@ -204,8 +204,8 @@ export function CodeAssignmentModal({ code, isOpen, onClose, onSuccess }: CodeAs
                             <span className={css({
                               px: 2,
                               py: 1,
-                              bg: 'orange.100',
-                              color: 'orange.800',
+                              bg: 'bg.muted',
+                              color: 'fg.default',
                               rounded: 'sm',
                               fontSize: 'xs'
                             })}>
@@ -215,8 +215,8 @@ export function CodeAssignmentModal({ code, isOpen, onClose, onSuccess }: CodeAs
                         )}
                       </Flex>
                       {selectedFunnel.reserved_code_id && (
-                        <Box mt={2} p={2} bg="orange.50" borderWidth="1px" borderColor="orange.200" rounded="sm">
-                          <p className={css({ fontSize: 'xs', color: 'orange.800' })}>
+                        <Box mt={2} p={2} bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="sm">
+                          <p className={css({ fontSize: 'xs', color: 'fg.default' })}>
                             ⚠️ This funnel already has a QR code assigned. Assigning this code will replace the existing one.
                           </p>
                         </Box>

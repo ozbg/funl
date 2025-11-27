@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { css } from '@/styled-system/css'
 import { Box, Flex, Grid } from '@/styled-system/jsx'
+import { Button } from '@/components/ui/button'
 
 interface PricingTier {
   min_quantity: number
@@ -105,8 +106,8 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
   return (
     <Box>
       {error && (
-        <Box bg="red.50" borderWidth="1px" borderColor="red.200" rounded="md" p={4} mb={4}>
-          <p className={css({ color: 'red.800', fontSize: 'sm' })}>{error}</p>
+        <Box bg="bg.muted" borderWidth="1px" borderColor="border.default" rounded="md" p={4} mb={4}>
+          <p className={css({ color: 'fg.default', fontSize: 'sm' })}>{error}</p>
         </Box>
       )}
 
@@ -128,7 +129,7 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
               borderWidth: '1px',
               borderColor: 'border.default',
               rounded: 'md',
-              _disabled: { bg: 'gray.50', cursor: 'not-allowed' },
+              _disabled: { bg: 'bg.muted', cursor: 'not-allowed' },
             })}
           />
         </Box>
@@ -149,7 +150,7 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
               borderWidth: '1px',
               borderColor: 'border.default',
               rounded: 'md',
-              _disabled: { bg: 'gray.50', cursor: 'not-allowed' },
+              _disabled: { bg: 'bg.muted', cursor: 'not-allowed' },
             })}
           />
         </Box>
@@ -355,55 +356,33 @@ export function ProductEditor({ productId, initialData, onSave }: ProductEditorP
       <Flex gap={3} mt={6}>
         {isEditing ? (
           <>
-            <button
+            <Button
               onClick={handleSave}
               disabled={isSaving}
-              className={css({
-                px: 4,
-                py: 2,
-                bg: 'blue.600',
-                color: 'white',
-                rounded: 'md',
-                fontWeight: 'medium',
-                _hover: { bg: 'blue.700' },
-                _disabled: { opacity: 0.5, cursor: 'not-allowed' },
-              })}
+              variant="solid"
+              size="sm"
             >
               {isSaving ? 'Saving...' : 'Save'}
-            </button>
+            </Button>
             {productId && (
-              <button
+              <Button
                 onClick={() => setIsEditing(false)}
                 disabled={isSaving}
-                className={css({
-                  px: 4,
-                  py: 2,
-                  bg: 'gray.200',
-                  color: 'gray.800',
-                  rounded: 'md',
-                  fontWeight: 'medium',
-                  _hover: { bg: 'gray.300' },
-                })}
+                variant="outline"
+                size="sm"
               >
                 Cancel
-              </button>
+              </Button>
             )}
           </>
         ) : (
-          <button
+          <Button
             onClick={() => setIsEditing(true)}
-            className={css({
-              px: 4,
-              py: 2,
-              bg: 'blue.600',
-              color: 'white',
-              rounded: 'md',
-              fontWeight: 'medium',
-              _hover: { bg: 'blue.700' },
-            })}
+            variant="solid"
+            size="sm"
           >
             Edit
-          </button>
+          </Button>
         )}
       </Flex>
     </Box>
